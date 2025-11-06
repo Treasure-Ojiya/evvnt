@@ -1,0 +1,116 @@
+<section
+  class="w-full min-h-screen bg-[#F5F5F5] mx-auto px-8 sm:px-12 md:px-5 py-2"
+>
+  <div class="mb-10 border-b border-[#00BFA6] pb-2">
+    <h1 class="text-3xl md:text-4xl font-bold text-[#1F3B6C]">Manage Event</h1>
+  </div>
+
+  <div>
+    <!-- Header -->
+    <div>
+      <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+        <div>
+          <input
+            type="text"
+            placeholder="Search events..."
+            class="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6C63FF]/50 transition-all"
+          />
+        </div>
+        <div>
+          <a routerLink="/events/organizer/create-event">
+            <button
+              class="bg-[#6C63FF] text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#00BFA6] transition-all duration-300"
+            >
+              + Create Event
+            </button></a
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Event Table -->
+    <div class="overflow-x-auto bg-white rounded-xl shadow-sm">
+      <table class="min-w-full text-sm text-gray-700">
+        <thead>
+          <tr class="bg-[#EAF2FF] text-[#1F3B6C] text-left">
+            <th class="px-6 py-3 font-semibold">Event Name</th>
+            <th class="px-6 py-3 font-semibold">Date</th>
+            <th class="px-6 py-3 font-semibold">Status</th>
+            <th class="px-6 py-3 font-semibold">Tickets Sold</th>
+            <th class="px-6 py-3 font-semibold text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Example Row -->
+          <tr
+            class="border-b hover:bg-[#F9FAFF] transition-colors duration-200"
+          >
+            <td class="px-6 py-4 font-medium">TechFest Lagos</td>
+            <td class="px-6 py-4">Nov 12, 2025</td>
+            <td class="px-6 py-4">
+              <span
+                class="bg-[#E6FFF6] text-[#00BFA6] px-3 py-1 rounded-full text-xs font-medium"
+                >Active</span
+              >
+            </td>
+            <td class="px-6 py-4">450</td>
+            <td
+              class="px-6 py-4 text-center flex items-center justify-center gap-4"
+            >
+              <button
+                class="text-[#6C63FF] hover:text-[#00BFA6] font-medium transition"
+              >
+                View
+              </button>
+              <button
+                class="text-[#FF6B35] hover:text-red-600 font-medium transition"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+
+          <!-- Add more rows dynamically -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- View Details Modal -->
+
+    <div
+      class="hidden inset-0 bg-black/50 justify-center items-center z-50 transition-all"
+    >
+      <div
+        class="bg-white w-[90%] md:w-[500px] rounded-xl shadow-xl p-6 relative"
+      >
+        <button
+          class="absolute top-3 right-4 text-gray-500 hover:text-[#FF6B35] text-lg"
+        >
+          ✕
+        </button>
+
+        <h3 class="text-xl font-bold text-[#1F3B6C] mb-4">Event Details</h3>
+
+        <div class="space-y-3 text-sm text-gray-700">
+          <p><strong>Name:</strong> TechFest Lagos</p>
+          <p><strong>Date:</strong> Nov 12, 2025</p>
+          <p><strong>Location:</strong> Landmark Centre</p>
+          <p><strong>Status:</strong> Active</p>
+          <p><strong>Tickets Sold:</strong> 450</p>
+          <p>
+            <strong>Description:</strong> A technology and innovation festival
+            bringing together developers and startups.
+          </p>
+        </div>
+
+        <div class="mt-6 text-right">
+          <button
+            class="bg-[#6C63FF] hover:bg-[#00BFA6] text-white px-4 py-2 rounded-lg font-medium transition-all"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

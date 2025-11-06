@@ -1,0 +1,74 @@
+Color	Hex	Mood / Use
+Primary Purple	#6b63ff, #6b63ffb3	Main buttons, CTA, highlights. Youthful, energetic, professional.
+
+Accent Orange	#FF6B35	Secondary buttons, badges, ticket labels. Attention-grabbing, fun.
+Vibrant Teal	#00BFA6	Status indicators (paid, available), icons. Fresh & positive.
+Deep Blue	#1f3b6c, #1f3b6cff	Navbar, headers, footers. Professional, trustable tone.
+
+Soft Gray	#F5F5F5	Background sections, cards, forms. Neutral for contrast.
+White	#FFFFFF	Text on colored backgrounds, card backgrounds, input fields.
+Warning Red	#FF3B30	Sold out, error messages, alerts. Immediate attention.
+🏗 Where to Use These Colors
+1️⃣ Navbar & Footer
+
+Deep Blue background (#1F3B6C)
+
+White text for links
+
+Accent Orange hover states for links/buttons
+
+2️⃣ Buttons / CTAs
+
+Primary buttons → Purple (#6C63FF) with white text
+
+Secondary buttons → Orange (#FF6B35) or Teal (#00BFA6)
+
+Disabled buttons → Soft Gray (#F5F5F5) with muted text
+
+3️⃣ Event Cards
+
+Card background → White (#FFFFFF) or very light gray (#F5F5F5)
+
+Ticket availability badge → Teal (#00BFA6) for available, Red (#FF3B30) for sold out
+
+Price → Purple (#6C63FF) to make it pop
+
+4️⃣ Payment / Status Indicators
+
+Processing / Pending → Orange (#FF6B35)
+
+Paid / Success → Teal (#00BFA6)
+
+Error / Sold Out → Red (#FF3B30)
+
+5️⃣ Forms
+
+Inputs → White with Deep Blue border
+
+Focus/active → Primary Purple border
+
+Submit button → Primary Purple background, White text
+
+6️⃣ Blog Section
+
+Post titles → Deep Blue (#1F3B6C)
+
+Post date/author → Gray (#888)
+
+“Read More” buttons → Purple (#6C63FF) hover → Orange (#FF6B35)
+
+7️⃣ Hero Section
+
+Background gradient: Purple → Teal (#6C63FF to #00BFA6)
+
+Headline → White (#FFFFFF)
+
+CTA buttons → Primary Purple or Orange for contrast
+
+💡 Extra Tips
+
+Use vibrant colors sparingly for attention areas: CTA buttons, badges, alerts.
+
+Keep the majority of the interface light/neutral for readability and professional feel.
+
+Hover states and small accents in Orange or Teal make the interface feel interactive and fun.

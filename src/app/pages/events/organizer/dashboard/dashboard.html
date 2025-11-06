@@ -1,0 +1,98 @@
+<section
+  class="w-full bg-[#F5F5F5] min-h-screen mx-auto px-8 sm:px-12 md:px-5 py-5 overflow-y-scroll"
+>
+  <!-- Header -->
+  <div class="mb-10 border-b border-[#00BFA6] pb-2">
+    <h1 class="text-3xl md:text-4xl font-bold text-[#1F3B6C]">Dashboard</h1>
+  </div>
+
+  <!-- Metrics Summary -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+    <div
+      class="bg-[#EAF2FF] p-5 rounded-xl text-center transition-all transform hover:-translate-y-1 hover:shadow-[0_4px_10px_rgba(31,59,108,0.25)]"
+    >
+      <p class="text-[#1F3B6C]/80 text-sm">Total Events</p>
+      <h3 class="text-2xl font-bold text-[#1F3B6C] mt-1">0</h3>
+    </div>
+
+    <div
+      class="bg-[#E6FFF6] p-5 rounded-xl text-center transition-all transform hover:-translate-y-1 hover:shadow-[0_4px_10px_rgba(0,191,166,0.25)]"
+    >
+      <p class="text-[#00BFA6]/80 text-sm">Active Events</p>
+      <h3 class="text-2xl font-bold text-[#00BFA6] mt-1">0</h3>
+    </div>
+
+    <div
+      class="bg-[#F7F7F7] p-5 rounded-xl text-center transition-all transform hover:-translate-y-1 hover:shadow-[0_4px_10px_rgba(107,114,128,0.25)]"
+    >
+      <p class="text-gray-500 text-sm">Upcoming Events</p>
+      <h3 class="text-2xl font-bold text-gray-900 mt-1">0</h3>
+    </div>
+
+    <div
+      class="bg-[#FFF4E6] p-5 rounded-xl text-center transition-all transform hover:-translate-y-1 hover:shadow-[0_4px_10px_rgba(255,107,53,0.25)]"
+    >
+      <p class="text-[#FF6B35]/80 text-sm">All Time Tickets Sold</p>
+      <h3 class="text-2xl font-bold text-[#FF6B35] mt-1">0</h3>
+    </div>
+
+    <div
+      class="bg-[#F0EDFF] p-5 rounded-xl text-center transition-all transform hover:-translate-y-1 hover:shadow-[0_4px_10px_rgba(108,99,255,0.25)]"
+    >
+      <p class="text-[#6C63FF]/80 text-sm">Revenue</p>
+      <h3 class="text-2xl font-bold text-[#6C63FF] mt-1">₦0.00</h3>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="mt-10">
+    <h3 class="text-xl font-semibold text-[#1F3B6C] mb-4">Recent Activity</h3>
+    <ul class="space-y-3">
+      <li
+        class="bg-white p-4 rounded-lg shadow-sm flex items-center hover:shadow-md transition"
+      >
+        <i class="fa fa-ticket-alt text-[#6C63FF] mr-3"></i>
+        <span>Lorem ipsum dolor sit amet.<strong>Lorem, ipsum.</strong></span>
+      </li>
+      <li
+        class="bg-white p-4 rounded-lg shadow-sm flex items-center hover:shadow-md transition"
+      >
+        <i class="fa fa-calendar text-[#00BFA6] mr-3"></i>
+        <span
+          ><strong>Lorem, ipsum dolor.</strong> Lorem ipsum dolor sit
+          amet.</span
+        >
+      </li>
+      <li
+        class="bg-white p-4 rounded-lg shadow-sm flex items-center hover:shadow-md transition"
+      >
+        <i class="fa fa-money-bill-wave text-[#FF6B35] mr-3"></i>
+        <span>Lorem, ipsum dolor.: <strong>₦0.00</strong></span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="flex flex-wrap gap-4 mt-10">
+    <a
+      routerLink="/events/organizer/create-event"
+      class="bg-[#1F3B6C] text-white px-6 py-3 rounded-lg hover:bg-[#163060] transition"
+      >Create Event</a
+    >
+    <a
+      routerLink="/events/organizer/manage-event"
+      class="bg-[#6C63FF] text-white px-6 py-3 rounded-lg hover:bg-[#5851D8] transition"
+      >Manage Events</a
+    >
+    <a
+      routerLink="/events/organizer/finance"
+      class="bg-[#00BFA6] text-white px-6 py-3 rounded-lg hover:bg-[#009D8A] transition"
+      >View Finance</a
+    >
+    <a
+      routerLink="/events/organizer/setting"
+      class="bg-[#FF6B35] text-white px-6 py-3 rounded-lg hover:bg-[#E65D2C] transition"
+      >Settings</a
+    >
+  </div>
+</section>

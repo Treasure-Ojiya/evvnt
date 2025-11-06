@@ -1,0 +1,100 @@
+@if (showFooter) {
+<footer class="bg-[#1f3b6cff] section-container py-10">
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 mb-10 text-center md:text-left"
+  >
+    <!-- Logo & Tagline -->
+    <div class="mx-auto md:mx-0 w-[80%]">
+      <img
+        src="assets/logo/evvnt-logo-white-1.png"
+        alt="Evvnt Logo"
+        width="150"
+        height="150"
+        class="mx-auto md:mx-0 mb-4"
+      />
+      <p class="text-white italic leading-relaxed">
+        Join us to create exhilarating memories, stories, and experiences that
+        will excite you!
+      </p>
+    </div>
+
+    <!-- Events -->
+    <div>
+      <h5 class="text-white font-bold mb-3 uppercase tracking-wide">Events</h5>
+      <div class="flex flex-col gap-2 items-center md:items-start">
+        <a
+          routerLink="events/event-list"
+          class="text-white decoration-none hover:text-[#FF6B35] hover:underline hover:underline-offset-5 hover:decoration-2 transition-all duration-300"
+          >Find Events</a
+        >
+        <a
+          routerLink="events/organizer/create-event"
+          class="text-white decoration-none hover:text-[#FF6B35] hover:underline hover:underline-offset-5 hover:decoration-2 transition-all duration-300"
+          >Create Event</a
+        >
+        <a
+          routerLink="/my-booking"
+          class="text-white decoration-none hover:text-[#FF6B35] hover:underline hover:underline-offset-5 hover:decoration-2 transition-all duration-300"
+          >Your Bookings</a
+        >
+      </div>
+    </div>
+
+    <!-- Organization -->
+    <div>
+      <h5 class="text-white font-bold mb-3 uppercase tracking-wide">
+        Organization
+      </h5>
+      <div class="flex flex-col gap-2 items-center md:items-start">
+        <a
+          href="#"
+          (click)="onScroll('serve', $event)"
+          class="text-white decoration-none hover:text-[#FF6B35] hover:underline hover:underline-offset-5 hover:decoration-2 transition-all duration-300"
+          >Our Services</a
+        >
+        <a
+          routerLink="/about"
+          class="text-white decoration-none hover:text-[#FF6B35] hover:underline hover:underline-offset-5 hover:decoration-2 transition-all duration-300"
+          >About</a
+        >
+        <a
+          routerLink="/contact"
+          class="text-white decoration-none hover:text-[#FF6B35] hover:underline hover:underline-offset-5 hover:decoration-2 transition-all duration-300"
+          >Contact</a
+        >
+      </div>
+    </div>
+
+    <!-- Follow Us -->
+    <div>
+      <h5 class="text-white font-bold mb-3 uppercase tracking-wide">
+        Follow Us
+      </h5>
+      <div class="flex flex-col gap-2 items-center md:items-start">
+        <a
+          href="#"
+          class="text-white decoration-none hover:text-[#FF6B35] hover:underline hover:underline-offset-5 hover:decoration-2 transition-all duration-300"
+          >Facebook</a
+        >
+        <a
+          href="#"
+          class="text-white decoration-none hover:text-[#FF6B35] hover:underline hover:underline-offset-5 hover:decoration-2 transition-all duration-300"
+          >Twitter</a
+        >
+        <a
+          href="#"
+          class="text-white decoration-none hover:text-[#FF6B35] hover:underline hover:underline-offset-5 hover:decoration-2 transition-all duration-300"
+          >Instagram</a
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Copyright -->
+  <div class="border-t border-white/20 pt-6">
+    <p class="text-center text-[#ffffff] font-semibold text-sm md:text-base">
+      &copy; 2025 Evvnt. All rights reserved.
+    </p>
+  </div>
+</footer>
+}

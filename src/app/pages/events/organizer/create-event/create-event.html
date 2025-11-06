@@ -1,0 +1,192 @@
+<section
+  class="w-full bg-[#F5F5F5] min-h-screen mx-auto px-8 sm:px-12 md:px-5 py-5 overflow-y-auto"
+>
+  <div class="">
+    <!-- Header -->
+    <div class="mb-10 border-b border-[#00BFA6] pb-5">
+      <h1 class="text-3xl md:text-4xl font-bold text-[#1F3B6C]">
+        Create Event
+      </h1>
+      <p class="text-gray-500 mt-2 text-base md:text-lg">
+        Fill out the form below to create your new event.
+      </p>
+    </div>
+
+    <form class="w-full max-w-6xl mx-auto space-y-8">
+      <!-- Upload Image -->
+      <div>
+        <label class="block text-lg font-semibold text-[#1F3B6C] mb-3"
+          >Event Image</label
+        >
+        <div
+          class="border-2 border-dashed border-[#6b63ffb3] rounded-2xl bg-white p-10 flex flex-col items-center justify-center hover:border-[#6b63ff] transition text-center"
+        >
+          <input type="file" accept="image/*" id="imageUpload" class="hidden" />
+          <label
+            for="imageUpload"
+            class="cursor-pointer text-[#6b63ff] font-medium hover:text-[#00BFA6] transition"
+          >
+            Click to upload image
+          </label>
+        </div>
+      </div>
+
+      <!-- Upload Video -->
+      <div>
+        <label class="block text-lg font-semibold text-[#1F3B6C] mb-3"
+          >Event Video</label
+        >
+        <div
+          class="border-2 border-dashed border-[#6b63ffb3] rounded-2xl bg-white p-10 flex flex-col items-center justify-center hover:border-[#6b63ff] transition text-center"
+        >
+          <input type="file" accept="video/*" id="videoUpload" class="hidden" />
+          <label
+            for="videoUpload"
+            class="cursor-pointer text-[#6b63ff] font-medium hover:text-[#00BFA6] transition"
+          >
+            Click to upload video
+          </label>
+        </div>
+      </div>
+
+      <!-- Group: Title & Host -->
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- Event Title -->
+        <div>
+          <label class="block text-lg font-semibold text-[#1F3B6C] mb-2"
+            >Event Title</label
+          >
+          <input
+            type="text"
+            placeholder="Enter event title"
+            class="w-full px-5 py-4 border border-[#1F3B6C] rounded-xl bg-white text-base md:text-lg focus:ring-2 focus:ring-[#00BFA6] focus:outline-none"
+          />
+        </div>
+
+        <!-- Host Name -->
+        <div>
+          <label class="block text-lg font-semibold text-[#1F3B6C] mb-2"
+            >Host Name</label
+          >
+          <input
+            type="text"
+            placeholder="Enter host name"
+            class="w-full px-5 py-4 border border-[#1F3B6C] rounded-xl bg-white text-base md:text-lg focus:ring-2 focus:ring-[#00BFA6] focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <!-- Location -->
+      <div>
+        <label class="block text-lg font-semibold text-[#1F3B6C] mb-2"
+          >Event Location</label
+        >
+        <input
+          type="text"
+          placeholder="Enter event location"
+          class="w-full px-5 py-4 border border-[#1F3B6C] rounded-xl bg-white text-base md:text-lg focus:ring-2 focus:ring-[#00BFA6] focus:outline-none"
+        />
+      </div>
+
+      <!-- Group: Date & Duration -->
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- Event Date -->
+        <!-- Event Date -->
+        <div>
+          <label class="block text-lg font-semibold text-[#1F3B6C] mb-2">
+            Event Date
+          </label>
+
+          <div class="datepicker-container">
+            <div
+              class="flex items-center gap-3 border border-[#1F3B6C]/50 rounded-xl px-4 py-3 bg-[#F9FAFF] focus-within:ring-2 focus-within:ring-[#00BFA6] transition-all duration-200"
+            >
+              <input
+                matInput
+                [matDatepicker]="picker"
+                placeholder="Select date"
+                [(ngModel)]="selected"
+                name="date"
+                class="w-full bg-transparent outline-none text-base md:text-lg text-[#1F3B6C] placeholder:text-gray-400"
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="picker"
+                class="text-[#6C63FF]"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </div>
+          </div>
+
+          <p class="mt-2 text-sm text-gray-600">
+            Selected:
+            <span class="font-semibold text-[#1F3B6C]">
+              {{ selected | date : "mediumDate" }}
+            </span>
+          </p>
+        </div>
+
+        <!-- Duration -->
+        <div>
+          <label class="block text-lg font-semibold text-[#1F3B6C] mb-2">
+            Duration
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. 3 hours"
+            class="w-full px-5 py-4 border border-[#1F3B6C]/50 rounded-xl bg-[#F9FAFF] text-base md:text-lg text-[#1F3B6C] focus:ring-2 focus:ring-[#00BFA6] focus:outline-none transition-all duration-200 placeholder:text-gray-400"
+          />
+        </div>
+      </div>
+
+      <!-- Type -->
+      <div>
+        <label class="block text-lg font-semibold text-[#1F3B6C] mb-3"
+          >Event Type</label
+        >
+        <div class="flex gap-10 flex-wrap">
+          <label class="flex items-center gap-3 text-base md:text-lg">
+            <input
+              type="radio"
+              name="type"
+              value="free"
+              class="text-red-500 focus:ring-[#6b63ff]"
+            />
+            <span class="text-[#1F3B6C] font-medium">Free</span>
+          </label>
+          <label class="flex items-center gap-3 text-base md:text-lg">
+            <input
+              type="radio"
+              name="type"
+              value="paid"
+              class="text-red-500 focus:ring-[#6b63ff]"
+            />
+            <span class="text-[#1F3B6C] font-medium">Paid</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label class="block text-lg font-semibold text-[#1F3B6C] mb-2"
+          >Description</label
+        >
+        <textarea
+          rows="6"
+          placeholder="Write a short description about the event..."
+          class="w-full px-5 py-4 border border-[#1F3B6C] rounded-xl bg-white text-base md:text-lg focus:ring-2 focus:ring-[#00BFA6] focus:outline-none"
+        ></textarea>
+      </div>
+
+      <!-- Submit -->
+      <div class="flex justify-end pt-8">
+        <button
+          type="submit"
+          class="bg-[#6b63ff] hover:bg-[#00BFA6] text-white font-semibold text-lg px-12 py-4 rounded-xl shadow-lg transition-all duration-300"
+        >
+          Publish Event
+        </button>
+      </div>
+    </form>
+  </div>
+</section>

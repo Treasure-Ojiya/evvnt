@@ -1,0 +1,122 @@
+<section
+  class="w-full bg-[#F5F5F5] min-h-screen mx-auto px-8 sm:px-12 md:px-5 py-2"
+>
+  <div class="mb-10 border-b border-[#00BFA6] pb-2">
+    <h1 class="text-3xl md:text-4xl font-bold text-[#1F3B6C]">Settings</h1>
+  </div>
+
+  <div class="space-y-8">
+    <!-- Profile Section -->
+    <div class="bg-white shadow-sm rounded-xl p-6">
+      <h3 class="text-lg font-semibold text-[#1F3B6C] mb-4">
+        Organizer Profile
+      </h3>
+      <form class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-gray-600 text-sm mb-1">Full Name</label>
+          <input
+            type="text"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#6C63FF]/40 focus:outline-none"
+            placeholder="John Doe"
+          />
+        </div>
+        <div>
+          <label class="block text-gray-600 text-sm mb-1">Email</label>
+          <input
+            type="email"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#6C63FF]/40 focus:outline-none"
+            placeholder="john@example.com"
+          />
+        </div>
+        <div>
+          <label class="block text-gray-600 text-sm mb-1">Phone</label>
+          <input
+            type="text"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#6C63FF]/40 focus:outline-none"
+            placeholder="+234 800 000 0000"
+          />
+        </div>
+        <div>
+          <label class="block text-gray-600 text-sm mb-1">Organization</label>
+          <input
+            type="text"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#6C63FF]/40 focus:outline-none"
+            placeholder="Event Masters Inc."
+          />
+        </div>
+      </form>
+
+      <div class="text-right mt-6">
+        <button
+          class="bg-[#6C63FF] text-white px-5 py-2 rounded-lg font-medium hover:bg-[#00BFA6] transition"
+        >
+          Save Changes
+        </button>
+      </div>
+    </div>
+
+    <!-- Security Section -->
+    <div class="bg-white shadow-sm rounded-xl p-6">
+      <h3 class="text-lg font-semibold text-[#1F3B6C] mb-4">Security</h3>
+      <form class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-gray-600 text-sm mb-1"
+            >Current Password</label
+          >
+          <input
+            type="password"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#6C63FF]/40 focus:outline-none"
+          />
+        </div>
+        <div>
+          <label class="block text-gray-600 text-sm mb-1">New Password</label>
+          <input
+            type="password"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#6C63FF]/40 focus:outline-none"
+          />
+        </div>
+      </form>
+
+      <div class="text-right mt-6">
+        <button
+          class="bg-[#FF6B35] text-white px-5 py-2 rounded-lg font-medium hover:bg-[#E85B28] transition"
+        >
+          Update Password
+        </button>
+      </div>
+    </div>
+
+    <!-- Payout Details -->
+    <div class="bg-white shadow-sm rounded-xl p-6">
+      <h3 class="text-lg font-semibold text-[#1F3B6C] mb-4">
+        Payout Information
+      </h3>
+      <form class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-gray-600 text-sm mb-1">Bank Name</label>
+          <input
+            type="text"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#6C63FF]/40 focus:outline-none"
+            placeholder="GTBank"
+          />
+        </div>
+        <div>
+          <label class="block text-gray-600 text-sm mb-1">Account Number</label>
+          <input
+            type="text"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#6C63FF]/40 focus:outline-none"
+            placeholder="0123456789"
+          />
+        </div>
+      </form>
+
+      <div class="text-right mt-6">
+        <button
+          class="bg-[#6C63FF] text-white px-5 py-2 rounded-lg font-medium hover:bg-[#00BFA6] transition"
+        >
+          Save Payout Info
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

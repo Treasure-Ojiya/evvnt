@@ -1,0 +1,50 @@
+/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.section-container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 90rem; /* same as max-w-7xl */
+  padding-left: 1.5rem; /* same as px-6 */
+  padding-right: 1.5rem;
+}
+
+/* Responsive versions */
+@media (min-width: 640px) {
+  /* sm */
+  .section-container {
+    padding-left: 2rem; /* same as sm:px-8 */
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* lg */
+  .section-container {
+    padding-left: 1.5rem; /* same as lg:px-10 */
+    padding-right: 1.5rem;
+  }
+}
+
+/* Fix Material Datepicker background */
+.mat-datepicker-content {
+  background-color: #f9faff !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 20px rgba(31, 59, 108, 0.15) !important;
+}
+
+.mat-datepicker-content .mat-calendar {
+  background-color: #f9faff !important;
+  border-radius: 16px !important;
+}
+
+.mat-calendar {
+  background-color: #f9faff !important;
+  color: #1f3b6c !important;
+}

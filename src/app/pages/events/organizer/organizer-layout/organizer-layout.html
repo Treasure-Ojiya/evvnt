@@ -1,0 +1,123 @@
+<!-- DASHBOARD LAYOUT -->
+<div class="flex flex-col h-screen">
+  <!-- 🔹 Header / Navbar -->
+  <header
+    class="flex items-center justify-between bg-[#1F3B6C] text-white px-6 py-4 shadow-md"
+  >
+    <!-- Left: Hamburger + Title -->
+    <div class="flex items-center space-x-4">
+      <button
+        (click)="createToggle()"
+        class="p-2 bg-[#163060] hover:bg-[#00BFA6] rounded-md transition"
+      >
+        <i class="fas fa-bars text-lg"></i>
+      </button>
+      <h1 class="text-xl font-semibold tracking-wide">Event Dashboard</h1>
+    </div>
+
+    <!-- Right: User Info or placeholder -->
+    <div class="flex items-center space-x-1">
+      <img src="assets/icons/profile.svg " alt="" width="20" height="20" />
+      <span class="text-sm font-medium">Welcome, User</span>
+    </div>
+  </header>
+
+  <!-- 🔹 Content Area -->
+  <div class="flex flex-1 overflow-hidden">
+    <!-- Sidebar -->
+    <aside
+      class="transition-all duration-500 bg-linear-to-br from-[#F5F5F5] via-[#EAEAFD] to-[#DDEBFF] border-r border-gray-300 shadow-lg flex flex-col py-6 px-3 space-y-8"
+      [ngClass]="{
+        'w-64 items-start px-4': !isCollapsed,
+        'w-20 items-center': isCollapsed
+      }"
+    >
+      <!-- Logo -->
+      <div class="flex items-center justify-center w-full">
+        <a routerLink="/home" class="flex items-center space-x-3">
+          <img src="assets/icons/home.svg" alt="home" width="20" height="20" />
+          @if(!isCollapsed) {
+          <span class="text-[#1F3B6C] font-semibold text-lg">Home</span>
+          }
+        </a>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="flex flex-col space-y-4 w-full text-[#1F3B6C]">
+        <a
+          routerLink="dashboard"
+          routerLinkActive="bg-[#00BFA6]/30"
+          class="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-300 transition w-full"
+        >
+          <img src="assets/icons/dashboard.svg" width="20" height="20" />
+          @if(!isCollapsed) {
+          <span class="font-medium text-[#1F3B6C]">Dashboard</span>
+          }
+        </a>
+
+        <a
+          routerLink="create-event"
+          routerLinkActive="bg-[#00BFA6]/30"
+          class="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-300 transition w-full"
+        >
+          <img src="assets/icons/create.svg" width="20" height="20" />
+          @if(!isCollapsed) {
+          <span class="font-medium text-[#1F3B6C]">Create Event</span>
+
+          }
+        </a>
+
+        <a
+          routerLink="manage-events"
+          routerLinkActive="bg-[#00BFA6]/30"
+          class="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-300 transition w-full"
+        >
+          <img src="assets/icons/manage.svg" width="20" height="20" />
+          @if(!isCollapsed) {
+          <span class="font-medium text-[#1F3B6C]">Manage Events</span>
+          }
+        </a>
+
+        <a
+          routerLink="orders"
+          routerLinkActive="bg-[#00BFA6]/30"
+          class="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-300 transition w-full"
+        >
+          <img src="assets/icons/order.svg" width="20" height="20" />
+          @if(!isCollapsed) {
+          <span class="font-medium text-[#1F3B6C]">Orders</span>
+          }
+        </a>
+
+        <a
+          routerLink="finance"
+          routerLinkActive="bg-[#00BFA6]/30"
+          class="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-300 transition w-full"
+        >
+          <img src="assets/icons/finance.svg" width="20" height="20" />
+          @if(!isCollapsed) {
+          <span class="font-medium text-[#1F3B6C]">Finance</span>
+          }
+        </a>
+
+        <a
+          routerLink="setting"
+          routerLinkActive="bg-[#00BFA6]/30"
+          class="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-300 transition w-full"
+        >
+          <img src="assets/icons/settings-event.svg" width="20" height="20" />
+          @if(!isCollapsed) {
+          <span class="font-medium text-[#1F3B6C]">Settings</span>
+          }
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main
+      class="flex-1 min-h-screen overflow-y-auto pb-16 transition-all duration-500"
+    >
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

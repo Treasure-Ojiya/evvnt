@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: CorelDRAW -->
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="508mm" height="285.75mm" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 50800 28575"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:xodm="http://www.corel.com/coreldraw/odm/2003">
+ <defs>
+  <font id="FontID0" horiz-adv-x="806" font-variant="normal" style="fill-rule:nonzero" font-style="normal" font-weight="900">
+	<font-face 
+		font-family="Montserrat Black">
+		<font-face-src>
+			<font-face-name name="Montserrat Black"/>
+		</font-face-src>
+	</font-face>
+   <missing-glyph><path d="M0 0z"/></missing-glyph>
+   <glyph unicode="E" horiz-adv-x="673" d="M289 178l0 92 296 0 0 170 -296 0 0 82 337 0 0 178 -569 0 0 -700 582 0 0 178 -350 0z"/>
+   <glyph unicode="n" horiz-adv-x="702" d="M430 557c-64,0 -122,-21 -165,-64l0 54 -215 0 0 -547 226 0 0 257c0,81 39,110 85,110 41,0 67,-26 67,-94l0 -273 226 0 0 312c0,172 -98,245 -224,245z"/>
+   <glyph unicode="t" horiz-adv-x="460" d="M399 176c-15,-10 -33,-15 -51,-15 -27,0 -47,19 -47,53l0 138 112 0 0 165 -112 0 0 153 -226 0 0 -153 -75 0 0 -165 75 0 0 -140c0,-151 88,-222 239,-222 53,0 104,9 139,29l-54 157z"/>
+   <glyph unicode="v" horiz-adv-x="644" d="M445 547l-118 -293 -110 293 -232 0 220 -547 234 0 220 547 -214 0z"/>
+  </font>
+  <style type="text/css">
+   <![CDATA[
+    @font-face { font-family:"Montserrat Black";font-variant:normal;font-style:normal;font-weight:900;src:url("#FontID0") format(svg)}
+    .fil0 {fill:none}
+    .fil1 {fill:#1F3B6C}
+    .fil2 {fill:url(#id0)}
+    .fnt0 {font-weight:900;font-size:6350px;font-family:'Montserrat Black'}
+   ]]>
+  </style>
+  <linearGradient id="id0" gradientUnits="objectBoundingBox" x1="78.0793%" y1="92.6315%" x2="21.9209%" y2="7.36856%">
+   <stop offset="0" style="stop-opacity:1; stop-color:#6B63FF"/>
+   <stop offset="1" style="stop-opacity:1; stop-color:#00BFA6"/>
+  </linearGradient>
+ </defs>
+ <g id="Layer_x0020_1">
+  <metadata id="CorelCorpID_0Corel-Layer"/>
+  <rect class="fil0" x="17780" y="2857.5" width="15240" height="22860"/>
+  <text x="14627.22" y="16347.83"  class="fil1 fnt0">E</text>
+  <text x="19307.17" y="16347.83"  class="fil2 fnt0">v</text>
+  <text x="23599.77" y="16347.83"  class="fil2 fnt0">v</text>
+  <text x="28095.57" y="16347.83"  class="fil1 fnt0">n</text>
+  <text x="32934.27" y="16347.83"  class="fil1 fnt0">t</text>
+ </g>
+</svg>

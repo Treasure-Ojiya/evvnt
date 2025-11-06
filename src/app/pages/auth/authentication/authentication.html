@@ -1,0 +1,222 @@
+<main class="min-h-screen flex bg-[#F5F5F5]">
+  <!-- Left Section: Image -->
+  <div class="hidden lg:flex lg:w-1/2 relative">
+    <!-- Background Image -->
+    <img
+      src="assets/hero-2.jpg"
+      alt="Background"
+      class="absolute inset-0 w-full h-full object-cover"
+    />
+
+    <!-- Overlay -->
+    <div
+      class="absolute inset-0 flex items-center justify-center"
+      style="
+        background: linear-gradient(
+          135deg,
+          rgba(108, 99, 255, 0.3),
+          rgba(0, 191, 166, 0.3)
+        );
+      "
+    >
+      <div class="text-center text-white px-12">
+        <!-- <h2 class="text-6xl font-bold mb-6">Evvnt</h2> -->
+        <img
+          src="assets/logo/evvnt-logo-white-1.png"
+          alt=""
+          width="350"
+          height="350"
+        />
+        <!-- <p class="text-xl max-w-md mx-auto">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis,
+          expedita.
+        </p> -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Section: Form -->
+  <div class="w-full lg:w-1/2 flex items-center justify-center p-8">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <!-- <div
+          class="inline-flex items-center justify-center w-16 h-16 bg-yellow-100 rounded-full mb-4"
+        >
+          @if (isLogin) {
+          <i class="fas fa-sign-in-alt text-yellow-600 fa-lg"></i>
+          } @if (!isLogin) {
+          <i class="fas fa-user-plus text-yellow-600 fa-lg"></i>
+          }
+        </div> -->
+        <h2 class="text-2xl font-bold text-[#1F3B6C]">
+          {{ isLogin ? "Welcome Back!" : "Create Account" }}
+        </h2>
+        <p class="text-gray-500 mt-2">
+          {{
+            isLogin
+              ? "Please sign in to continue"
+              : "Get started with your account"
+          }}
+        </p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex justify-around mb-6">
+        <button
+          (click)="showLoginForm()"
+          [ngClass]="{
+            'border-b-2 border-[#6b63ff] text-[#6b63ff] font-bold': isLogin,
+            'text-gray-500': !isLogin
+          }"
+          class="w-1/2 py-2 cursor-pointer"
+        >
+          Login
+        </button>
+        <button
+          (click)="showRegisterForm()"
+          [ngClass]="{
+            'border-b-2 border-[#6b63ff] text-[#6b63ff] font-bold': !isLogin,
+            'text-gray-500': isLogin
+          }"
+          class="w-1/2 py-2 cursor-pointer"
+        >
+          Register
+        </button>
+      </div>
+
+      <!-- Forms -->
+      @if (isLogin) {
+      <!-- Login Form -->
+      <form [formGroup]="loginForm">
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-[#1F3B6C] mb-2"
+            >Email</label
+          >
+          <input
+            formControlName="email"
+            type="email"
+            placeholder="@email"
+            class="w-full px-4 py-3 rounded-lg border border-[#1F3B6C]"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-[#1F3B6C] mb-2"
+            >Password</label
+          >
+          <input
+            formControlName="password"
+            type="password"
+            placeholder="••••••••"
+            class="w-full px-4 py-3 rounded-lg border border-[#1F3B6C]"
+          />
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="mb-3">
+            <a
+              routerLink="/auth/forgot-password"
+              class="text-sm text-[#1F3B6C] font-semibold text-decoration-none"
+              >Forgot password?</a
+            >
+          </div>
+          <div class="mb-3">
+            <a
+              routerLink="/auth/reset-password"
+              class="text-sm text-[#1F3B6C] font-semibold text-decoration-none"
+              >Reset password</a
+            >
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="block w-full bg-[#6b63ff] text-white py-3 rounded-md font-semibold hover:bg-[#00BFA6] shadow-lg transition-all duration-300"
+        >
+          Sign In
+        </button>
+        <p class="mt-4 text-center text-sm text-gray-600">
+          Don't have an account?
+          <button
+            type="button"
+            class="text-[#6b63ff] font-semibold hover:text-[#00BFA6] hover:scale-[1.09]"
+            (click)="showRegisterForm()"
+          >
+            Sign up
+          </button>
+        </p>
+      </form>
+      } @else {
+      <!-- Register Form -->
+      <form [formGroup]="registerForm">
+        <div class="mb-6">
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-[#1F3B6C] mb-2"
+              >Full Name</label
+            >
+            <input
+              formControlName="name"
+              type="text"
+              placeholder="Enter Full Name"
+              class="w-full px-4 py-3 rounded-lg border border-[#1F3B6C]"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-[#1F3B6C] mb-2"
+              >Email</label
+            >
+            <input
+              formControlName="email"
+              type="email"
+              placeholder="@email"
+              class="w-full px-4 py-3 rounded-lg border border-[#1F3B6C]"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div>
+            <label class="block text-sm font-medium text-[#1F3B6C] mb-2"
+              >Mobile No</label
+            >
+            <input
+              formControlName="mobileNo"
+              type="text"
+              placeholder="Enter phone"
+              class="w-full px-4 py-3 rounded-lg border border-[#1F3B6C]"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-[#1F3B6C] mb-2"
+              >Password</label
+            >
+            <input
+              formControlName="password"
+              type="password"
+              placeholder="••••••••"
+              class="w-full px-4 py-3 rounded-lg border border-[#1F3B6C]"
+            />
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="block w-full bg-[#6b63ff] text-white py-3 rounded-md font-semibold hover:bg-[#00BFA6] shadow-lg transition-all duration-300"
+        >
+          Register
+        </button>
+
+        <p class="mt-4 text-center text-sm text-gray-600">
+          Already have an account?
+          <button
+            type="button"
+            class="text-[#6b63ff] font-semibold hover:text-[#00BFA6] hover:scale-[1.09]"
+            (click)="showLoginForm()"
+          >
+            Sign in
+          </button>
+        </p>
+      </form>
+      }
+    </div>
+  </div>
+</main>

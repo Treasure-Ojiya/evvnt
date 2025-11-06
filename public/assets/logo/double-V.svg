@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: CorelDRAW -->
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="508mm" height="285.75mm" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 50800 28575"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:xodm="http://www.corel.com/coreldraw/odm/2003">
+ <defs>
+  <font id="FontID0" horiz-adv-x="806" font-variant="normal" style="fill-rule:nonzero" font-weight="900">
+	<font-face 
+		font-family="Montserrat Black">
+		<font-face-src>
+			<font-face-name name="Montserrat Black"/>
+		</font-face-src>
+	</font-face>
+   <missing-glyph><path d="M0 0z"/></missing-glyph>
+   <glyph unicode="v" horiz-adv-x="644" d="M445 547l-118 -293 -110 293 -232 0 220 -547 234 0 220 547 -214 0z"/>
+  </font>
+  <style type="text/css">
+   <![CDATA[
+    @font-face { font-family:"Montserrat Black";font-variant:normal;font-weight:900;src:url("#FontID0") format(svg)}
+    .str0 {stroke:#1F3B6C;stroke-width:105.83;stroke-miterlimit:22.9256}
+    .fil0 {fill:none}
+    .fil1 {fill:url(#id0)}
+    .fnt0 {font-weight:900;font-size:6350px;font-family:'Montserrat Black'}
+   ]]>
+  </style>
+  <linearGradient id="id0" gradientUnits="objectBoundingBox" x1="78.0793%" y1="92.6315%" x2="21.9209%" y2="7.36856%">
+   <stop offset="0" style="stop-opacity:1; stop-color:#6B63FF"/>
+   <stop offset="1" style="stop-opacity:1; stop-color:#00BFA6"/>
+  </linearGradient>
+ </defs>
+ <g id="Layer_x0020_1">
+  <metadata id="CorelCorpID_0Corel-Layer"/>
+  <rect class="fil0 str0" x="20374.47" y="11356.02" width="10051.05" height="5871.4"/>
+  <g id="_2212515301984">
+   <text x="21209" y="16028.46"  class="fil1 fnt0">v</text>
+   <text x="25501.6" y="16028.46"  class="fil1 fnt0">v</text>
+  </g>
+ </g>
+</svg>

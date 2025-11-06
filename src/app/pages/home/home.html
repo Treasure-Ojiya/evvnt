@@ -1,0 +1,44 @@
+<main class="mt-24">
+  <section class="section-container px-0 md:px-6">
+    <div
+      class="hero-banner relative flex flex-col justify-center items-center text-white overflow-hidden py-16 my-8 rounded-2xl shadow-lg"
+    >
+      <div class="absolute inset-0 bg-black/40 z-0"></div>
+
+      <div class="text-center z-10 px-4">
+        <h1 class="text-3xl md:text-5xl font-extrabold mb-3 drop-shadow-lg">
+          Discover. <span class="text-[#FF6B35]">Create.</span> Experience.
+        </h1>
+
+        <p class="text-base md:text-lg mb-6 text-gray-100 max-w-2xl mx-auto">
+          Empowering organizers and attendees to create meaningful experiences,
+          one ticket at a time.
+        </p>
+
+        <div class="flex flex-wrap justify-center gap-4">
+          <a
+            routerLink="/events/event-list"
+            class="bg-[#6C63FF] hover:bg-[#00BFA6] text-white font-semibold py-3 px-8 rounded-full shadow-md transition-all duration-300 transform hover:scale-105"
+            >Find Events</a
+          >
+          <a
+            routerLink="/events/organizer"
+            class="bg-transparent border-2 border-white hover:border-[#FF6B35] hover:bg-[#FF6B35] text-white font-semibold py-3 px-8 rounded-full transition-all duration-300 transform hover:scale-105"
+            >Host Event</a
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="section-container block md:hidden">
+    <app-search-bar></app-search-bar>
+  </div>
+
+  <section class="section-container">
+    <app-feature-card></app-feature-card>
+  </section>
+
+  <section class="bg-[#F9FAFB]">
+    <app-serve id="serve"></app-serve>
+  </section>
+</main>
