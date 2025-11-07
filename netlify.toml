@@ -1,0 +1,18 @@
+[build]
+  command = "ng build --configuration=production"
+  publish = "dist/event/browser"  # Replace with your actual `dist` folder
+  functions = "netlify/functions"     # Only if using serverless functions
+
+[build.environment]
+  NODE_VERSION = "22.18.0"                 # Match your local Node version
+
+  [[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+
+# Disable the Angular plugin
+#[plugins]
+ # package = "@netlify/angular-runtime"
+  #enabled = false
