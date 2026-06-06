@@ -1,12 +1,12 @@
-<main class="mt-24">
-  <section class="section-container px-0 md:px-6">
+<main class="">
+  <section class="px-0">
     <div
-      class="hero-banner relative flex flex-col justify-center items-center text-white overflow-hidden py-16 my-8 rounded-2xl shadow-lg"
+      class="hero-banner relative flex flex-col justify-center items-center text-white rounded-2xl shadow-lg"
     >
-      <div class="absolute inset-0 bg-black/40 z-0"></div>
+      <div class="absolute inset-0 bg-blue-900/70 z-0"></div>
 
-      <div class="text-center z-10 px-4">
-        <h1 class="text-3xl md:text-5xl font-extrabold mb-3 drop-shadow-lg">
+      <div class="text-center z-10 px-6">
+        <h1 class="text-3xl md:text-6xl font-bold mb-3 drop-shadow-lg">
           Discover. <span class="text-[#FF6B35]">Create.</span> Experience.
         </h1>
 
@@ -28,11 +28,14 @@
           >
         </div>
       </div>
+      <div class="mt-8 md:flex items-center">
+        <app-search-bar></app-search-bar>
+      </div>
     </div>
   </section>
-  <div class="section-container block md:hidden">
+  <!-- <div class="section-container block md:hidden">
     <app-search-bar></app-search-bar>
-  </div>
+  </div> -->
 
   <section class="section-container">
     <app-feature-card></app-feature-card>

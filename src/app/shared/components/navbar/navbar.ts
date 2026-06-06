@@ -12,7 +12,7 @@ import { SearchBar } from '../search-bar/search-bar';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, CommonModule, SearchBar],
+  imports: [RouterLink, CommonModule],
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.css'], // ✅ corrected "styleUrl" → "styleUrls"
 })

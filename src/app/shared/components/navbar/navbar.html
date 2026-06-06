@@ -1,9 +1,9 @@
 @if (showNavbar) {
 <div
-  class="navbar-container fixed top-0 left-0 w-full z-50 backdrop-blur-md border-b border-gray-400 transition-all duration-500 ease-in-out"
+  class="navbar-container fixed top-0 left-0 w-full z-50 backdrop-blur-md transition-all duration-500 ease-in-out"
   [ngClass]="{
     'bg-white shadow-md': scrolled || !isHomePage,
-    'bg-transparent': isHomePage && !scrolled
+    'bg-gray-50': isHomePage && !scrolled
   }"
 >
   <div class="section-container flex justify-between items-center py-2">
@@ -67,6 +67,13 @@
         >Host Event</a
       >
 
+      <a
+        routerLink="/listings/provider"
+        class="block md:inline-block p-4 font-semibold text-black hover:text-[#FF6B35] hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
+        (click)="closeMenu()"
+        >List Space</a
+      >
+
       <!-- Login inside menu (mobile only) -->
       @if( !isLoggedIn ){
       <a
@@ -85,7 +92,7 @@
 
     <!-- Right side (desktop only) -->
     <div class="hidden md:flex items-center space-x-4">
-      <app-search-bar></app-search-bar>
+      <!-- <app-search-bar></app-search-bar> -->
       <div class="relative" (click)="toggleDropdown($event)">
         <img
           src="assets/icons/profile.svg"
