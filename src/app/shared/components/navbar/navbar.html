@@ -1,21 +1,19 @@
 @if (showNavbar) {
   <div
-    class="navbar-container fixed top-0 left-0 w-full z-50 backdrop-blur-md transition-all duration-500 ease-in-out"
+    class="navbar-container fixed top-0 left-0 w-full z-50 rounded-full backdrop-blur-md transition-all duration-500 ease-in-out"
     [ngClass]="{
       'bg-white shadow-md': scrolled || !isHomePage,
       'bg-gray-50': isHomePage && !scrolled,
     }"
   >
-    <div class="section-container flex justify-between items-center py-2">
+    <div class="section-container flex justify-between items-center">
       <!-- Logo -->
       <div>
         <a routerLink="/home">
           <img
             src="assets/logo/evvnt-logo.png"
             alt="Logo"
-            width="150"
-            height="150"
-            class="block"
+            class="block w-20 h-auto"
         /></a>
       </div>
 
@@ -100,9 +98,7 @@
           <img
             src="assets/icons/profile.svg"
             alt="Profile"
-            width="50"
-            height="50"
-            class="cursor-pointer"
+            class="cursor-pointer w-10 h-auto"
           />
           @if (showDropdown) {
             <div

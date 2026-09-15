@@ -2,11 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, Validators, FormBuilder } from '@angular/forms';
-// import { AuthService } from '../../services/authService/auth-service';
-// import {
-//   LoginModel,
-//   RegistrationModel,
-// } from '../../model/interface-flight.model';
+
+import { AuthService } from '../../../core/services/auth-service/auth-service';
+import { LoginModel, RegModel } from '../../../app-model/model';
 
 @Component({
   selector: 'app-authentication',
@@ -23,7 +21,7 @@ export class Authentication {
   isLogin = true;
   loader = false;
 
-  // private authService = inject(AuthService);
+  private authService = inject(AuthService);
   private formBuilder = inject(FormBuilder);
   private router = inject(Router);
 
@@ -35,92 +33,95 @@ export class Authentication {
 
   // --- Register Form ---
   registerForm = this.formBuilder.group({
-    name: ['', Validators.required],
-    mobileNo: ['', Validators.required],
+    first_name: ['', Validators.required],
+    last_name: ['', Validators.required],
+    phone: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    city: ['', Validators.required],
-    address: ['', Validators.required],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
   // --- Switch Tabs ---
-  showLoginForm() {
+  showLoginForm(): void {
     this.isLogin = true;
   }
-  showRegisterForm() {
+
+  showRegisterForm(): void {
     this.isLogin = false;
   }
 
   // --- LOGIN LOGIC ---
-  // onLogin() {
-  //   console.log('onLogin() called');
-  //   if (this.loginForm.invalid) {
-  //     this.loginForm.markAllAsTouched();
-  //     return;
-  //   }
+  onLogin(): void {
+    console.log('onLogin() called');
 
-  //   this.loader = true;
-  //   // const loginData = this.loginForm.value as LoginModel;
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
 
-  //   this.authService.loginUser(loginData).subscribe({
-  //     next: (res: any) => {
-  //       this.loader = false;
-  //       console.log('Response from backend:', res);
+    this.loader = true;
 
-  //       if (res.result) {
-  //         localStorage.setItem('user', JSON.stringify(res.data));
-  //         console.log('User saved in localStorage:', res.data);
+    const loginData = this.loginForm.value as LoginModel;
 
-  //         this.router.navigate(['/home']);
-  //       } else {
-  //         console.log(' Login failed:', res.message);
-  //       }
-  //     },
-  //     error: (error) => {
-  //       this.loader = false;
-  //       console.error('Login API error:', error);
-  //     },
-  //   });
-  // }
+    this.authService.loginUser(loginData).subscribe({
+      next: (res) => {
+        this.loader = false;
 
-  // // --- REGISTER LOGIC ---
-  // onRegister() {
-  //   console.log('Register button clicked');
+        console.log('Response from backend:', res);
 
-  //   if (this.registerForm.invalid) {
-  //     this.registerForm.markAllAsTouched();
-  //     return;
-  //   }
+        if (res.status === 'success') {
+          localStorage.setItem('access_token', res.access_token);
 
-  //   this.loader = true;
+          this.authService.setLoggedIn();
 
-  //   // const registerData = this.registerForm.value as RegistrationModel;
+          this.router.navigate(['/home']);
+        } else {
+          console.log('Login failed:', res.message);
+        }
+      },
 
-  //   // Example: Using service (uncomment in real case)
-  //   // this.authService.registerUser(registerData).subscribe({
-  //   //   next: (res: any) => {
-  //   //     this.loader = false;
-  //   //     console.log('Register API response:', res);
+      error: (error) => {
+        this.loader = false;
 
-  //   //     if (res.result) {
-  //   //       // ✅ If verification is required, redirect after success:
-  //   //       alert('Registration successful! Please verify your email.');
-  //   //       this.showLoginForm(); // switch to login tab
-  //   //     } else {
-  //   //       console.log('Registration failed:', res.message);
-  //   //     }
-  //   //   },
-  //   //   error: (error) => {
-  //   //     this.loader = false;
-  //   //     console.error('Registration API error:', error);
-  //   //   },
-  //   // });
+        console.error('Login API error:', error);
+      },
+    });
+  }
 
-  //   // 💡 Temporary mock (until API is connected)
-  //   setTimeout(() => {
-  //     this.loader = false;
-  //     alert('Registration successful! Please verify your email.');
-  //     this.showLoginForm(); // switch to login tab
-  //   }, 1000);
-  // }
+  // --- REGISTER LOGIC ---
+  onRegister(): void {
+    console.log('🔥 onRegister() FIRED');
+
+    console.log('Form value:', this.registerForm.value);
+    console.log('Form valid:', this.registerForm.valid);
+    console.log('Form errors:', this.registerForm.errors);
+
+    if (this.registerForm.invalid) {
+      console.log('❌ Form is invalid');
+      this.registerForm.markAllAsTouched();
+      return;
+    }
+
+    console.log('✅ Form is valid — calling API');
+
+    this.loader = true;
+
+    const registerData = this.registerForm.value as RegModel;
+
+    console.log('📦 Registration payload:', registerData);
+
+    this.authService.registerUser(registerData).subscribe({
+      next: (res) => {
+        this.loader = false;
+        console.log('✅ Register API response:', res);
+
+        alert('Registration successful! Please verify your email.');
+        this.showLoginForm();
+      },
+
+      error: (error) => {
+        this.loader = false;
+        console.error('❌ Registration API error:', error);
+      },
+    });
+  }
 }

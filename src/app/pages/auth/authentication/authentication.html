@@ -35,24 +35,13 @@
     </div>
   </div>
 
-  <!-- Right Section: Form -->
   <div class="w-full lg:w-1/2 flex items-center justify-center p-8">
     <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-      <!-- Header -->
-      <div class="text-center mb-8">
-        <!-- <div
-          class="inline-flex items-center justify-center w-16 h-16 bg-yellow-100 rounded-full mb-4"
-        >
-          @if (isLogin) {
-          <i class="fas fa-sign-in-alt text-yellow-600 fa-lg"></i>
-          } @if (!isLogin) {
-          <i class="fas fa-user-plus text-yellow-600 fa-lg"></i>
-          }
-        </div> -->
-        <h2 class="text-2xl font-bold text-[#1F3B6C]">
+      <div class="text-center mb-3">
+        <h2 class="text-lg font-bold text-[#1F3B6C]">
           {{ isLogin ? "Welcome Back!" : "Create Account" }}
         </h2>
-        <p class="text-gray-500 mt-2">
+        <p class="text-sm text-gray-500 mt-2">
           {{
             isLogin
               ? "Please sign in to continue"
@@ -62,12 +51,12 @@
       </div>
 
       <!-- Tabs -->
-      <div class="flex justify-around mb-6">
+      <div class="flex justify-around mb-5">
         <button
           (click)="showLoginForm()"
           [ngClass]="{
             'border-b-2 border-[#6b63ff] text-[#6b63ff] font-bold': isLogin,
-            'text-gray-500': !isLogin
+            'text-gray-500': !isLogin,
           }"
           class="w-1/2 py-2 cursor-pointer"
         >
@@ -77,7 +66,7 @@
           (click)="showRegisterForm()"
           [ngClass]="{
             'border-b-2 border-[#6b63ff] text-[#6b63ff] font-bold': !isLogin,
-            'text-gray-500': isLogin
+            'text-gray-500': isLogin,
           }"
           class="w-1/2 py-2 cursor-pointer"
         >
@@ -87,135 +76,143 @@
 
       <!-- Forms -->
       @if (isLogin) {
-      <!-- Login Form -->
-      <form [formGroup]="loginForm">
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-[#1F3B6C] mb-2"
-            >Email</label
-          >
-          <input
-            formControlName="email"
-            type="email"
-            placeholder="@email"
-            class="w-full px-4 py-3 rounded-lg border border-[#1F3B6C]"
-          />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-[#1F3B6C] mb-2"
-            >Password</label
-          >
-          <input
-            formControlName="password"
-            type="password"
-            placeholder="••••••••"
-            class="w-full px-4 py-3 rounded-lg border border-[#1F3B6C]"
-          />
-        </div>
-        <div class="flex items-center justify-between">
-          <div class="mb-3">
-            <a
-              routerLink="/auth/forgot-password"
-              class="text-sm text-[#1F3B6C] font-semibold text-decoration-none"
-              >Forgot password?</a
-            >
-          </div>
-          <div class="mb-3">
-            <a
-              routerLink="/auth/reset-password"
-              class="text-sm text-[#1F3B6C] font-semibold text-decoration-none"
-              >Reset password</a
-            >
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          class="block w-full bg-[#6b63ff] text-white py-3 rounded-md font-semibold hover:bg-[#00BFA6] shadow-lg transition-all duration-300"
-        >
-          Sign In
-        </button>
-        <p class="mt-4 text-center text-sm text-gray-600">
-          Don't have an account?
-          <button
-            type="button"
-            class="text-[#6b63ff] font-semibold hover:text-[#00BFA6] hover:scale-[1.09]"
-            (click)="showRegisterForm()"
-          >
-            Sign up
-          </button>
-        </p>
-      </form>
-      } @else {
-      <!-- Register Form -->
-      <form [formGroup]="registerForm">
-        <div class="mb-6">
+        <!-- Login Form -->
+        <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
           <div class="mb-6">
-            <label class="block text-sm font-medium text-[#1F3B6C] mb-2"
-              >Full Name</label
-            >
-            <input
-              formControlName="name"
-              type="text"
-              placeholder="Enter Full Name"
-              class="w-full px-4 py-3 rounded-lg border border-[#1F3B6C]"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-[#1F3B6C] mb-2"
+            <label class="block text-sm font-base text-[#1F3B6C] mb-2"
               >Email</label
             >
             <input
               formControlName="email"
               type="email"
               placeholder="@email"
-              class="w-full px-4 py-3 rounded-lg border border-[#1F3B6C]"
-            />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div>
-            <label class="block text-sm font-medium text-[#1F3B6C] mb-2"
-              >Mobile No</label
-            >
-            <input
-              formControlName="mobileNo"
-              type="text"
-              placeholder="Enter phone"
-              class="w-full px-4 py-3 rounded-lg border border-[#1F3B6C]"
+              class="w-full px-4 py-1.5 rounded-lg border border-[#1F3B6C]/60 placeholder:text-[#1F3B6C]/50 focus:outline-none focus:ring-1 focus:ring-[#1F3B6C]/20 focus:border-[#1F3B6C]/70"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-[#1F3B6C] mb-2"
+            <label class="block text-sm font-base text-[#1F3B6C] mb-2"
               >Password</label
             >
             <input
               formControlName="password"
               type="password"
               placeholder="••••••••"
-              class="w-full px-4 py-3 rounded-lg border border-[#1F3B6C]"
+              class="w-full px-4 py-1.5 rounded-lg border border-[#1F3B6C]/60 placeholder:text-[#1F3B6C]/50 focus:outline-none focus:ring-1 focus:ring-[#1F3B6C]/20 focus:border-[#1F3B6C]/70"
             />
           </div>
-        </div>
+          <div class="flex items-center justify-between">
+            <div class="mb-3">
+              <a
+                routerLink="/auth/forgot-password"
+                class="text-sm text-[#1F3B6C] font-semibold text-decoration-none"
+                >Forgot password?</a
+              >
+            </div>
+          </div>
 
-        <button
-          type="submit"
-          class="block w-full bg-[#6b63ff] text-white py-3 rounded-md font-semibold hover:bg-[#00BFA6] shadow-lg transition-all duration-300"
-        >
-          Register
-        </button>
-
-        <p class="mt-4 text-center text-sm text-gray-600">
-          Already have an account?
           <button
-            type="button"
-            class="text-[#6b63ff] font-semibold hover:text-[#00BFA6] hover:scale-[1.09]"
-            (click)="showLoginForm()"
+            type="submit"
+            (click)="onLogin()"
+            class="block w-full bg-[#6b63ff] text-white py-1.5 rounded-md font-semibold hover:bg-[#00BFA6] shadow-lg transition-all duration-300"
           >
-            Sign in
+            Sign In
           </button>
-        </p>
-      </form>
+          <p class="mt-4 text-center text-sm text-gray-600">
+            Don't have an account?
+            <button
+              type="button"
+              class="text-[#6b63ff] font-semibold hover:text-[#00BFA6] hover:scale-[1.09]"
+              (click)="showRegisterForm()"
+            >
+              Sign up
+            </button>
+          </p>
+        </form>
+      } @else {
+        <!-- Register Form -->
+        <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+          <div class="mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div>
+                <label class="block text-sm font-base text-[#1F3B6C] mb-2"
+                  >First Name</label
+                >
+                <input
+                  formControlName="first_name"
+                  type="text"
+                  placeholder="First Name"
+                  class="w-full px-4 py-1.5 rounded-lg border border-[#1F3B6C]/60 placeholder:text-[#1F3B6C]/50 focus:outline-none focus:ring-1 focus:ring-[#1F3B6C]/20 focus:border-[#1F3B6C]/70"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-base text-[#1F3B6C] mb-2"
+                  >Last Name</label
+                >
+                <input
+                  formControlName="last_name"
+                  type="text"
+                  placeholder="Last Name"
+                  class="w-full px-4 py-1.5 rounded-lg border border-[#1F3B6C]/60 placeholder:text-[#1F3B6C]/50 focus:outline-none focus:ring-1 focus:ring-[#1F3B6C]/20 focus:border-[#1F3B6C]/70"
+                />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-base text-[#1F3B6C] mb-2"
+                >Email</label
+              >
+              <input
+                formControlName="email"
+                type="email"
+                placeholder="@email"
+                class="w-full px-4 py-1.5 rounded-lg border border-[#1F3B6C]/60 placeholder:text-[#1F3B6C]/50 focus:outline-none focus:ring-1 focus:ring-[#1F3B6C]/20 focus:border-[#1F3B6C]/70"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div>
+              <label class="block text-sm font-base text-[#1F3B6C] mb-2"
+                >Mobile No</label
+              >
+              <input
+                formControlName="phone"
+                type="text"
+                placeholder="Phone"
+                class="w-full px-4 py-1.5 rounded-lg border border-[#1F3B6C]/60 placeholder:text-[#1F3B6C]/50 focus:outline-none focus:ring-1 focus:ring-[#1F3B6C]/20 focus:border-[#1F3B6C]/70"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-base text-[#1F3B6C] mb-2"
+                >Password</label
+              >
+              <input
+                formControlName="password"
+                type="password"
+                placeholder="••••••••"
+                class="w-full px-4 py-1.5 rounded-lg border border-[#1F3B6C]/60 placeholder:text-[#1F3B6C]/50 focus:outline-none focus:ring-1 focus:ring-[#1F3B6C]/20 focus:border-[#1F3B6C]/70"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="block w-full bg-[#6b63ff] text-white py-1.5 rounded-md font-semibold hover:bg-[#00BFA6] shadow-lg transition-all duration-300"
+          >
+            Register
+          </button>
+
+          <p class="mt-4 text-center text-sm text-gray-600">
+            Already have an account?
+            <button
+              type="button"
+              class="text-[#6b63ff] font-semibold hover:text-[#00BFA6] hover:scale-[1.09]"
+              (click)="showLoginForm()"
+            >
+              Sign in
+            </button>
+          </p>
+        </form>
       }
     </div>
   </div>

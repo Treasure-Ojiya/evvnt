@@ -7,7 +7,7 @@ import {
 } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
-import { SearchBar } from '../search-bar/search-bar';
+import { AuthService } from '../../../core/services/auth-service/auth-service';
 
 @Component({
   selector: 'app-navbar',
@@ -24,34 +24,31 @@ export class Navbar implements OnInit {
   showDropdown = false;
   showNavbar = true; // ✅ new: control navbar visibility
 
+  private authService = inject(AuthService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
-  // private authService = inject(AuthService);
 
   ngOnInit() {
-    // ✅ Detect route changes
+    this.authService.isLoggedIn$.subscribe((loggedIn) => {
+      this.isLoggedIn = loggedIn;
+    });
+
     this.router.events
       .pipe(
         filter(
-          (event): event is NavigationEnd => event instanceof NavigationEnd
-        )
+          (event): event is NavigationEnd => event instanceof NavigationEnd,
+        ),
       )
       .subscribe((event: NavigationEnd) => {
-        // Detect if on home page
         this.isHomePage =
           event.urlAfterRedirects === '/' ||
           event.urlAfterRedirects === '/home';
 
-        // ✅ Detect if current route should hide layout
         const currentRoute = this.getDeepestChild(this.activatedRoute);
         const hideLayout = currentRoute.snapshot.data['hideLayout'];
+
         this.showNavbar = !hideLayout;
       });
-
-    // Subscribe to login status (when AuthService is connected)
-    // this.authService.isLoggedIn$.subscribe((status) => {
-    //   this.isLoggedIn = status;
-    // });
   }
 
   // ✅ Helper to find deepest child route (important for nested routing)
@@ -72,9 +69,9 @@ export class Navbar implements OnInit {
   }
 
   logout() {
-    // this.authService.logout();
+    this.authService.logoutUser();
     this.isLoggedIn = false;
-    this.router.navigate(['/home']);
+    this.router.navigate(['/auth/authentication']);
   }
 
   // ✅ Hamburger toggle

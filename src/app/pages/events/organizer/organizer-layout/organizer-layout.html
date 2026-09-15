@@ -1,10 +1,8 @@
 <!-- DASHBOARD LAYOUT -->
 <div class="flex flex-col h-screen">
-  <!-- 🔹 Header / Navbar -->
   <header
     class="flex items-center justify-between bg-[#1F3B6C] text-white px-6 py-4 shadow-md"
   >
-    <!-- Left: Hamburger + Title -->
     <div class="flex items-center space-x-4">
       <button
         (click)="createToggle()"
@@ -25,16 +23,13 @@
       </div>
     </div>
 
-    <!-- Right: User Info or placeholder -->
     <div class="flex items-center space-x-1">
       <img src="assets/icons/profile.svg " alt="" width="20" height="20" />
       <span class="text-sm font-medium">Welcome, User</span>
     </div>
   </header>
 
-  <!-- 🔹 Content Area -->
   <div class="flex flex-1 overflow-hidden">
-    <!-- Sidebar -->
     <aside
       class="transition-all duration-500 bg-linear-to-br from-[#F5F5F5] via-[#EAEAFD] to-[#DDEBFF] border-r border-gray-300 shadow-lg flex flex-col py-6 px-3 space-y-8"
       [ngClass]="{
@@ -42,7 +37,6 @@
         'w-20 items-center': isCollapsed,
       }"
     >
-      <!-- Logo -->
       <div class="flex items-center justify-center w-full">
         <a routerLink="/home" class="flex items-center space-x-3">
           <img src="assets/icons/home.svg" alt="home" width="20" height="20" />
@@ -52,7 +46,6 @@
         </a>
       </div>
 
-      <!-- Navigation -->
       <nav class="flex flex-col space-y-4 w-full text-[#1F3B6C]">
         <a
           routerLink="dashboard"
@@ -132,7 +125,6 @@
       </button>
     </aside>
 
-    <!-- Main Content -->
     <main
       class="flex-1 min-h-screen overflow-y-auto pb-16 transition-all duration-500"
     >

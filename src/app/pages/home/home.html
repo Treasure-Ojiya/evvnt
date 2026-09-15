@@ -1,34 +1,35 @@
 <main class="">
   <section class="px-0">
     <div
-      class="hero-banner relative flex flex-col justify-center items-center text-white rounded-2xl shadow-lg"
+      class="hero-banner relative flex flex-col justify-center items-center text-white rounded-b-4xl shadow-lg"
     >
-      <div class="absolute inset-0 bg-blue-900/70 z-0"></div>
-
+      <div
+        class="absolute inset-0 bg-gradient-to-r from-[#071A35]/95 via-[#1F3B6C]/85 to-[#1F3B6C]/70 z-0 rounded-b-4xl"
+      ></div>
       <div class="text-center z-10 px-6">
         <h1 class="text-3xl md:text-6xl font-bold mb-3 drop-shadow-lg">
-          Discover. <span class="text-[#FF6B35]">Create.</span> Experience.
+          Discover Event. <span class="text-[#FF6B35]">Create Experience.</span>
         </h1>
 
         <p class="text-base md:text-lg mb-6 text-gray-100 max-w-2xl mx-auto">
-          Empowering organizers and attendees to create meaningful experiences,
-          one ticket at a time.
+          Discover events happening around you, book your tickets, and make your
+          next experience unforgettable, one ticket at a time!
         </p>
 
         <div class="flex flex-wrap justify-center gap-4">
           <a
             routerLink="/events/event-list"
-            class="bg-[#6C63FF] hover:bg-[#00BFA6] text-white font-semibold py-3 px-8 rounded-full shadow-md transition-all duration-300 transform hover:scale-105"
+            class="bg-[#FF6B35] hover:bg-[#00BFA6] text-white font-semibold py-3 px-8 rounded-full shadow-md transition-all duration-300"
             >Find Events</a
           >
           <a
             routerLink="/events/organizer"
-            class="bg-transparent border-2 border-white hover:border-[#FF6B35] hover:bg-[#FF6B35] text-white font-semibold py-3 px-8 rounded-full transition-all duration-300 transform hover:scale-105"
+            class="bg-transparent border-2 border-white hover:bg-[#00BFA6] hover:border-[#00BFA6] text-white font-semibold py-3 px-8 rounded-full shadow-md transition-all duration-300"
             >Host Event</a
           >
         </div>
       </div>
-      <div class="mt-8 md:flex items-center">
+      <div class="relative z-20 mt-8 md:flex items-center">
         <app-search-bar></app-search-bar>
       </div>
     </div>

@@ -1,7 +1,14 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/guard/auth-guard';
+import { guestGuard } from './core/guard/guest-guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  {
+    path: '',
+    redirectTo: 'home',
+    pathMatch: 'full',
+  },
+
   {
     path: 'home',
     loadComponent: () => import('./pages/home/home').then((m) => m.Home),
@@ -17,7 +24,9 @@ export const routes: Routes = [
             (m) => m.Authentication,
           ),
         data: { hideLayout: true },
+        // canActivate: [guestGuard],
       },
+
       {
         path: 'forgot-password',
         loadComponent: () =>
@@ -26,6 +35,7 @@ export const routes: Routes = [
           ),
         data: { hideLayout: true },
       },
+
       {
         path: 'reset-password',
         loadComponent: () =>
@@ -45,13 +55,23 @@ export const routes: Routes = [
         redirectTo: 'event-list',
         pathMatch: 'full',
       },
+
       {
         path: 'event-list',
         loadComponent: () =>
           import('./pages/events/event-list/event-list').then(
             (m) => m.EventList,
           ),
+        canActivate: [authGuard],
       },
+
+      {
+        path: 'my-booking',
+        loadComponent: () =>
+          import('./pages/my-booking/my-booking').then((m) => m.MyBooking),
+        canActivate: [authGuard],
+      },
+
       {
         path: 'organizer',
         loadComponent: () =>
@@ -59,12 +79,15 @@ export const routes: Routes = [
             (m) => m.OrganizerLayout,
           ),
         data: { hideLayout: true },
+        canActivate: [authGuard],
+
         children: [
           {
             path: '',
             redirectTo: 'dashboard',
             pathMatch: 'full',
           },
+
           {
             path: 'dashboard',
             loadComponent: () =>
@@ -73,6 +96,7 @@ export const routes: Routes = [
               ),
             data: { hideLayout: true },
           },
+
           {
             path: 'manage-events',
             loadComponent: () =>
@@ -81,6 +105,7 @@ export const routes: Routes = [
               ),
             data: { hideLayout: true },
           },
+
           {
             path: 'create-event',
             loadComponent: () =>
@@ -98,6 +123,7 @@ export const routes: Routes = [
               ),
             data: { hideLayout: true },
           },
+
           {
             path: 'finance',
             loadComponent: () =>
@@ -130,13 +156,15 @@ export const routes: Routes = [
             (m) => m.ProvidersLayout,
           ),
         data: { hideLayout: true },
+        canActivate: [authGuard],
 
         children: [
           {
             path: '',
-            redirectTo: 'provider-layouthidelayout',
+            redirectTo: 'dashboard',
             pathMatch: 'full',
           },
+
           {
             path: 'dashboard',
             loadComponent: () =>
@@ -172,11 +200,5 @@ export const routes: Routes = [
     path: 'contact',
     loadComponent: () =>
       import('./pages/contact/contact').then((m) => m.Contact),
-  },
-
-  {
-    path: 'my-booking',
-    loadComponent: () =>
-      import('./pages/my-booking/my-booking').then((m) => m.MyBooking),
   },
 ];
