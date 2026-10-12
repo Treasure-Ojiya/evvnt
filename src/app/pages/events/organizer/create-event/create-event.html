@@ -1,190 +1,517 @@
-<section
-  class="w-full bg-[#F5F5F5] min-h-screen mx-auto px-8 sm:px-12 md:px-5 py-5 overflow-y-auto"
->
-  <div class="">
-    <!-- Header -->
-    <div class="mb-10 border-b border-[#00BFA6] pb-5">
-      <h1 class="text-3xl md:text-4xl font-bold text-[#1F3B6C]">
-        Create Event
-      </h1>
-      <p class="text-gray-500 mt-2 text-base md:text-lg">
-        Fill out the form below to create your new event.
+<section class="relative px-4 sm:px-6 lg:px-8 py-8">
+  <div class="max-w-6xl mx-auto">
+    <div class="mb-8">
+      <h1 class="text-2xl md:text-3xl font-bold text-ink">Create Event</h1>
+
+      <p class="text-gray-500 mt-1">
+        Add the details people need to discover and attend your event.
       </p>
     </div>
 
-    <form class="w-full max-w-6xl mx-auto space-y-8">
-      <!-- Upload Image -->
-      <div>
-        <label class="block text-lg font-semibold text-[#1F3B6C] mb-3"
-          >Event Image</label
-        >
-        <div
-          class="border-2 border-dashed border-[#6b63ffb3] rounded-2xl bg-white p-10 flex flex-col items-center justify-center hover:border-[#6b63ff] transition text-center"
-        >
-          <input type="file" accept="image/*" id="imageUpload" class="hidden" />
+    <form
+      [formGroup]="eventForm"
+      (ngSubmit)="onSubmit(false)"
+      class="space-y-8"
+    >
+      <div class="bg-white rounded-2xl p-5 sm:p-7 space-y-6">
+        <div>
+          <h2 class="text-lg font-semibold text-ink">Event Details</h2>
+
+          <!-- <p class="text-sm text-gray-500 mt-1">
+            Tell people what your event is about.
+          </p> -->
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-5">
+          <div>
+            <label
+              for="title"
+              class="block text-sm font-semibold text-ink mb-2"
+            >
+              Event Title
+            </label>
+
+            <input
+              id="title"
+              type="text"
+              formControlName="title"
+              placeholder="e.g. Lagos Music Festival"
+              class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-ink placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all duration-200"
+            />
+
+            @if (hasError("title")) {
+              <p class="mt-1.5 text-sm text-danger-dark">
+                {{ getErrorMessage("title") }}
+              </p>
+            }
+          </div>
+
+          <div>
+            <label
+              for="hostName"
+              class="block text-sm font-semibold text-ink mb-2"
+            >
+              Host Name
+            </label>
+
+            <input
+              id="hostName"
+              type="text"
+              formControlName="host_name"
+              placeholder="e.g. EVVNT Live"
+              class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-ink placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all duration-200"
+            />
+
+            @if (hasError("host_name")) {
+              <p class="mt-1.5 text-sm text-danger-dark">
+                {{ getErrorMessage("host_name") }}
+              </p>
+            }
+          </div>
+        </div>
+
+        <div>
           <label
-            for="imageUpload"
-            class="cursor-pointer text-[#6b63ff] font-medium hover:text-[#00BFA6] transition"
+            for="description"
+            class="block text-sm font-semibold text-ink mb-2"
           >
-            Click to upload image
+            Description
           </label>
-        </div>
-      </div>
 
-      <!-- Upload Video -->
-      <div>
-        <label class="block text-lg font-semibold text-[#1F3B6C] mb-3"
-          >Event Video</label
-        >
-        <div
-          class="border-2 border-dashed border-[#6b63ffb3] rounded-2xl bg-white p-10 flex flex-col items-center justify-center hover:border-[#6b63ff] transition text-center"
-        >
-          <input type="file" accept="video/*" id="videoUpload" class="hidden" />
+          <textarea
+            id="description"
+            rows="5"
+            formControlName="description"
+            placeholder="Tell people what to expect from your event..."
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-ink placeholder:text-gray-400 resize-none focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all duration-200"
+          ></textarea>
+
+          @if (hasError("description")) {
+            <p class="mt-1.5 text-sm text-danger-dark">
+              {{ getErrorMessage("description") }}
+            </p>
+          }
+        </div>
+
+        <div>
           <label
-            for="videoUpload"
-            class="cursor-pointer text-[#6b63ff] font-medium hover:text-[#00BFA6] transition"
+            for="location"
+            class="block text-sm font-semibold text-ink mb-2"
           >
-            Click to upload video
-          </label>
-        </div>
-      </div>
-
-      <!-- Group: Title & Host -->
-      <div class="grid md:grid-cols-2 gap-6">
-        <!-- Event Title -->
-        <div>
-          <label class="block text-lg font-semibold text-[#1F3B6C] mb-2"
-            >Event Title</label
-          >
-          <input
-            type="text"
-            placeholder="Enter event title"
-            class="w-full px-5 py-4 border border-[#1F3B6C] rounded-xl bg-white text-base md:text-lg focus:ring-2 focus:ring-[#00BFA6] focus:outline-none"
-          />
-        </div>
-
-        <!-- Host Name -->
-        <div>
-          <label class="block text-lg font-semibold text-[#1F3B6C] mb-2"
-            >Host Name</label
-          >
-          <input
-            type="text"
-            placeholder="Enter host name"
-            class="w-full px-5 py-4 border border-[#1F3B6C] rounded-xl bg-white text-base md:text-lg focus:ring-2 focus:ring-[#00BFA6] focus:outline-none"
-          />
-        </div>
-      </div>
-
-      <!-- Location -->
-      <div>
-        <label class="block text-lg font-semibold text-[#1F3B6C] mb-2"
-          >Event Location</label
-        >
-        <input
-          type="text"
-          placeholder="Enter event location"
-          class="w-full px-5 py-4 border border-[#1F3B6C] rounded-xl bg-white text-base md:text-lg focus:ring-2 focus:ring-[#00BFA6] focus:outline-none"
-        />
-      </div>
-
-      <!-- Group: Date & Duration -->
-      <div class="grid md:grid-cols-2 gap-6">
-        <!-- Event Date -->
-        <!-- Event Date -->
-        <div>
-          <label class="block text-lg font-semibold text-[#1F3B6C] mb-2">
-            Event Date
+            Event Location
           </label>
 
-          <div class="datepicker-container">
+          <input
+            id="location"
+            type="text"
+            formControlName="location"
+            placeholder="e.g. Landmark Event Centre, Lagos"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-ink placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all duration-200"
+          />
+
+          @if (hasError("location")) {
+            <p class="mt-1.5 text-sm text-danger-dark">
+              {{ getErrorMessage("location") }}
+            </p>
+          }
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-5">
+          <div>
+            <label class="block text-sm font-semibold text-ink mb-2">
+              Event Date
+            </label>
+
             <div
-              class="flex items-center gap-3 border border-[#1F3B6C]/50 rounded-xl px-4 py-3 bg-[#F9FAFF] focus-within:ring-2 focus-within:ring-[#00BFA6] transition-all duration-200"
+              class="flex items-center gap-3 border border-gray-200 rounded-xl px-4 py-1.5 bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-brand/20 focus-within:border-brand transition-all duration-200"
             >
               <input
                 matInput
                 [matDatepicker]="picker"
+                formControlName="event_date"
                 placeholder="Select date"
-                [(ngModel)]="selected"
-                name="date"
-                class="w-full bg-transparent outline-none text-base md:text-lg text-[#1F3B6C] placeholder:text-gray-400"
+                class="w-full bg-transparent outline-none text-ink placeholder:text-gray-400"
               />
+
               <mat-datepicker-toggle
                 matSuffix
                 [for]="picker"
-                class="text-[#6C63FF]"
+                class="text-brand"
               ></mat-datepicker-toggle>
+
               <mat-datepicker #picker></mat-datepicker>
             </div>
+
+            @if (hasError("event_date")) {
+              <p class="mt-1.5 text-sm text-danger-dark">
+                {{ getErrorMessage("event_date") }}
+              </p>
+            }
           </div>
 
-          <p class="mt-2 text-sm text-gray-600">
-            Selected:
-            <span class="font-semibold text-[#1F3B6C]">
-              {{ selected | date : "mediumDate" }}
-            </span>
+          <div>
+            <label
+              for="eventTime"
+              class="block text-sm font-semibold text-ink mb-2"
+            >
+              Event Time
+            </label>
+
+            <input
+              id="eventTime"
+              type="time"
+              formControlName="event_time"
+              class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-ink focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all duration-200"
+            />
+
+            @if (hasError("event_time")) {
+              <p class="mt-1.5 text-sm text-danger-dark">
+                {{ getErrorMessage("event_time") }}
+              </p>
+            }
+          </div>
+
+          <div>
+            <label
+              for="duration"
+              class="block text-sm font-semibold text-ink mb-2"
+            >
+              Duration
+            </label>
+
+            <input
+              id="duration"
+              type="text"
+              formControlName="duration"
+              placeholder="e.g. 3 hours"
+              class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-ink placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all duration-200"
+            />
+
+            @if (hasError("duration")) {
+              <p class="mt-1.5 text-sm text-danger-dark">
+                {{ getErrorMessage("duration") }}
+              </p>
+            }
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-ink mb-3">
+            Event Type
+          </label>
+
+          <div class="flex gap-3">
+            <label class="relative cursor-pointer">
+              <input
+                type="radio"
+                formControlName="event_type"
+                value="free"
+                class="peer sr-only"
+              />
+
+              <span
+                class="inline-flex items-center px-5 py-2.5 rounded-full border border-gray-200 bg-gray-50 text-sm font-medium text-ink peer-checked:bg-brand peer-checked:border-brand peer-checked:text-white transition-all duration-200"
+              >
+                Free
+              </span>
+            </label>
+
+            <label class="relative cursor-pointer">
+              <input
+                type="radio"
+                formControlName="event_type"
+                value="paid"
+                class="peer sr-only"
+              />
+
+              <span
+                class="inline-flex items-center px-5 py-2.5 rounded-full border border-gray-200 bg-gray-50 text-sm font-medium text-ink peer-checked:bg-brand peer-checked:border-brand peer-checked:text-white transition-all duration-200"
+              >
+                Paid
+              </span>
+            </label>
+          </div>
+
+          @if (hasError("event_type")) {
+            <p class="mt-1.5 text-sm text-danger-dark">
+              {{ getErrorMessage("event_type") }}
+            </p>
+          }
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 sm:p-7">
+        <div class="flex items-start justify-between gap-4 mb-5">
+          <div>
+            <h2 class="text-lg font-semibold text-ink">Categories</h2>
+
+            <p class="text-sm text-gray-500 mt-1">
+              Help people find your event.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            (click)="showCreateCategory = !showCreateCategory"
+            class="shrink-0 text-sm font-semibold text-brand hover:text-brand-dark transition-colors cursor-pointer"
+          >
+            @if (showCreateCategory) {
+              Cancel
+            } @else {
+              + New Category
+            }
+          </button>
+        </div>
+
+        @if (showCreateCategory) {
+          <div class="mb-6 p-4 rounded-xl bg-brand/5 border border-brand/10">
+            <label
+              for="newCategory"
+              class="block text-sm font-semibold text-ink mb-2"
+            >
+              New Category
+            </label>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+              <input
+                id="newCategory"
+                type="text"
+                formControlName="new_category_name"
+                placeholder="e.g. Photography"
+                class="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white text-ink placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand"
+              />
+
+              <button
+                type="button"
+                (click)="createCategory()"
+                [disabled]="isCreatingCategory"
+                class="px-5 py-3 rounded-xl bg-brand hover:bg-brand-dark disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold"
+              >
+                @if (isCreatingCategory) {
+                  Creating...
+                } @else {
+                  Create Category
+                }
+              </button>
+            </div>
+
+            @if (categoryError) {
+              <p class="mt-2 text-sm text-danger-dark">
+                {{ categoryError }}
+              </p>
+            }
+          </div>
+        }
+
+        @if (isLoadingCategories) {
+          <p class="text-sm text-gray-500">Loading categories...</p>
+        } @else if (categories.length === 0) {
+          <p class="text-sm text-gray-500">No categories available yet.</p>
+        } @else {
+          <div class="flex flex-wrap gap-3">
+            @for (category of categories; track category.uuid) {
+              <button
+                type="button"
+                (click)="selectCategory(category.uuid)"
+                [class.bg-brand]="isCategorySelected(category.uuid)"
+                [class.border-brand]="isCategorySelected(category.uuid)"
+                [class.text-white]="isCategorySelected(category.uuid)"
+                class="px-4 py-2 rounded-full border border-gray-200 text-sm text-ink hover:bg-brand hover:border-brand hover:text-white transition-all duration-200"
+              >
+                {{ category.name }}
+              </button>
+            }
+          </div>
+        }
+
+        @if (hasError("category_ids")) {
+          <p class="mt-3 text-sm text-danger-dark">
+            {{ getErrorMessage("category_ids") }}
+          </p>
+        }
+      </div>
+
+      @if (eventForm.get("event_type")?.value === "paid") {
+        <div class="bg-white rounded-2xl p-5 sm:p-7">
+          <div class="flex items-start justify-between gap-4 mb-5">
+            <div>
+              <h2 class="text-lg font-semibold text-ink">Tickets</h2>
+
+              <p class="text-sm text-gray-500 mt-1">
+                Set up the ticket types available for your event.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              (click)="addTicket()"
+              class="shrink-0 text-sm font-semibold text-brand hover:text-brand-dark transition-colors"
+            >
+              + Add Ticket
+            </button>
+          </div>
+
+          <div formArrayName="ticket_types" class="space-y-5">
+            @for (ticket of ticketTypes.controls; track $index) {
+              <div
+                [formGroupName]="$index"
+                class="grid sm:grid-cols-[1fr_160px_160px_auto] gap-4 items-end border-b border-gray-100 pb-5"
+              >
+                <div>
+                  <label class="block text-xs font-semibold text-gray-500 mb-2">
+                    Ticket Name
+                  </label>
+
+                  <input
+                    type="text"
+                    formControlName="name"
+                    placeholder="e.g. General"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-ink focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-gray-500 mb-2">
+                    Price
+                  </label>
+
+                  <input
+                    type="number"
+                    formControlName="price"
+                    min="0"
+                    placeholder="0"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-ink focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-gray-500 mb-2">
+                    Quantity
+                  </label>
+
+                  <input
+                    type="number"
+                    formControlName="total_quantity"
+                    min="1"
+                    placeholder="100"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-ink focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  aria-label="Remove ticket"
+                  (click)="removeTicket($index)"
+                  [disabled]="ticketTypes.length === 1"
+                  class="w-10 h-10 flex items-center justify-center rounded-full text-gray-400 hover:text-danger-dark hover:bg-danger/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
+                >
+                  <i class="fas fa-trash-alt text-sm"></i>
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="bg-white rounded-2xl p-5 sm:p-7">
+        <div class="mb-5">
+          <h2 class="text-lg font-semibold text-ink">Media</h2>
+
+          <p class="text-sm text-gray-500 mt-1">
+            Add media to help people understand your event.
           </p>
         </div>
 
-        <!-- Duration -->
+        <div class="mb-6">
+          <label class="block text-sm font-semibold text-ink mb-2">
+            Event Image
+          </label>
+
+          <div
+            class="border border-dashed border-gray-300 rounded-xl bg-gray-50 px-5 py-8 text-center hover:border-brand transition-colors duration-200"
+          >
+            <input
+              type="file"
+              accept="image/*"
+              id="imageUpload"
+              class="hidden"
+              (change)="onImageSelected($event)"
+            />
+
+            <label
+              for="imageUpload"
+              class="cursor-pointer text-sm font-medium text-brand hover:text-brand-dark"
+            >
+              @if (selectedImage) {
+                {{ selectedImage.name }}
+              } @else {
+                Upload event image
+              }
+            </label>
+
+            <p class="text-xs text-gray-400 mt-1">
+              @if (selectedImage) {
+                Image selected successfully.
+              } @else {
+                Add an image that represents your event.
+              }
+            </p>
+          </div>
+        </div>
+
         <div>
-          <label class="block text-lg font-semibold text-[#1F3B6C] mb-2">
-            Duration
+          <label
+            for="videoUrl"
+            class="block text-sm font-semibold text-ink mb-2"
+          >
+            Event Video
           </label>
+
           <input
-            type="text"
-            placeholder="e.g. 3 hours"
-            class="w-full px-5 py-4 border border-[#1F3B6C]/50 rounded-xl bg-[#F9FAFF] text-base md:text-lg text-[#1F3B6C] focus:ring-2 focus:ring-[#00BFA6] focus:outline-none transition-all duration-200 placeholder:text-gray-400"
+            id="videoUrl"
+            type="file"
+            accept="video/mp4,video/quicktime,video/webm"
+            (change)="onVideoSelected($event)"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-ink placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all duration-200"
           />
+
+          <p class="text-xs text-gray-400 mt-2">Optional</p>
         </div>
       </div>
 
-      <!-- Type -->
-      <div>
-        <label class="block text-lg font-semibold text-[#1F3B6C] mb-3"
-          >Event Type</label
+      @if (formError) {
+        <div
+          class="rounded-xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger-dark"
         >
-        <div class="flex gap-10 flex-wrap">
-          <label class="flex items-center gap-3 text-base md:text-lg">
-            <input
-              type="radio"
-              name="type"
-              value="free"
-              class="text-red-500 focus:ring-[#6b63ff]"
-            />
-            <span class="text-[#1F3B6C] font-medium">Free</span>
-          </label>
-          <label class="flex items-center gap-3 text-base md:text-lg">
-            <input
-              type="radio"
-              name="type"
-              value="paid"
-              class="text-red-500 focus:ring-[#6b63ff]"
-            />
-            <span class="text-[#1F3B6C] font-medium">Paid</span>
-          </label>
+          {{ formError }}
         </div>
-      </div>
+      }
 
-      <!-- Description -->
-      <div>
-        <label class="block text-lg font-semibold text-[#1F3B6C] mb-2"
-          >Description</label
-        >
-        <textarea
-          rows="6"
-          placeholder="Write a short description about the event..."
-          class="w-full px-5 py-4 border border-[#1F3B6C] rounded-xl bg-white text-base md:text-lg focus:ring-2 focus:ring-[#00BFA6] focus:outline-none"
-        ></textarea>
-      </div>
-
-      <!-- Submit -->
-      <div class="flex justify-end pt-8">
+      <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
         <button
-          type="submit"
-          class="bg-[#6b63ff] hover:bg-[#00BFA6] text-white font-semibold text-lg px-12 py-4 rounded-xl shadow-lg transition-all duration-300"
+          type="button"
+          (click)="onSubmit(false)"
+          [disabled]="isSubmitting"
+          class="px-6 py-3 rounded-full border border-gray-300 text-ink font-semibold hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
         >
-          Publish Event
+          @if (isSubmitting && submitMode === "draft") {
+            Saving...
+          } @else {
+            Save Draft
+          }
+        </button>
+
+        <button
+          type="button"
+          (click)="onSubmit(true)"
+          [disabled]="isSubmitting"
+          class="px-7 py-3 rounded-full bg-brand hover:bg-brand-dark disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold transition-all duration-200"
+        >
+          @if (isSubmitting && submitMode === "publish") {
+            Publishing...
+          } @else {
+            Publish Event
+          }
         </button>
       </div>
     </form>

@@ -1,128 +1,240 @@
 @if (showNavbar) {
   <div
-    class="navbar-container fixed top-0 left-0 w-full z-50 rounded-full backdrop-blur-md transition-all duration-500 ease-in-out"
-    [ngClass]="{
-      'bg-white shadow-md': scrolled || !isHomePage,
-      'bg-gray-50': isHomePage && !scrolled,
-    }"
+    class="fixed w-full z-50 bg-nav transition-all duration-500 ease-in-out"
+    [ngClass]="{ 'shadow-md': scrolled || !isHomePage }"
   >
-    <div class="section-container flex justify-between items-center">
+    <div
+      class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between"
+    >
       <!-- Logo -->
-      <div>
-        <a routerLink="/home">
-          <img
-            src="assets/logo/evvnt-logo.png"
-            alt="Logo"
-            class="block w-20 h-auto"
-        /></a>
-      </div>
+      <!-- The logo file is white, so brightness-0 turns it black on the yellow bar.
+           Replace with a dark logo file and remove the class when you have one. -->
+      <a routerLink="/home" class="shrink-0">
+        <img
+          src="assets/logo/evvnt-logo-white-1.png"
+          alt="EVVNT Logo"
+          class="block w-20 h-auto brightness-0"
+        />
+      </a>
 
-      <!-- Hamburger for small screens -->
-      <button
-        class="text-black md:hidden text-3xl focus:outline-none transition-all duration-300"
-        (click)="toggleMenu()"
-      >
-        <i
-          class="fas"
-          [ngClass]="{ 'fa-bars': !menuOpen, 'fa-times': menuOpen }"
-        ></i>
-      </button>
-
-      <!-- Nav Links -->
-      <nav
-        class="navbar md:flex md:items-center md:space-x-6 md:static absolute top-full left-0 w-full md:w-auto bg-white/95 md:bg-transparent flex flex-col md:flex-row overflow-hidden transition-all duration-500 ease-in-out transform"
-        [ngClass]="{
-          'opacity-0 max-h-0 pointer-events-none md:opacity-100 md:max-h-full md:pointer-events-auto':
-            !menuOpen,
-          'opacity-100 max-h-[500px] pointer-events-auto': menuOpen,
-        }"
-      >
-        <a
-          routerLink="/home"
-          class="block md:inline-block p-4 font-semibold text-black hover:text-[#FF6B35] hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
-          (click)="closeMenu()"
-          >Home</a
-        >
-
-        <a
-          routerLink="/my-booking"
-          class="block md:inline-block p-4 font-semibold text-black hover:text-[#FF6B35] hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
-          (click)="closeMenu()"
-          >Bookings</a
-        >
-
-        <a
-          routerLink="/events/event-list"
-          class="block md:inline-block p-4 font-semibold text-black hover:text-[#FF6B35] hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
-          (click)="closeMenu()"
-          >Events</a
-        >
-
-        <a
-          routerLink="/events/organizer"
-          class="block md:inline-block p-4 font-semibold text-black hover:text-[#FF6B35] hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
-          (click)="closeMenu()"
-          >Host Event</a
-        >
-
-        <!-- <a
-        routerLink="/listings/provider"
-        class="block md:inline-block p-4 font-semibold text-black hover:text-[#FF6B35] hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
-        (click)="closeMenu()"
-        >List Space</a
-      > -->
-
-        <!-- Login inside menu (mobile only) -->
-        @if (!isLoggedIn) {
+      <!-- Desktop Navigation -->
+      <nav class="navbar hidden md:flex md:items-center md:space-x-2 md:static">
+        <!-- Main links -->
+        @for (link of navLinks; track link.path) {
           <a
-            (click)="goToAuth(); closeMenu()"
-            class="block md:hidden p-4 font-semibold text-black hover:text-[#FF6B35] transition-all duration-300 cursor-pointer"
+            [routerLink]="link.path"
+            class="block md:inline-block p-4 font-semibold text-ink hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
+            (click)="closeMenu()"
           >
-            Login / Register
+            {{ link.label }}
           </a>
         }
-        @if (isLoggedIn) {
+
+        <!-- Create -->
+        <div class="relative">
           <button
-            (click)="logout(); closeMenu()"
-            class="block md:hidden p-4 font-semibold text-black hover:text-[#FF6B35] transition-all duration-300 text-left"
+            type="button"
+            (click)="toggleCreateMenu($event)"
+            class="w-full md:w-auto text-left md:text-center block md:inline-block p-4 font-semibold text-ink hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
           >
-            Logout
+            Create
+            <i
+              class="fas fa-chevron-down text-xs ml-1 transition-transform duration-300"
+              [ngClass]="{ 'rotate-180': createMenuOpen }"
+            ></i>
           </button>
-        }
+
+          @if (createMenuOpen) {
+            <div
+              class="absolute right-0 top-full mt-1 w-56 bg-white rounded-lg shadow-lg py-2 z-60 text-ink"
+              (click)="$event.stopPropagation()"
+            >
+              @for (item of createMenuItems; track item.path) {
+                <a
+                  [routerLink]="item.path"
+                  (click)="closeCreateMenu(); closeMenu()"
+                  class="flex items-center gap-3 px-4 py-3 hover:bg-brand-soft transition-colors"
+                >
+                  <i class="fas w-5 text-brand" [ngClass]="item.icon"></i>
+
+                  <div>
+                    <p class="font-semibold">{{ item.title }}</p>
+                    <p class="text-xs text-gray-500">{{ item.subtitle }}</p>
+                  </div>
+                </a>
+              }
+            </div>
+          }
+        </div>
       </nav>
 
-      <!-- Right side (desktop only) -->
-      <div class="hidden md:flex items-center space-x-4">
-        <!-- <app-search-bar></app-search-bar> -->
+      <!-- Desktop Search -->
+      <div class="hidden md:block">
+        <app-search-bar></app-search-bar>
+      </div>
+
+      <!-- Desktop Profile -->
+      <div class="hidden md:flex items-center">
         <div class="relative" (click)="toggleDropdown($event)">
           <img
             src="assets/icons/profile.svg"
             alt="Profile"
-            class="cursor-pointer w-10 h-auto"
+            class="cursor-pointer w-10 h-auto brightness-0"
           />
+
           @if (showDropdown) {
             <div
-              class="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg py-2 z-50 text-[#1f3b6cff] origin-top-right transition-all duration-200"
+              class="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg py-2 z-50 text-ink"
+              (click)="$event.stopPropagation()"
             >
               @if (!isLoggedIn) {
                 <a
                   (click)="goToAuth(); closeDropdown()"
-                  class="block px-4 py-2 hover:bg-[#f3f4f6] cursor-pointer"
+                  class="block px-4 py-2 hover:bg-brand-soft cursor-pointer"
                 >
                   Login / Register
                 </a>
               } @else {
                 <button
                   (click)="logout(); closeDropdown()"
-                  class="block w-full text-left px-4 py-2 hover:bg-[#f3f4f6]"
+                  class="block w-full text-left px-4 py-2 hover:bg-brand-soft cursor-pointer"
                 >
                   Logout
                 </button>
+
+                <a
+                  routerLink="/profile"
+                  (click)="closeDropdown()"
+                  class="block px-4 py-2 hover:bg-brand-soft cursor-pointer"
+                >
+                  Profile
+                </a>
               }
             </div>
           }
         </div>
       </div>
+
+      <!-- Mobile Actions -->
+      <div class="flex md:hidden items-center gap-3">
+        <!-- Search Icon -->
+        <button
+          type="button"
+          aria-label="Search"
+          class="w-10 h-10 flex items-center justify-center text-ink text-xl"
+          (click)="toggleMobileSearch()"
+        >
+          @if (mobileSearchOpen) {
+            <i class="fas fa-times"></i>
+          } @else {
+            <img
+              src="assets/icons/search.svg"
+              alt="Search"
+              class="w-6 h-6 brightness-0"
+            />
+          }
+        </button>
+
+        <!-- Hamburger -->
+        <button
+          type="button"
+          aria-label="Menu"
+          class="w-10 h-10 flex items-center justify-center text-ink text-2xl focus:outline-none transition-all duration-300"
+          (click)="toggleMenu()"
+        >
+          <i class="fas" [ngClass]="menuOpen ? 'fa-times' : 'fa-bars'"></i>
+        </button>
+      </div>
     </div>
+
+    <div
+      class="md:hidden absolute top-full left-0 w-full overflow-hidden transition-all duration-500 ease-in-out"
+      [ngClass]="{
+        'max-h-0 opacity-0 pointer-events-none': !mobileSearchOpen,
+        'max-h-24 opacity-100 pointer-events-auto': mobileSearchOpen,
+      }"
+    >
+      <div class="px-4 pb-3 pt-1 bg-nav">
+        <app-search-bar></app-search-bar>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <nav
+      class="md:hidden absolute top-full left-0 w-full bg-white/95 overflow-hidden transition-all duration-500 ease-in-out"
+      [ngClass]="{
+        'opacity-0 max-h-0 pointer-events-none': !menuOpen,
+        'opacity-100 max-h-[700px] pointer-events-auto': menuOpen,
+      }"
+    >
+      @for (link of navLinks; track link.path) {
+        <a
+          [routerLink]="link.path"
+          class="block p-4 font-semibold text-ink hover:text-brand-dark transition-all duration-300"
+          (click)="closeMenu()"
+        >
+          {{ link.label }}
+        </a>
+      }
+
+      <!-- Create -->
+      <div>
+        <button
+          type="button"
+          (click)="toggleCreateMenu($event)"
+          class="w-full text-left p-4 font-semibold text-ink hover:text-brand-dark transition-all duration-300"
+        >
+          Create
+          <i
+            class="fas fa-chevron-down text-xs ml-1 transition-transform duration-300"
+            [ngClass]="{ 'rotate-180': createMenuOpen }"
+          ></i>
+        </button>
+
+        @if (createMenuOpen) {
+          <div class="bg-gray-50 text-ink" (click)="$event.stopPropagation()">
+            @for (item of createMenuItems; track item.path) {
+              <a
+                [routerLink]="item.path"
+                (click)="closeCreateMenu(); closeMenu()"
+                class="flex items-center gap-3 px-6 py-3 hover:bg-brand-soft"
+              >
+                <i class="fas w-5 text-brand" [ngClass]="item.icon"></i>
+
+                <div>
+                  <p class="font-semibold">{{ item.title }}</p>
+                  <p class="text-xs text-gray-500">{{ item.subtitle }}</p>
+                </div>
+              </a>
+            }
+          </div>
+        }
+      </div>
+
+      @if (!isLoggedIn) {
+        <a
+          (click)="goToAuth(); closeMenu()"
+          class="block p-4 font-semibold text-ink hover:text-brand-dark cursor-pointer"
+        >
+          Login / Register
+        </a>
+      } @else {
+        <button
+          (click)="logout(); closeMenu()"
+          class="block w-full text-left p-4 font-semibold text-ink hover:text-brand-dark"
+        >
+          Logout
+        </button>
+      }
+
+      <div>
+        <a
+          routerLink="/profile"
+          class="block p-4 font-semibold text-ink hover:text-brand-dark transition-all duration-300"
+          (click)="closeMenu()"
+          >Profile</a
+        >
+      </div>
+    </nav>
   </div>
 }

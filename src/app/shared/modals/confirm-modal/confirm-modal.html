@@ -1,0 +1,28 @@
+<div class="p-6" role="alertdialog" aria-labelledby="confirm-title">
+  <h2 id="confirm-title" class="text-xl font-bold text-ink">
+    {{ data.title }}
+  </h2>
+  <p class="mt-2 text-sm text-gray-600">{{ data.message }}</p>
+
+  <div class="mt-6 flex justify-end gap-3">
+    <button
+      type="button"
+      (click)="cancel()"
+      class="rounded-full border border-gray-300 px-5 py-2.5 text-sm font-semibold text-ink hover:bg-gray-50 transition-colors"
+    >
+      {{ data.cancelLabel ?? "Cancel" }}
+    </button>
+    <button
+      type="button"
+      (click)="confirm()"
+      class="rounded-full px-5 py-2.5 text-sm font-semibold text-white transition-colors"
+      [ngClass]="
+        data.tone === 'danger'
+          ? 'bg-danger hover:bg-danger-dark'
+          : 'bg-brand-dark hover:bg-ink'
+      "
+    >
+      {{ data.confirmLabel ?? "Yes, continue" }}
+    </button>
+  </div>
+</div>

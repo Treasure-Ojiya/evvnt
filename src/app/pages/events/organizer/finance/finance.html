@@ -1,36 +1,35 @@
-<section
-  class="w-full bg-[#F5F5F5] min-h-screen mx-auto px-8 sm:px-12 md:px-5 py-2"
->
-  <div class="mb-10 border-b border-[#00BFA6] pb-2">
-    <h1 class="text-3xl md:text-4xl font-bold text-[#1F3B6C]">Finance</h1>
+<section class="px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mb-10 border-b border-gray-200 pb-2">
+    <h1 class="text-3xl md:text-4xl font-bold text-ink">Finance</h1>
   </div>
 
   <div>
     <!-- Finance Summary Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-3">
+      <!-- Total Revenue is the one highlighted metric -->
       <div
-        class="bg-[#EAF2FF] p-5 rounded-xl text-center hover:shadow-md hover:-translate-y-1 transition"
+        class="bg-brand-soft border border-brand/20 p-5 rounded-xl text-center hover:shadow-md hover:-translate-y-1 transition"
       >
-        <p class="text-[#1F3B6C]/80 text-sm">Total Revenue</p>
-        <h3 class="text-2xl font-bold text-[#1F3B6C] mt-1">₦1,240,000</h3>
+        <p class="text-gray-500 text-sm">Total Revenue</p>
+        <h3 class="text-2xl font-bold text-brand mt-1">₦1,240,000</h3>
       </div>
       <div
-        class="bg-[#E6FFF6] p-5 rounded-xl text-center hover:shadow-md hover:-translate-y-1 transition"
+        class="bg-white border border-gray-200 p-5 rounded-xl text-center hover:shadow-md hover:-translate-y-1 transition"
       >
-        <p class="text-[#00BFA6]/80 text-sm">Available Balance</p>
-        <h3 class="text-2xl font-bold text-[#00BFA6] mt-1">₦250,000</h3>
+        <p class="text-gray-500 text-sm">Available Balance</p>
+        <h3 class="text-2xl font-bold text-ink mt-1">₦250,000</h3>
       </div>
       <div
-        class="bg-[#FFF4E6] p-5 rounded-xl text-center hover:shadow-md hover:-translate-y-1 transition"
+        class="bg-white border border-gray-200 p-5 rounded-xl text-center hover:shadow-md hover:-translate-y-1 transition"
       >
-        <p class="text-[#FF6B35]/80 text-sm">Pending Payouts</p>
-        <h3 class="text-2xl font-bold text-[#FF6B35] mt-1">₦80,000</h3>
+        <p class="text-gray-500 text-sm">Pending Payouts</p>
+        <h3 class="text-2xl font-bold text-ink mt-1">₦80,000</h3>
       </div>
       <div
-        class="bg-[#F0EDFF] p-5 rounded-xl text-center hover:shadow-md hover:-translate-y-1 transition"
+        class="bg-white border border-gray-200 p-5 rounded-xl text-center hover:shadow-md hover:-translate-y-1 transition"
       >
-        <p class="text-[#6C63FF]/80 text-sm">Total Events Tracked</p>
-        <h3 class="text-2xl font-bold text-[#6C63FF] mt-1">12</h3>
+        <p class="text-gray-500 text-sm">Total Events Tracked</p>
+        <h3 class="text-2xl font-bold text-ink mt-1">12</h3>
       </div>
     </div>
 
@@ -38,7 +37,7 @@
     <div class="bg-white shadow-sm rounded-xl overflow-x-auto">
       <table class="min-w-full text-sm text-gray-700">
         <thead>
-          <tr class="bg-[#EAF2FF] text-[#1F3B6C]">
+          <tr class="bg-gray-50 text-ink">
             <th class="px-6 py-3 text-left font-semibold">Date</th>
             <th class="px-6 py-3 text-left font-semibold">Event</th>
             <th class="px-6 py-3 text-left font-semibold">Amount</th>
@@ -47,26 +46,26 @@
           </tr>
         </thead>
         <tbody>
-          <tr class="border-b hover:bg-[#F9FAFF] transition">
+          <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
             <td class="px-6 py-3">Oct 20, 2025</td>
             <td class="px-6 py-3">Music Fiesta 2025</td>
             <td class="px-6 py-3 font-semibold">₦25,000</td>
             <td class="px-6 py-3">
               <span
-                class="bg-[#E6FFF6] text-[#00BFA6] px-3 py-1 rounded-full text-xs font-medium"
+                class="bg-success/10 text-success-dark px-3 py-1 rounded-full text-xs font-medium"
                 >Paid</span
               >
             </td>
             <td class="px-6 py-3 text-gray-500">Ticket Sale</td>
           </tr>
 
-          <tr class="border-b hover:bg-[#F9FAFF] transition">
+          <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
             <td class="px-6 py-3">Oct 18, 2025</td>
             <td class="px-6 py-3">Tech Expo</td>
             <td class="px-6 py-3 font-semibold">₦10,000</td>
             <td class="px-6 py-3">
               <span
-                class="bg-[#FFF4E6] text-[#FF6B35] px-3 py-1 rounded-full text-xs font-medium"
+                class="bg-accent/10 text-accent-dark px-3 py-1 rounded-full text-xs font-medium"
                 >Pending</span
               >
             </td>

@@ -1,4 +1,10 @@
-import { Component, inject, HostListener, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  inject,
+  HostListener,
+  OnInit,
+} from '@angular/core';
 import {
   Router,
   NavigationEnd,
@@ -8,11 +14,12 @@ import {
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth-service/auth-service';
+import { SearchBar } from '../search-bar/search-bar';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule, SearchBar],
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.css'], // ✅ corrected "styleUrl" → "styleUrls"
 })
@@ -22,11 +29,14 @@ export class Navbar implements OnInit {
   menuOpen = false;
   isLoggedIn = false;
   showDropdown = false;
-  showNavbar = true; // ✅ new: control navbar visibility
+  showNavbar = true;
+  createMenuOpen = false;
+  mobileSearchOpen = false;
 
   private authService = inject(AuthService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
+  private host = inject(ElementRef<HTMLElement>);
 
   ngOnInit() {
     this.authService.isLoggedIn$.subscribe((loggedIn) => {
@@ -51,6 +61,28 @@ export class Navbar implements OnInit {
       });
   }
 
+  navLinks = [
+    { label: 'Home', path: '/home' },
+    { label: 'Explore', path: '/explore' },
+    // { label: 'Spaces', path: '/spaces' },
+    { label: 'Bookings', path: '/my-booking' },
+  ];
+
+  createMenuItems = [
+    {
+      path: '/events/organizer',
+      icon: 'fa-ticket-alt',
+      title: 'Host an Event',
+      subtitle: 'Create and sell tickets',
+    },
+    {
+      path: '/listings/provider',
+      icon: 'fa-building',
+      title: 'List a Space',
+      subtitle: 'Rent out your venue',
+    },
+  ];
+
   // ✅ Helper to find deepest child route (important for nested routing)
   private getDeepestChild(route: ActivatedRoute): ActivatedRoute {
     while (route.firstChild) route = route.firstChild;
@@ -68,39 +100,59 @@ export class Navbar implements OnInit {
     this.router.navigate(['auth/authentication']);
   }
 
-  logout() {
-    this.authService.logoutUser();
-    this.isLoggedIn = false;
-    this.router.navigate(['/auth/authentication']);
+  logout(): void {
+    this.authService.logoutUser().subscribe({
+      next: () => {
+        this.router.navigate(['/auth/authentication']);
+      },
+      error: (error) => {
+        console.error('Logout failed:', error);
+        this.router.navigate(['/auth/authentication']);
+      },
+    });
   }
 
-  // ✅ Hamburger toggle
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
   }
 
-  closeMenu() {
-    this.menuOpen = false;
+  toggleMobileSearch(): void {
+    this.mobileSearchOpen = !this.mobileSearchOpen;
   }
 
-  // ✅ Profile dropdown
+  closeMenu(): void {
+    this.menuOpen = false;
+    this.createMenuOpen = false;
+    this.mobileSearchOpen = false;
+  }
+
   toggleDropdown(event: Event) {
     event.stopPropagation();
     this.showDropdown = !this.showDropdown;
+    this.createMenuOpen = false;
   }
 
+  toggleCreateMenu(event: Event): void {
+    event.stopPropagation();
+    this.createMenuOpen = !this.createMenuOpen;
+    this.showDropdown = false;
+  }
   closeDropdown() {
     this.showDropdown = false;
   }
 
-  // ✅ Close menu & dropdown on outside click
+  closeCreateMenu(): void {
+    this.createMenuOpen = false;
+  }
+
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event) {
     const target = event.target as HTMLElement;
-    const navbar = document.querySelector('.navbar-container');
-    if (navbar && !navbar.contains(target)) {
+    if (!this.host.nativeElement.contains(target)) {
       this.menuOpen = false;
       this.showDropdown = false;
+      this.createMenuOpen = false;
+      this.mobileSearchOpen = false;
     }
   }
 }

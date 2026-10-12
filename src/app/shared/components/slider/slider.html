@@ -1,0 +1,126 @@
+<div class="max-w-7xl mx-auto mt-10 px-4 sm:px-6 lg:px-8 py-10">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h2 class="text-2xl font-bold text-ink">Recommended</h2>
+
+      <p class="text-sm text-gray-500 mt-1">Events you might enjoy</p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <a
+        [routerLink]="['/explore']"
+        [queryParams]="{ type: 'events' }"
+        class="text-sm font-semibold text-ink border-2 border-ink px-4 py-2 rounded-full hover:bg-ink hover:text-white transition-all duration-300"
+      >
+        See more
+      </a>
+
+      <!-- Slide controls: hidden on phones, where swiping is enough -->
+      <div class="hidden sm:flex items-center gap-2">
+        <button
+          id="recommended-prev"
+          type="button"
+          aria-label="Previous events"
+          class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-ink hover:bg-ink hover:border-ink hover:text-white disabled:opacity-40 disabled:pointer-events-none transition-all duration-300"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="w-4 h-4"
+            aria-hidden="true"
+          >
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+
+        <button
+          id="recommended-next"
+          type="button"
+          aria-label="Next events"
+          class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-ink hover:bg-ink hover:border-ink hover:text-white disabled:opacity-40 disabled:pointer-events-none transition-all duration-300"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="w-4 h-4"
+            aria-hidden="true"
+          >
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slider -->
+  <swiper-container
+    #swiper
+    init="false"
+    class="mt-8"
+    navigation-prev-el="#recommended-prev"
+    navigation-next-el="#recommended-next"
+    pagination="true"
+  >
+    @for (event of events; track event.id) {
+      <swiper-slide>
+        <div
+          class="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300"
+        >
+          <!-- Image -->
+          <div class="relative overflow-hidden">
+            <img
+              [src]="event.image"
+              [alt]="event.title"
+              class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+
+            <div
+              class="absolute top-4 left-4 bg-white/95 text-ink text-xs font-bold px-3 py-1.5 rounded-full"
+            >
+              Recommended
+            </div>
+          </div>
+
+          <!-- Details -->
+          <div class="p-5">
+            <h3 class="text-lg font-bold text-ink line-clamp-1">
+              {{ event.title }}
+            </h3>
+
+            <div class="flex items-center gap-2 mt-2 text-sm text-gray-500">
+              <span class="text-gray-300">●</span>
+
+              <span>
+                {{ event.location }}
+              </span>
+
+              <span>·</span>
+
+              <span>
+                {{ event.date }}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              class="mt-4 w-full py-2.5 rounded-xl bg-brand text-white font-semibold hover:bg-brand-dark transition-all duration-300"
+            >
+              View Event
+            </button>
+          </div>
+        </div>
+      </swiper-slide>
+    }
+  </swiper-container>
+</div>

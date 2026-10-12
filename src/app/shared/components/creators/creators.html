@@ -1,0 +1,160 @@
+<div class="max-w-7xl mx-auto mt-10 px-4 sm:px-6 lg:px-8 py-10">
+  <!-- Section Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h2 class="text-2xl font-bold text-ink">Creators to follow</h2>
+      <p class="text-sm text-gray-500 mt-1">
+        Discover people creating experiences on EVVNT
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <a
+        [routerLink]="['/explore']"
+        [queryParams]="{ type: 'creators' }"
+        class="text-sm font-semibold text-ink border-2 border-ink cursor-pointer hover:text-white hover:bg-ink px-4 py-2 rounded-full transition-all duration-300"
+      >
+        See more
+      </a>
+
+      <!-- Slide controls: hidden on phones, where swiping is enough -->
+      <div class="hidden sm:flex items-center gap-2">
+        <button
+          id="creators-prev"
+          type="button"
+          aria-label="Previous creators"
+          class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-ink hover:bg-ink hover:border-ink hover:text-white disabled:opacity-40 disabled:pointer-events-none transition-all duration-300"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="w-4 h-4"
+            aria-hidden="true"
+          >
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+
+        <button
+          id="creators-next"
+          type="button"
+          aria-label="Next creators"
+          class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-ink hover:bg-ink hover:border-ink hover:text-white disabled:opacity-40 disabled:pointer-events-none transition-all duration-300"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="w-4 h-4"
+            aria-hidden="true"
+          >
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slider -->
+  <swiper-container
+    #swiper
+    init="false"
+    class="mt-8"
+    navigation-prev-el="#creators-prev"
+    navigation-next-el="#creators-next"
+    pagination="true"
+  >
+    @for (creator of creatorSlide; track creator.id) {
+      <swiper-slide>
+        <div
+          class="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300"
+        >
+          <!-- Cover -->
+          <div class="relative h-32 overflow-hidden">
+            <img
+              [src]="creator.cover"
+              [alt]="creator.name"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+
+            <!-- subtle overlay -->
+            <div
+              class="absolute inset-0 bg-linear-to-t from-ink/60 to-transparent"
+            ></div>
+
+            <!-- Creator type -->
+            <span
+              class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-ink text-xs font-semibold px-3 py-1 rounded-full"
+            >
+              Creator
+            </span>
+
+            <!-- Profile image -->
+            <div class="absolute -bottom-9 left-5">
+              <img
+                [src]="creator.image"
+                [alt]="creator.name"
+                class="w-[72px] h-[72px] rounded-full object-cover border-4 border-white shadow-md"
+              />
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="px-5 pt-12 pb-5">
+            <!-- Name + Follow -->
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <h3 class="text-lg font-bold text-ink truncate">
+                  {{ creator.name }}
+                </h3>
+
+                <p class="text-sm text-gray-500 truncate">
+                  {{ creator.username }}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                class="shrink-0 text-sm font-semibold text-ink border border-ink px-3 py-1.5 rounded-full hover:bg-ink hover:text-white transition-all duration-300"
+              >
+                Follow
+              </button>
+            </div>
+
+            <!-- Creator Info -->
+            <div class="flex items-center gap-3 mt-4 text-sm text-gray-500">
+              <span class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-gray-300"></span>
+                {{ creator.eventCount }} events
+              </span>
+
+              <span class="text-gray-300">|</span>
+
+              <span>
+                {{ creator.location }}
+              </span>
+            </div>
+
+            <!-- CTA -->
+            <a
+              [routerLink]="['/explore']"
+              [queryParams]="{ creator: creator.id }"
+              class="flex items-center justify-center mt-5 w-full bg-brand text-white font-semibold py-2.5 rounded-xl hover:bg-brand-dark transition-all duration-300"
+            >
+              View Events
+            </a>
+          </div>
+        </div>
+      </swiper-slide>
+    }
+  </swiper-container>
+</div>

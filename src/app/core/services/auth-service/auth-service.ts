@@ -1,17 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, finalize } from 'rxjs';
 import {
   RegModel,
   RegResult,
   LoginModel,
   LoginResult,
-  UserModel,
-  UserResult,
   ForgotPasswordModel,
   ForgotPasswordResult,
   ResetPasswordModel,
   ResetPasswordResult,
+  RefreshResult,
 } from '../../../app-model/model';
 import { environment } from '../../../../environments/environment';
 
@@ -21,11 +20,7 @@ import { environment } from '../../../../environments/environment';
 export class AuthService {
   constructor(private http: HttpClient) {}
 
-  private authRegUrl = environment.AUTH_REG_URL;
-  private authLoginUrl = environment.AUTH_LOGIN_URL;
-  private userUrl = environment.USER_URL;
-  private forgotPasswordUrl = environment.FORGOT_PASSWORD;
-  private resetPasswordUrl = environment.RESET_PASSWORD;
+  private baseUrl = environment.BASE_URL;
 
   private loggedInSubject = new BehaviorSubject<boolean>(
     !!localStorage.getItem('access_token'),
@@ -38,36 +33,59 @@ export class AuthService {
   }
 
   registerUser(user: RegModel): Observable<RegResult> {
-    return this.http.post<RegResult>(this.authRegUrl, user);
+    return this.http.post<RegResult>(`${this.baseUrl}/auth/register`, user);
   }
 
   loginUser(user: LoginModel): Observable<LoginResult> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
     });
-    return this.http.post<LoginResult>(this.authLoginUrl, user, { headers });
+    return this.http.post<LoginResult>(`${this.baseUrl}/auth/login`, user, {
+      headers,
+    });
   }
 
-  logoutUser(): void {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('user');
+  refreshToken(): Observable<RefreshResult> {
+    const refreshToken = localStorage.getItem('refresh_token');
 
-    this.loggedInSubject.next(false);
+    return this.http.post<RefreshResult>(`${this.baseUrl}/auth/refresh`, {
+      refresh_token: refreshToken,
+    });
+  }
+
+  logoutUser(): Observable<any> {
+    const refreshToken = localStorage.getItem('refresh_token');
+
+    return this.http
+      .post(`${this.baseUrl}/auth/logout`, {
+        refresh_token: refreshToken,
+      })
+      .pipe(
+        finalize(() => {
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          localStorage.removeItem('user');
+
+          this.loggedInSubject.next(false);
+        }),
+      );
   }
 
   setLoggedIn(): void {
     this.loggedInSubject.next(true);
   }
 
-  getUser(): Observable<UserModel> {
-    return this.http.get<UserModel>(this.userUrl);
-  }
-
   forgotPassword(user: ForgotPasswordModel): Observable<ForgotPasswordResult> {
-    return this.http.post<ForgotPasswordResult>(this.forgotPasswordUrl, user);
+    return this.http.post<ForgotPasswordResult>(
+      `${this.baseUrl}/auth/forgot-password`,
+      user,
+    );
   }
 
   resetPassword(user: ResetPasswordModel): Observable<ResetPasswordResult> {
-    return this.http.patch<ResetPasswordResult>(this.resetPasswordUrl, user);
+    return this.http.patch<ResetPasswordResult>(
+      `${this.baseUrl}/auth/reset-password`,
+      user,
+    );
   }
 }

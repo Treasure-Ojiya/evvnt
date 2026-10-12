@@ -1,0 +1,99 @@
+<div class="max-w-7xl mx-auto mt-10 px-4 sm:px-6 lg:px-8 py-10">
+  <div class="flex items-center justify-between">
+    <div>
+      <h2 class="text-2xl font-bold text-ink">Spaces</h2>
+
+      <p class="text-sm text-gray-500 mt-1">Spaces that might interest you</p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <a
+        [routerLink]="['/explore']"
+        [queryParams]="{ type: 'spaces' }"
+        class="text-sm font-semibold text-ink border-2 border-ink px-4 py-2 rounded-full hover:bg-ink hover:text-white transition-all duration-300"
+        >See more</a
+      >
+
+      <div class="hidden sm:flex items-center gap-3">
+        <button
+          id="spaces-prev"
+          type="button"
+          aria-label="Previous spaces"
+          class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-ink hover:bg-ink hover:border-ink hover:text-white disabled:opacity-40 disabled:pointer-events-none transition-all duration-300"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="w-4 h-4"
+            aria-hidden="true"
+          >
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+
+        <button
+          id="spaces-next"
+          type="button"
+          aria-label="Next spaces"
+          class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-ink hover:bg-ink hover:border-ink hover:text-white disabled:opacity-40 disabled:pointer-events-none transition-all duration-300"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="w-4 h-4"
+            aria-hidden="true"
+          >
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <swiper-container
+    #swiper
+    init="false"
+    class="mt-8"
+    navigation-prev-el="#spaces-prev"
+    navigation-next-el="#spaces-next"
+    pagination="true"
+  >
+    @for (space of spaces; track space.id) {
+      <swiper-slide>
+        <div
+          class="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300"
+        >
+          <img
+            src="{{ space.image }}"
+            alt="{{ space.name }}"
+            class="w-full h-48 object-cover"
+          />
+
+          <div class="p-4">
+            <h3 class="text-lg font-semibold text-ink mb-1">
+              {{ space.name }}
+            </h3>
+
+            <p class="text-sm text-gray-500 mb-2">{{ space.location }}</p>
+
+            <a
+              [routerLink]="['/spaces', space.id]"
+              class="text-sm font-semibold text-brand hover:text-brand-dark transition-colors"
+              >View Details</a
+            >
+          </div>
+        </div>
+      </swiper-slide>
+    }
+  </swiper-container>
+</div>

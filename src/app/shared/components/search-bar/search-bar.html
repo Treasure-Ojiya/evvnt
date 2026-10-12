@@ -1,38 +1,40 @@
-<div
-  class="relative w-full md:w-[850px] p-2 bg-white rounded-full shadow-sm z-20"
->
+<div class="relative w-full p-0.5 bg-white rounded-full shadow-sm z-20">
   <div class="flex items-center gap-2">
     <div class="relative flex-1">
       <input
-        id="location"
-        type="text"
-        placeholder="📍 What are you looking for?"
-        class="w-full rounded-full border border-gray-300 bg-[#1F3B6C] px-4 py-3 text-white placeholder:text-gray-500 font-semibold shadow-sm focus:outline-none focus:border-[#1F3B6C] focus:ring-2 focus:ring-[#1F3B6C]/40 transition-all duration-200"
-        [(ngModel)]="searchLocation"
-        (input)="filterLocations()"
+        id="search"
+        type="search"
+        autocomplete="off"
+        aria-label="Search events"
+        placeholder="Search events"
+        class="w-full rounded-full -200 py-1.5 px-2 font-semibold text-sm text-ink placeholder:text-gray-400 focus:outline-none"
+        [(ngModel)]="searchText"
+        (input)="onInput()"
+        (keydown.enter)="submit()"
         (blur)="hideDropdown()"
       />
 
-      @if (filteredLocations.length > 0 && showDropdown) {
+      @if (showDropdown && eventSuggestions.length > 0) {
         <ul
-          class="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-2xl shadow-lg max-h-56 overflow-y-auto z-50"
+          class="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-2xl shadow-lg max-h-72 overflow-y-auto z-50 py-1"
         >
-          @for (loc of filteredLocations; track loc) {
+          @for (title of eventSuggestions; track title) {
             <li
-              class="text-[#1F3B6C] font-semibold px-4 py-2 hover:bg-[#1F3B6C]/10 cursor-pointer"
-              (mousedown)="selectLocation(loc)"
+              class="text-ink font-semibold px-4 py-2 hover:bg-brand-soft cursor-pointer"
+              (mousedown)="selectEvent(title)"
             >
-              {{ loc.state }}, {{ loc.city }}
+              {{ title }}
             </li>
           }
         </ul>
       }
     </div>
-    <!-- <img src="assets/icons/search.svg" alt="Search" class="w-5 h-5" /> -->
 
     <button
-      class="px-6 py-3 bg-[#1F3B6C] text-white font-semibold rounded-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-      [disabled]="!searchLocation"
+      type="button"
+      (click)="submit()"
+      class="text-sm font-semibold px-4 py-1.5 bg-brand text-white rounded-full cursor-pointer hover:bg-ink disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+      [disabled]="!searchText.trim()"
     >
       Search
     </button>

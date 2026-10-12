@@ -1,0 +1,328 @@
+<div class="min-h-screen bg-surface">
+  <!-- Profile Header -->
+  <section class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <div class="flex flex-col sm:flex-row sm:items-end gap-5">
+        <!-- Avatar -->
+        <div
+          class="w-24 h-24 sm:w-28 sm:h-28 shrink-0 rounded-full bg-brand-soft text-brand ring-4 ring-white flex items-center justify-center text-3xl font-bold"
+          aria-hidden="true"
+        >
+          {{ createInitials() }}
+        </div>
+
+        <!-- Name + actions -->
+        <div
+          class="flex-1 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 min-w-0"
+        >
+          <div class="min-w-0">
+            <h1 class="text-2xl sm:text-3xl font-bold text-ink truncate">
+              {{ firstName }} {{ lastName }}
+            </h1>
+
+            <p class="text-sm text-gray-500 mt-1 truncate">{{ email }}</p>
+
+            <p class="text-sm text-gray-500 mt-0.5">
+              {{ location }}
+              @if (createdAt) {
+                <span class="mx-1.5 text-gray-300" aria-hidden="true">|</span>
+                Joined {{ createdAt | dateFormat: "short" }}
+              }
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="inline-flex w-fit shrink-0 items-center border border-brand text-brand px-5 py-2 rounded-full text-sm font-semibold hover:bg-brand hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand transition-colors duration-200"
+          >
+            Edit profile
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <!-- <dl class="flex flex-wrap items-center gap-x-8 gap-y-3 mt-6 text-sm">
+        @for (stat of stats; track stat.label) {
+          <div class="flex items-baseline gap-1.5">
+            <dt class="sr-only">{{ stat.label }}</dt>
+            <dd class="text-xl font-bold text-ink">{{ stat.value }}</dd>
+            <span class="text-gray-500" aria-hidden="true">{{
+              stat.label
+            }}</span>
+          </div>
+        }
+      </dl> -->
+    </div>
+  </section>
+
+  <!-- Profile Navigation -->
+  <section class="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav class="flex gap-8" aria-label="Profile sections">
+        @for (tab of tabs; track tab.id) {
+          <button
+            type="button"
+            (click)="activeTab = tab.id"
+            [attr.aria-current]="activeTab === tab.id ? 'page' : null"
+            class="py-4 text-sm whitespace-nowrap border-b-2 -mb-px transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+            [ngClass]="
+              activeTab === tab.id
+                ? 'font-semibold text-brand border-brand'
+                : 'font-medium text-gray-500 border-transparent hover:text-ink'
+            "
+          >
+            {{ tab.label }}
+          </button>
+        }
+      </nav>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    @if (activeTab === "overview") {
+      <!-- Upcoming bookings -->
+      <section>
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="text-xl font-bold text-ink">Upcoming</h2>
+
+          <a
+            routerLink="/my-booking"
+            class="text-sm font-semibold text-brand-dark hover:underline underline-offset-4"
+          >
+            View all bookings
+          </a>
+        </div>
+
+        @if (bookingsLoading()) {
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4" aria-hidden="true">
+            @for (n of [1, 2]; track n) {
+              <div class="h-24 rounded-2xl bg-gray-200 animate-pulse"></div>
+            }
+          </div>
+        } @else if (bookingsError()) {
+          <p class="text-sm text-gray-500">
+            {{ bookingsError() }}
+            <button
+              type="button"
+              (click)="loadBookings()"
+              class="font-semibold text-brand-dark hover:underline underline-offset-4"
+            >
+              Try again
+            </button>
+          </p>
+        } @else if (upcomingBookings().length === 0) {
+          <section
+            class="bg-white rounded-2xl border border-dashed border-gray-300 px-6 py-10 text-center"
+          >
+            <p class="font-semibold text-ink">No upcoming bookings</p>
+            <p class="text-sm text-gray-500 mt-1">
+              Book an event now and pay for it later.
+            </p>
+            <a
+              routerLink="/explore"
+              class="inline-flex mt-4 px-5 py-2 rounded-full bg-brand-dark text-white text-sm font-semibold hover:bg-ink transition-colors"
+            >
+              Explore events
+            </a>
+          </section>
+        } @else {
+          <ul class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            @for (booking of upcomingBookings(); track booking.uuid) {
+              <ng-container
+                [ngTemplateOutlet]="bookingRow"
+                [ngTemplateOutletContext]="{ $implicit: booking }"
+              />
+            }
+          </ul>
+        }
+      </section>
+
+      <!-- Recently Viewed -->
+      <section class="mt-14">
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="text-xl font-bold text-ink">Recently viewed</h2>
+
+          <a
+            routerLink="/explore"
+            class="text-sm font-semibold text-brand hover:underline underline-offset-4"
+          >
+            Explore more
+          </a>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-x-5 gap-y-8">
+          @for (event of recent; track event.title) {
+            <a href="#" class="group block">
+              <div class="rounded-2xl overflow-hidden bg-gray-100">
+                <img
+                  [src]="event.image"
+                  [alt]="event.title"
+                  class="w-full h-40 sm:h-44 object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+
+              <h3
+                class="font-semibold text-ink mt-3 group-hover:text-brand transition-colors"
+              >
+                {{ event.title }}
+              </h3>
+              <p class="text-sm text-gray-500 mt-0.5">{{ event.place }}</p>
+            </a>
+          }
+        </div>
+      </section>
+
+      <!-- Saved Events -->
+      <!-- <section class="mt-14">
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="text-xl font-bold text-ink">Saved events</h2>
+
+          <a
+            routerLink="/explore"
+            class="text-sm font-semibold text-brand hover:underline underline-offset-4"
+          >
+            See more
+          </a>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-x-5 gap-y-8">
+          @for (event of saved; track event.title) {
+            <a href="#" class="group block">
+              <div class="relative rounded-2xl overflow-hidden bg-gray-100">
+                <img
+                  [src]="event.image"
+                  [alt]="event.title"
+                  class="w-full h-40 sm:h-44 object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+
+                <button
+                  type="button"
+                  aria-label="Remove from saved"
+                  class="absolute top-3 right-3 w-9 h-9 rounded-full bg-white flex items-center justify-center text-brand shadow-sm hover:bg-brand-soft focus-visible:outline-2 focus-visible:outline-brand transition-colors"
+                  (click)="$event.preventDefault()"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    class="w-5 h-5"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 2.7 4.5 6.4 4.5c2 0 3.5 1 4.6 2.6l1 1.4 1-1.4c1.1-1.6 2.6-2.6 4.6-2.6 3.7 0 5.5 3.9 4 7.3C19.5 16.4 12 21 12 21z"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <h3 class="font-semibold text-ink mt-3">{{ event.title }}</h3>
+              <p class="text-sm text-gray-500 mt-0.5">{{ event.place }}</p>
+            </a>
+          }
+        </div>
+      </section> -->
+    } @else if (activeTab === "bookings") {
+      <!-- All bookings -->
+      <section>
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="text-xl font-bold text-ink">Your bookings</h2>
+
+          <a
+            routerLink="/my-booking"
+            class="text-sm font-semibold text-brand-dark hover:underline underline-offset-4"
+          >
+            Manage bookings
+          </a>
+        </div>
+
+        @if (bookingsLoading()) {
+          <div
+            class="h-24 rounded-2xl bg-gray-200 animate-pulse"
+            aria-hidden="true"
+          ></div>
+        } @else if (allBookings().length === 0) {
+          <section
+            class="bg-white rounded-2xl border border-dashed border-gray-300 px-6 py-10 text-center"
+          >
+            <p class="font-semibold text-ink">No bookings yet</p>
+            <a
+              routerLink="/explore"
+              class="inline-flex mt-4 px-5 py-2 rounded-full bg-brand-dark text-white text-sm font-semibold hover:bg-ink transition-colors"
+            >
+              Explore events
+            </a>
+          </section>
+        } @else {
+          <ul class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            @for (booking of allBookings(); track booking.uuid) {
+              <ng-container
+                [ngTemplateOutlet]="bookingRow"
+                [ngTemplateOutletContext]="{ $implicit: booking }"
+              />
+            }
+          </ul>
+        }
+      </section>
+    } @else {
+      <!-- Empty state for tabs without content yet -->
+      <section
+        class="bg-white rounded-2xl border border-dashed border-gray-300 px-6 py-16 text-center"
+      >
+        <h2 class="text-lg font-bold text-ink">Nothing here yet</h2>
+        <p class="text-sm text-gray-500 mt-1">
+          Your {{ activeTabLabel.toLowerCase() }} will show up here.
+        </p>
+        <a
+          routerLink="/explore"
+          class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-ink transition-colors duration-200"
+        >
+          Explore events
+        </a>
+      </section>
+    }
+  </main>
+</div>
+
+<!-- One booking row, used by the Overview and Bookings tabs -->
+<ng-template #bookingRow let-booking>
+  <li
+    class="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-200"
+  >
+    <!-- Date tile -->
+    <div class="w-16 shrink-0 rounded-xl bg-ink text-white text-center py-2.5">
+      <p class="text-xs font-medium text-white/70">
+        {{ month(booking.event.event_date) }}
+      </p>
+      <p class="text-2xl font-bold leading-none mt-0.5">
+        {{ day(booking.event.event_date) }}
+      </p>
+    </div>
+
+    <div class="min-w-0 flex-1">
+      <h3 class="font-bold text-ink truncate">{{ booking.event.title }}</h3>
+      <p class="text-sm text-gray-500 mt-0.5 truncate">
+        {{ booking.event.location }}
+        <span class="mx-1.5 text-gray-300" aria-hidden="true">|</span>
+        {{ booking.quantity }}
+        {{ booking.quantity === 1 ? "ticket" : "tickets" }}
+        <span class="mx-1.5 text-gray-300" aria-hidden="true">|</span>
+        {{ formatAmount(booking) }}
+      </p>
+
+      <span
+        class="inline-flex items-center mt-2 px-2.5 py-0.5 rounded-full text-xs font-semibold"
+        [ngClass]="statusClasses(booking)"
+      >
+        {{ statusLabel(booking) }}
+      </span>
+    </div>
+
+    @if (booking.event.images.length > 0) {
+      <img
+        [src]="booking.event.images[0]"
+        [alt]="booking.event.title"
+        class="hidden sm:block w-24 h-20 rounded-xl object-cover shrink-0 bg-gray-100"
+      />
+    }
+  </li>
+</ng-template>

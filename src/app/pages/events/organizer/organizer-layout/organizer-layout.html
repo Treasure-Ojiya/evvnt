@@ -1,132 +1,100 @@
 <!-- DASHBOARD LAYOUT -->
-<div class="flex flex-col h-screen">
+<div class="fixed inset-0 flex flex-col overflow-hidden bg-surface">
+  <!-- HEADER -->
   <header
-    class="flex items-center justify-between bg-[#1F3B6C] text-white px-6 py-4 shadow-md"
+    class="shrink-0 flex items-center justify-between bg-nav text-ink px-6 py-2 shadow-md z-40"
   >
     <div class="flex items-center space-x-4">
       <button
-        (click)="createToggle()"
-        class="p-2 bg-[#163060] hover:bg-[#00BFA6] rounded-md transition"
+        type="button"
+        (click)="toggleMobileMenu()"
+        class="md:hidden p-2 rounded-md transition"
       >
         <i class="fas fa-bars text-lg"></i>
       </button>
-      <!-- <h1 class="text-xl font-semibold tracking-wide">Evvnt Dashboard</h1> -->
-      <div class="flex">
-        <img
-          src="assets/logo/evvnt-logo-white-1.png"
-          alt="Evvnt-Logo"
-          width="100"
-          height="100"
-          class="mr-3"
-        />
-        <!-- <h1 class="text-xl font-semibold tracking-wide">Dashboard</h1> -->
-      </div>
+
+      <img
+        src="assets/logo/evvnt-logo-white-1.png"
+        alt="Evvnt Logo"
+        routerLink="/home"
+        class="block w-20 h-auto cursor-pointer brightness-0"
+      />
     </div>
 
     <div class="flex items-center space-x-1">
-      <img src="assets/icons/profile.svg " alt="" width="20" height="20" />
-      <span class="text-sm font-medium">Welcome, User</span>
+      <img
+        src="assets/icons/profile.svg"
+        alt=""
+        width="20"
+        height="20"
+        class="brightness-0"
+      />
+      <span class="text-md font-medium"> Welcome, {{ user }} </span>
     </div>
   </header>
 
-  <div class="flex flex-1 overflow-hidden">
+  <!-- BODY -->
+  <div class="flex flex-1 min-h-0 overflow-hidden">
+    <!-- MOBILE BACKDROP -->
+    @if (mobileMenuOpen) {
+      <div
+        class="fixed inset-0 bg-black/40 z-40 md:hidden"
+        (click)="closeMobileMenu()"
+      ></div>
+    }
+
+    <!-- SIDEBAR -->
     <aside
-      class="transition-all duration-500 bg-linear-to-br from-[#F5F5F5] via-[#EAEAFD] to-[#DDEBFF] border-r border-gray-300 shadow-lg flex flex-col py-6 px-3 space-y-8"
+      class="shrink-0 bg-linear-to-br from-surface to-brand-soft border-r border-gray-200 shadow-lg flex flex-col gap-6 py-6 px-3 overflow-y-auto fixed md:static inset-y-0 left-0 z-50 md:z-auto w-64 transform transition-all duration-500 md:translate-x-0"
       [ngClass]="{
-        'w-64 items-start px-4': !isCollapsed,
-        'w-20 items-center': isCollapsed,
+        'translate-x-0': mobileMenuOpen,
+        '-translate-x-full': !mobileMenuOpen,
+        'md:w-64 md:px-4': !isCollapsed,
+        'md:w-20': isCollapsed,
       }"
     >
-      <div class="flex items-center justify-center w-full">
-        <a routerLink="/home" class="flex items-center space-x-3">
-          <img src="assets/icons/home.svg" alt="home" width="20" height="20" />
-          @if (!isCollapsed) {
-            <span class="text-[#1F3B6C] font-semibold text-lg">Home</span>
-          }
-        </a>
-      </div>
+      <!-- NAVIGATION (Home is just another item now) -->
+      <nav class="flex flex-col space-y-2 w-full text-ink">
+        @for (item of navItems; track item.link) {
+          <a
+            [routerLink]="item.link"
+            routerLinkActive="bg-brand/10"
+            class="flex items-center space-x-3 p-3 rounded-xl hover:bg-ink/5 transition w-full"
+            [ngClass]="{ 'md:justify-center md:space-x-0': isCollapsed }"
+            (click)="closeMobileMenu()"
+          >
+            <img [src]="item.icon" [alt]="item.label" width="20" height="20" />
 
-      <nav class="flex flex-col space-y-4 w-full text-[#1F3B6C]">
-        <a
-          routerLink="dashboard"
-          routerLinkActive="bg-[#00BFA6]/30"
-          class="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-300 transition w-full"
-        >
-          <img src="assets/icons/dashboard.svg" width="20" height="20" />
-          @if (!isCollapsed) {
-            <span class="font-medium text-[#1F3B6C]">Dashboard</span>
-          }
-        </a>
-
-        <a
-          routerLink="create-event"
-          routerLinkActive="bg-[#00BFA6]/30"
-          class="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-300 transition w-full"
-        >
-          <img src="assets/icons/create.svg" width="20" height="20" />
-          @if (!isCollapsed) {
-            <span class="font-medium text-[#1F3B6C]">Create Event</span>
-          }
-        </a>
-
-        <a
-          routerLink="manage-events"
-          routerLinkActive="bg-[#00BFA6]/30"
-          class="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-300 transition w-full"
-        >
-          <img src="assets/icons/manage.svg" width="20" height="20" />
-          @if (!isCollapsed) {
-            <span class="font-medium text-[#1F3B6C]">Manage Events</span>
-          }
-        </a>
-
-        <a
-          routerLink="orders"
-          routerLinkActive="bg-[#00BFA6]/30"
-          class="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-300 transition w-full"
-        >
-          <img src="assets/icons/order.svg" width="20" height="20" />
-          @if (!isCollapsed) {
-            <span class="font-medium text-[#1F3B6C]">Orders</span>
-          }
-        </a>
-
-        <a
-          routerLink="finance"
-          routerLinkActive="bg-[#00BFA6]/30"
-          class="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-300 transition w-full"
-        >
-          <img src="assets/icons/finance.svg" width="20" height="20" />
-          @if (!isCollapsed) {
-            <span class="font-medium text-[#1F3B6C]">Finance</span>
-          }
-        </a>
-
-        <a
-          routerLink="setting"
-          routerLinkActive="bg-[#00BFA6]/30"
-          class="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-300 transition w-full"
-        >
-          <img src="assets/icons/settings-event.svg" width="20" height="20" />
-          @if (!isCollapsed) {
-            <span class="font-medium text-[#1F3B6C]">Settings</span>
-          }
-        </a>
+            @if (!isCollapsed) {
+              <span class="font-medium">{{ item.label }}</span>
+            }
+          </a>
+        }
       </nav>
 
+      <!-- LOGOUT -->
       <button
         type="button"
-        class="flex items-center space-x-3 p-3 rounded-xl w-full text-red-600 hover:bg-red-100 transition"
+        (click)="logout()"
+        class="mt-auto flex items-center space-x-3 p-3 rounded-xl w-full text-ink/70 hover:bg-ink/5 hover:text-ink transition"
+        [ngClass]="{ 'md:justify-center md:space-x-0': isCollapsed }"
       >
-        <img src="assets/icons/logout.svg" width="20" height="20" />
+        <img
+          src="assets/icons/logout.svg"
+          alt="Logout"
+          width="20"
+          height="20"
+        />
+
         @if (!isCollapsed) {
           <span class="font-medium">Logout</span>
         }
       </button>
     </aside>
 
+    <!-- MAIN CONTENT: the only scroll container on the page -->
     <main
-      class="flex-1 min-h-screen overflow-y-auto pb-16 transition-all duration-500"
+      class="flex-1 min-w-0 min-h-0 overflow-y-auto overflow-x-hidden bg-surface"
     >
       <router-outlet></router-outlet>
     </main>

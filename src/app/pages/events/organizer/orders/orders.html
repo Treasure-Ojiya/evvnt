@@ -1,45 +1,54 @@
-<section
-  class="w-full bg-[#F5F5F5] min-h-screen mx-auto px-8 sm:px-12 md:px-5 py-2"
->
-  <div class="mb-10 border-b border-[#00BFA6] pb-2">
-    <h1 class="text-3xl md:text-4xl font-bold text-[#1F3B6C]">Orders</h1>
+<section class="px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mb-10 border-b border-gray-200 pb-2">
+    <h1 class="text-3xl md:text-4xl font-bold text-ink">Orders</h1>
   </div>
 
   <div>
     <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
       <div
-        class="bg-[#EAF2FF] p-4 rounded-lg text-center transition-all transform hover:-translate-y-1 hover:shadow-[0_4px_10px_rgba(31,59,108,0.25)]"
+        class="bg-white border border-gray-200 p-4 rounded-lg text-center transition-all transform hover:-translate-y-1 hover:shadow-md"
       >
-        <p class="text-[#1F3B6C]/80 text-sm">Total Orders</p>
-        <h3 class="text-2xl font-bold text-[#1F3B6C]">1,230</h3>
+        <p class="text-gray-500 text-sm">Total Orders</p>
+        <h3 class="text-2xl font-bold text-ink">1,230</h3>
+      </div>
+
+      <!-- Status dots: orange = pending, teal = completed -->
+      <div
+        class="bg-white border border-gray-200 p-4 rounded-lg text-center transition-all transform hover:-translate-y-1 hover:shadow-md"
+      >
+        <p
+          class="text-gray-500 text-sm flex items-center justify-center gap-1.5"
+        >
+          <span class="w-2 h-2 rounded-full bg-accent"></span>
+          Pending
+        </p>
+        <h3 class="text-2xl font-bold text-ink">24</h3>
       </div>
 
       <div
-        class="bg-[#FFF4E6] p-4 rounded-lg text-center transition-all transform hover:-translate-y-1 hover:shadow-[0_4px_10px_rgba(255,107,53,0.25)]"
+        class="bg-white border border-gray-200 p-4 rounded-lg text-center transition-all transform hover:-translate-y-1 hover:shadow-md"
       >
-        <p class="text-[#FF6B35]/80 text-sm">Pending</p>
-        <h3 class="text-2xl font-bold text-[#FF6B35]">24</h3>
+        <p
+          class="text-gray-500 text-sm flex items-center justify-center gap-1.5"
+        >
+          <span class="w-2 h-2 rounded-full bg-success"></span>
+          Completed
+        </p>
+        <h3 class="text-2xl font-bold text-ink">1,100</h3>
       </div>
 
       <div
-        class="bg-[#E6FFF6] p-4 rounded-lg text-center transition-all transform hover:-translate-y-1 hover:shadow-[0_4px_10px_rgba(0,191,166,0.25)]"
+        class="bg-white border border-gray-200 p-4 rounded-lg text-center transition-all transform hover:-translate-y-1 hover:shadow-md"
       >
-        <p class="text-[#00BFA6]/80 text-sm">Completed</p>
-        <h3 class="text-2xl font-bold text-[#00BFA6]">1,100</h3>
+        <p class="text-gray-500 text-sm">Refunded</p>
+        <h3 class="text-2xl font-bold text-ink">6</h3>
       </div>
 
       <div
-        class="bg-[#F0EDFF] p-4 rounded-lg text-center transition-all transform hover:-translate-y-1 hover:shadow-[0_4px_10px_rgba(108,99,255,0.25)]"
+        class="bg-white border border-gray-200 p-4 rounded-lg text-center transition-all transform hover:-translate-y-1 hover:shadow-md"
       >
-        <p class="text-[#6C63FF]/80 text-sm">Refunded</p>
-        <h3 class="text-2xl font-bold text-[#6C63FF]">6</h3>
-      </div>
-
-      <div
-        class="bg-[#FFFCEB] p-4 rounded-lg text-center transition-all transform hover:-translate-y-1 hover:shadow-[0_4px_10px_rgba(255,193,7,0.25)]"
-      >
-        <p class="text-[#FFC107]/80 text-sm">Free Orders</p>
-        <h3 class="text-2xl font-bold text-[#FFC107]">12</h3>
+        <p class="text-gray-500 text-sm">Free Orders</p>
+        <h3 class="text-2xl font-bold text-ink">12</h3>
       </div>
     </div>
 
@@ -48,7 +57,7 @@
     >
       <table class="min-w-full text-left">
         <!-- Table Header -->
-        <thead class="bg-[#F9FAFB] text-[#1F3B6C]">
+        <thead class="bg-gray-50 text-ink">
           <tr>
             <th class="px-6 py-3 font-semibold">Order ID</th>
             <th class="px-6 py-3 font-semibold">Event</th>
@@ -62,8 +71,8 @@
         </thead>
 
         <!-- Table Body -->
-        <tbody class="text-[#1F3B6C]/90">
-          <tr class="border-b hover:bg-[#EAF2FF]/50 transition-all">
+        <tbody class="text-ink/90">
+          <tr class="border-b border-gray-100 hover:bg-gray-50 transition-all">
             <td class="px-6 py-3 font-semibold">#EVT-239</td>
             <td class="px-6 py-3">Tech Expo 2025</td>
             <td class="px-6 py-3">John Doe</td>
@@ -71,20 +80,20 @@
             <td class="px-6 py-3">₦20,000</td>
             <td class="px-6 py-3">
               <span
-                class="bg-[#E6FFF6] text-[#00BFA6] px-3 py-1 rounded-full text-sm font-medium"
+                class="bg-success/10 text-success-dark px-3 py-1 rounded-full text-sm font-medium"
                 >Paid</span
               >
             </td>
             <td class="px-6 py-3">
               <span
-                class="bg-[#E6FFF6] text-[#00BFA6] px-3 py-1 rounded-full text-sm font-medium"
+                class="bg-success/10 text-success-dark px-3 py-1 rounded-full text-sm font-medium"
                 >Completed</span
               >
             </td>
             <td class="px-6 py-3">Oct 20, 2025</td>
           </tr>
 
-          <tr class="border-b hover:bg-[#FFF4E6]/60 transition-all">
+          <tr class="border-b border-gray-100 hover:bg-gray-50 transition-all">
             <td class="px-6 py-3 font-semibold">#EVT-240</td>
             <td class="px-6 py-3">Music Fest</td>
             <td class="px-6 py-3">Ada Eze</td>
@@ -92,13 +101,13 @@
             <td class="px-6 py-3">₦0</td>
             <td class="px-6 py-3">
               <span
-                class="bg-[#FFFCEB] text-[#FFC107] px-3 py-1 rounded-full text-sm font-medium"
+                class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium"
                 >Free</span
               >
             </td>
             <td class="px-6 py-3">
               <span
-                class="bg-[#FFF4E6] text-[#FF6B35] px-3 py-1 rounded-full text-sm font-medium"
+                class="bg-accent/10 text-accent-dark px-3 py-1 rounded-full text-sm font-medium"
                 >Pending</span
               >
             </td>

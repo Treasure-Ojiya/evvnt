@@ -1,8 +1,14 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  Router,
+  RouterOutlet,
+} from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
 import { Navbar } from './shared/components/navbar/navbar';
 import { Footer } from './shared/components/footer/footer';
-// import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -13,19 +19,29 @@ import { Footer } from './shared/components/footer/footer';
 export class App {
   protected readonly title = signal('event');
 
-  // constructor(library: FaIconLibrary) {
-  //   library.addIcons(faUser, faCoffee);
-  // }
+  private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
 
-  // showNavbar = true;
+  // Routes opt out with `data: { hideFooter: true }`. Routes that already
+  // use `hideLayout` (auth, organizer, provider) never show the footer.
+  protected readonly showFooter = signal(true);
 
-  // constructor(private router: Router) {
-  //   this.router.events
-  //     .pipe(filter((event) => event instanceof NavigationEnd))
-  //     .subscribe((event: NavigationEnd) => {
-  //       // hide navbar on login and register pages
-  //       const noNavbarRoutes = ['/authentication'];
-  //       this.showNavbar = !noNavbarRoutes.includes(event.url);
-  //     });
-  // }
+  constructor() {
+    this.router.events
+      .pipe(
+        filter(
+          (event): event is NavigationEnd => event instanceof NavigationEnd,
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe(() => {
+        let route = this.activatedRoute;
+        while (route.firstChild) {
+          route = route.firstChild;
+        }
+
+        const data = route.snapshot.data;
+        this.showFooter.set(!data['hideFooter'] && !data['hideLayout']);
+      });
+  }
 }

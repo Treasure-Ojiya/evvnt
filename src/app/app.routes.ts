@@ -15,6 +15,35 @@ export const routes: Routes = [
   },
 
   {
+    path: 'my-booking',
+    loadComponent: () =>
+      import('./pages/my-booking/my-booking').then((m) => m.MyBooking),
+    data: { hideFooter: true },
+    canActivate: [authGuard],
+  },
+
+  {
+    path: 'spaces',
+    loadComponent: () => import('./pages/spaces/spaces').then((m) => m.Spaces),
+    canActivate: [authGuard],
+  },
+
+  {
+    path: 'explore',
+    loadComponent: () =>
+      import('./pages/explore/explore').then((m) => m.Explore),
+    // canActivate: [authGuard],
+  },
+
+  {
+    path: 'profile',
+    loadComponent: () =>
+      import('./pages/profile/profile').then((m) => m.Profile),
+    data: { hideFooter: true },
+    canActivate: [authGuard],
+  },
+
+  {
     path: 'auth',
     children: [
       {
@@ -24,7 +53,7 @@ export const routes: Routes = [
             (m) => m.Authentication,
           ),
         data: { hideLayout: true },
-        // canActivate: [guestGuard],
+        canActivate: [guestGuard],
       },
 
       {
@@ -52,26 +81,9 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'event-list',
+        redirectTo: '/explore',
         pathMatch: 'full',
       },
-
-      {
-        path: 'event-list',
-        loadComponent: () =>
-          import('./pages/events/event-list/event-list').then(
-            (m) => m.EventList,
-          ),
-        canActivate: [authGuard],
-      },
-
-      {
-        path: 'my-booking',
-        loadComponent: () =>
-          import('./pages/my-booking/my-booking').then((m) => m.MyBooking),
-        canActivate: [authGuard],
-      },
-
       {
         path: 'organizer',
         loadComponent: () =>
@@ -142,6 +154,16 @@ export const routes: Routes = [
             data: { hideLayout: true },
           },
         ],
+      },
+
+      // Must stay after 'organizer', otherwise ':id' would swallow it.
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./pages/events/event-details/event-details/event-details').then(
+            (m) => m.EventDetails,
+          ),
+        data: { hideFooter: true },
       },
     ],
   },

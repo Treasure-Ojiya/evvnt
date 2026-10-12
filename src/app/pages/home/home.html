@@ -1,10 +1,10 @@
 <main class="">
-  <section class="px-0">
+  <!-- <section class="px-0">
     <div
       class="hero-banner relative flex flex-col justify-center items-center text-white rounded-b-4xl shadow-lg"
     >
       <div
-        class="absolute inset-0 bg-gradient-to-r from-[#071A35]/95 via-[#1F3B6C]/85 to-[#1F3B6C]/70 z-0 rounded-b-4xl"
+        class="absolute inset-0 bg-linear-to-r from-[#071A35]/95 via-[#1F3B6C]/85 to-[#1F3B6C]/70 z-0 rounded-b-4xl"
       ></div>
       <div class="text-center z-10 px-6">
         <h1 class="text-3xl md:text-6xl font-bold mb-3 drop-shadow-lg">
@@ -33,16 +33,84 @@
         <app-search-bar></app-search-bar>
       </div>
     </div>
+  </section> -->
+
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+      <!-- Text -->
+      <div>
+        <h1 class="text-3xl md:text-5xl font-bold mb-3 text-ink">Discover.</h1>
+
+        <h1 class="text-brand text-3xl md:text-5xl font-bold mb-3">
+          Book. Create.
+        </h1>
+
+        <p class="text-base md:text-lg mb-6 text-ink font-semibold max-w-xl">
+          Discover events, book tickets and spaces, and create experiences of
+          your own — all in one place.
+        </p>
+
+        <div class="flex flex-wrap gap-4">
+          <a
+            routerLink="/explore"
+            class="bg-brand hover:bg-brand-dark text-white font-semibold py-2 px-4 rounded-full shadow-md transition-all duration-300"
+          >
+            Find Events
+          </a>
+
+          <a
+            routerLink="/spaces"
+            class="bg-transparent border-2 border-ink hover:bg-ink hover:text-white text-ink font-semibold py-2 px-4 rounded-full transition-all duration-300"
+          >
+            Book a Space
+          </a>
+        </div>
+
+        <div class="mt-6">
+          <p class="text-base text-gray-600">
+            Want to host an event?
+            <a
+              routerLink="/events/organizer"
+              class="text-brand font-semibold hover:text-brand-dark hover:underline transition-colors"
+            >
+              Create
+            </a>
+          </p>
+        </div>
+      </div>
+
+      <!-- Image -->
+      <div>
+        <img
+          src="/assets/evvnt-hero.png"
+          alt="Discover events and experiences with EVVNT"
+          class="w-full h-auto rounded-lg shadow-lg shadow-black/20"
+        />
+      </div>
+    </div>
   </section>
+
   <!-- <div class="section-container block md:hidden">
     <app-search-bar></app-search-bar>
   </div> -->
 
-  <section class="section-container">
+  <section class="">
     <app-feature-card></app-feature-card>
   </section>
 
-  <section class="bg-[#F9FAFB]">
+  <section>
+    <app-recommended></app-recommended>
+  </section>
+
+  <!-- <section class="bg-surface">
+    <app-creators></app-creators>
+  </section> -->
+
+  <section>
+    <app-view-spaces></app-view-spaces>
+  </section>
+
+  <section class="bg-surface">
     <app-serve id="serve"></app-serve>
   </section>
 </main>

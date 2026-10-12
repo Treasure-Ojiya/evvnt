@@ -4,7 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, Validators, FormBuilder } from '@angular/forms';
 
 import { AuthService } from '../../../core/services/auth-service/auth-service';
-import { LoginModel, RegModel } from '../../../app-model/model';
+import { AccountType, LoginModel, RegModel } from '../../../app-model/model';
 
 @Component({
   selector: 'app-authentication',
@@ -38,7 +38,52 @@ export class Authentication {
     phone: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
+    account_type: ['individual' as AccountType, Validators.required],
+    organization: [''],
   });
+
+  registerError = '';
+
+  readonly accountTypes: { id: AccountType; label: string; hint: string }[] = [
+    {
+      id: 'individual',
+      label: 'Individual',
+      hint: 'Find, book and host events',
+    },
+    {
+      id: 'organization',
+      label: 'Organization',
+      hint: 'Host events as a team or company',
+    },
+  ];
+
+  constructor() {
+    // The organization name is only required for organization accounts.
+    this.registerForm.controls.account_type.valueChanges.subscribe((type) =>
+      this.syncOrganizationValidator(type),
+    );
+  }
+
+  get accountType(): AccountType {
+    return this.registerForm.controls.account_type.value ?? 'individual';
+  }
+
+  setAccountType(type: AccountType): void {
+    this.registerForm.controls.account_type.setValue(type);
+  }
+
+  private syncOrganizationValidator(type: AccountType | null): void {
+    const control = this.registerForm.controls.organization;
+
+    if (type === 'organization') {
+      control.setValidators(Validators.required);
+    } else {
+      control.clearValidators();
+      control.setValue('');
+    }
+
+    control.updateValueAndValidity();
+  }
 
   // --- Switch Tabs ---
   showLoginForm(): void {
@@ -87,6 +132,22 @@ export class Authentication {
     });
   }
 
+  private errorText(error: any, fallback: string): string {
+    const detail = error?.error?.detail;
+
+    if (typeof detail === 'string') {
+      return detail;
+    }
+
+    if (Array.isArray(detail) && detail.length > 0) {
+      return detail
+        .map((d) => `${(d.loc ?? []).slice(1).join('.') || 'field'}: ${d.msg}`)
+        .join(' | ');
+    }
+
+    return error?.error?.message ?? fallback;
+  }
+
   // --- REGISTER LOGIC ---
   onRegister(): void {
     console.log('🔥 onRegister() FIRED');
@@ -105,7 +166,21 @@ export class Authentication {
 
     this.loader = true;
 
-    const registerData = this.registerForm.value as RegModel;
+    const value = this.registerForm.getRawValue();
+
+    const registerData: RegModel = {
+      email: value.email!.trim(),
+      first_name: value.first_name!.trim(),
+      last_name: value.last_name!.trim(),
+      phone: value.phone!.trim(),
+      password: value.password!,
+      account_type: value.account_type!,
+      ...(value.account_type === 'organization'
+        ? { organization: value.organization!.trim() }
+        : {}),
+    };
+
+    this.registerError = '';
 
     console.log('📦 Registration payload:', registerData);
 
@@ -121,6 +196,10 @@ export class Authentication {
       error: (error) => {
         this.loader = false;
         console.error('❌ Registration API error:', error);
+        this.registerError = this.errorText(
+          error,
+          'We could not create your account. Please try again.',
+        );
       },
     });
   }

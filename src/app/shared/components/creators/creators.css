@@ -1,0 +1,43 @@
+/* swiper-container {
+  --swiper-navigation-size: 18px;
+  --swiper-navigation-color: #ffffff;
+
+  --swiper-pagination-color: #6b63ff;
+  --swiper-pagination-bullet-size: 8px;
+  --swiper-pagination-bullet-inactive-color: #1f3b6c;
+  --swiper-pagination-bullet-inactive-opacity: 0.25;
+
+  --swiper-pagination-bottom: 0px;
+
+  padding-bottom: 35px;
+}
+
+swiper-container::part(button-prev),
+swiper-container::part(button-next) {
+  width: 20px;
+  height: 20px;
+  padding: 15px;
+  background: #1f3b6c;
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+}
+
+swiper-container::part(button-prev):hover,
+swiper-container::part(button-next):hover {
+  background: #ff6b35;
+}
+
+swiper-container::part(pagination) {
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 5px;
+}
+
+swiper-container::part(bullet) {
+  transition: all 0.3s ease;
+}
+
+swiper-container::part(bullet-active) {
+  width: 22px;
+  border-radius: 9999px;
+} */

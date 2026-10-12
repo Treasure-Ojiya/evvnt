@@ -1,5 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  Subject,
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  of,
+  switchMap,
+} from 'rxjs';
+import { ExploreService } from '../../../core/services/explore-service/explore-service';
 
 @Component({
   selector: 'app-search-bar',
@@ -8,57 +20,82 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './search-bar.css',
 })
 export class SearchBar {
-  searchLocation = '';
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private exploreService = inject(ExploreService);
+
+  searchText = '';
   showDropdown = false;
-  filteredLocations: { state: string; city: string }[] = [];
+  eventSuggestions: string[] = [];
 
-  locations = [
-    { state: 'Lagos', city: 'Ikeja' },
-    { state: 'Lagos', city: 'Lekki' },
-    { state: 'Abuja', city: 'Garki' },
-    { state: 'Oyo', city: 'Ibadan' },
-    { state: 'Rivers', city: 'Port Harcourt' },
-    { state: 'Edo', city: 'Auchi' },
-    { state: 'Abuja', city: 'Wuse' },
-    { state: 'Delta', city: 'Warri' },
-    { state: 'Ebonyi', city: 'Abakaliki' },
-  ];
+  private typed$ = new Subject<string>();
 
-  // filterLocations() {
-  //   const query = this.searchLocation.toLowerCase();
-  //   this.filteredLocations = this.locations.filter(
-  //     (l) =>
-  //       l.state.toLowerCase().includes(query) ||
-  //       l.city.toLowerCase().includes(query)
-  //   );
-  //   this.showDropdown = this.filteredLocations.length > 0;
-  // }
+  constructor() {
+    // Keep the box in sync with the URL, so on /explore it shows the current
+    // search and clears when the search chip is removed.
+    this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((params) => {
+      this.searchText = params.get('search') ?? '';
+    });
 
-  filterLocations() {
-    const query = this.searchLocation.toLowerCase();
+    // Event title suggestions, using the same /events/?search= endpoint.
+    this.typed$
+      .pipe(
+        debounceTime(250),
+        distinctUntilChanged(),
+        switchMap((term) =>
+          term.length < 2
+            ? of<string[]>([])
+            : this.exploreService.getEvents({ search: term }).pipe(
+                map((events) =>
+                  [...new Set(events.map((e) => e.title))].slice(0, 5),
+                ),
+                catchError(() => of<string[]>([])),
+              ),
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe((titles) => (this.eventSuggestions = titles));
+  }
 
-    // If empty input → clear list + hide dropdown
-    if (!query.trim()) {
-      this.filteredLocations = [];
+  onInput(): void {
+    const term = this.searchText.trim();
+    this.typed$.next(term);
+
+    if (!term) {
+      this.eventSuggestions = [];
       this.showDropdown = false;
       return;
     }
 
-    this.filteredLocations = this.locations.filter(
-      (l) =>
-        l.state.toLowerCase().includes(query) ||
-        l.city.toLowerCase().includes(query)
-    );
-
-    this.showDropdown = this.filteredLocations.length > 0;
+    this.showDropdown = true;
   }
 
-  selectLocation(loc: { state: string; city: string }) {
-    this.searchLocation = `${loc.state}, ${loc.city}`;
-    this.showDropdown = false;
+  // Free text searches event titles.
+  submit(): void {
+    const text = this.searchText.trim();
+
+    if (!text) {
+      return;
+    }
+
+    this.go({ search: text });
   }
 
-  hideDropdown() {
+  selectEvent(title: string): void {
+    this.searchText = title;
+    this.go({ search: title });
+  }
+
+  hideDropdown(): void {
     setTimeout(() => (this.showDropdown = false), 100);
+  }
+
+  private go(queryParams: Record<string, string | null>): void {
+    this.showDropdown = false;
+
+    this.router.navigate(['/explore'], {
+      queryParams,
+      queryParamsHandling: 'merge',
+    });
   }
 }

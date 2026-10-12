@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EventList } from './event-list';
+import { Recommended } from './recommended';
 
-describe('EventList', () => {
-  let component: EventList;
-  let fixture: ComponentFixture<EventList>;
+describe('Recommended', () => {
+  let component: Recommended;
+  let fixture: ComponentFixture<Recommended>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EventList]
+      imports: [Recommended]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(EventList);
+    fixture = TestBed.createComponent(Recommended);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
