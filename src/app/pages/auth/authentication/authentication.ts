@@ -18,6 +18,9 @@ export class Authentication {
   backgroundSize = 'cover';
   backgroundPosition = 'center';
 
+  showPassword = false;
+  isLoginSubmitting = false;
+  isRegisterSubmitting = false;
   isLogin = true;
   loader = false;
 
@@ -25,13 +28,11 @@ export class Authentication {
   private formBuilder = inject(FormBuilder);
   private router = inject(Router);
 
-  // --- Login Form ---
   loginForm = this.formBuilder.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
-  // --- Register Form ---
   registerForm = this.formBuilder.group({
     first_name: ['', Validators.required],
     last_name: ['', Validators.required],
@@ -58,7 +59,6 @@ export class Authentication {
   ];
 
   constructor() {
-    // The organization name is only required for organization accounts.
     this.registerForm.controls.account_type.valueChanges.subscribe((type) =>
       this.syncOrganizationValidator(type),
     );
@@ -66,6 +66,10 @@ export class Authentication {
 
   get accountType(): AccountType {
     return this.registerForm.controls.account_type.value ?? 'individual';
+  }
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
   }
 
   setAccountType(type: AccountType): void {
@@ -85,7 +89,6 @@ export class Authentication {
     control.updateValueAndValidity();
   }
 
-  // --- Switch Tabs ---
   showLoginForm(): void {
     this.isLogin = true;
   }
@@ -94,39 +97,31 @@ export class Authentication {
     this.isLogin = false;
   }
 
-  // --- LOGIN LOGIC ---
   onLogin(): void {
-    console.log('onLogin() called');
-
-    if (this.loginForm.invalid) {
+    if (this.loginForm.invalid || this.isLoginSubmitting) {
       this.loginForm.markAllAsTouched();
       return;
     }
 
-    this.loader = true;
+    this.isLoginSubmitting = true;
 
-    const loginData = this.loginForm.value as LoginModel;
+    const loginData = this.loginForm.getRawValue() as LoginModel;
 
     this.authService.loginUser(loginData).subscribe({
       next: (res) => {
-        this.loader = false;
-
-        console.log('Response from backend:', res);
+        this.isLoginSubmitting = false;
 
         if (res.status === 'success') {
           localStorage.setItem('access_token', res.access_token);
-
           this.authService.setLoggedIn();
-
           this.router.navigate(['/home']);
         } else {
-          console.log('Login failed:', res.message);
+          console.error('Login failed:', res.message);
         }
       },
 
       error: (error) => {
-        this.loader = false;
-
+        this.isLoginSubmitting = false;
         console.error('Login API error:', error);
       },
     });
@@ -148,23 +143,14 @@ export class Authentication {
     return error?.error?.message ?? fallback;
   }
 
-  // --- REGISTER LOGIC ---
   onRegister(): void {
-    console.log('🔥 onRegister() FIRED');
-
-    console.log('Form value:', this.registerForm.value);
-    console.log('Form valid:', this.registerForm.valid);
-    console.log('Form errors:', this.registerForm.errors);
-
-    if (this.registerForm.invalid) {
-      console.log('❌ Form is invalid');
+    if (this.registerForm.invalid || this.isRegisterSubmitting) {
       this.registerForm.markAllAsTouched();
       return;
     }
 
-    console.log('✅ Form is valid — calling API');
-
-    this.loader = true;
+    this.isRegisterSubmitting = true;
+    this.registerError = '';
 
     const value = this.registerForm.getRawValue();
 
@@ -180,22 +166,20 @@ export class Authentication {
         : {}),
     };
 
-    this.registerError = '';
-
-    console.log('📦 Registration payload:', registerData);
-
     this.authService.registerUser(registerData).subscribe({
       next: (res) => {
-        this.loader = false;
-        console.log('✅ Register API response:', res);
+        this.isRegisterSubmitting = false;
 
+        console.log('Registration response:', res);
         alert('Registration successful! Please verify your email.');
         this.showLoginForm();
       },
 
       error: (error) => {
-        this.loader = false;
-        console.error('❌ Registration API error:', error);
+        this.isRegisterSubmitting = false;
+
+        console.error('Registration API error:', error);
+
         this.registerError = this.errorText(
           error,
           'We could not create your account. Please try again.',

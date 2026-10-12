@@ -67,7 +67,6 @@
         </button>
       </div>
 
-      <!-- Forms -->
       @if (isLogin) {
         <!-- Login Form -->
         <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
@@ -81,15 +80,35 @@
             />
           </div>
           <div>
-            <label class="block text-sm font-base text-ink mb-2"
-              >Password</label
-            >
-            <input
-              formControlName="password"
-              type="password"
-              placeholder="••••••••"
-              class="w-full px-4 py-1.5 rounded-lg border border-ink/60 placeholder:text-ink/50 focus:outline-none focus:ring-1 focus:ring-brand/30 focus:border-brand"
-            />
+            <label class="block text-sm font-base text-ink mb-2">
+              Password
+            </label>
+
+            <div class="relative flex items-center">
+              <input
+                formControlName="password"
+                [type]="showPassword ? 'text' : 'password'"
+                placeholder="••••••••"
+                class="w-full px-4 py-1.5 pr-12 rounded-lg border border-ink/60 placeholder:text-ink/50 focus:outline-none focus:ring-1 focus:ring-brand/30 focus:border-brand"
+              />
+
+              <button
+                type="button"
+                class="absolute right-3 inset-y-0 flex items-center justify-center focus:outline-none group"
+                (click)="togglePassword()"
+                aria-label="Toggle password visibility"
+              >
+                <img
+                  [src]="
+                    showPassword
+                      ? '/assets/icons/eye-hide.svg'
+                      : '/assets/icons/eye-view.svg'
+                  "
+                  alt=""
+                  class="w-5 h-5 opacity-60 group-hover:opacity-100 transition-opacity duration-200"
+                />
+              </button>
+            </div>
           </div>
           <div class="flex items-center justify-between">
             <div class="mb-3">
@@ -103,10 +122,19 @@
 
           <button
             type="submit"
-            class="block w-full bg-brand text-white py-1.5 rounded-md font-semibold hover:bg-brand-dark shadow-lg transition-all duration-300"
+            [disabled]="loginForm.invalid || isLoginSubmitting"
+            class="flex w-full items-center justify-center gap-2 bg-brand text-white py-2 rounded-md font-semibold hover:bg-brand-dark shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign In
+            @if (isLoginSubmitting) {
+              <span
+                class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
+              ></span>
+              <span>Signing in...</span>
+            } @else {
+              <span>Sign In</span>
+            }
           </button>
+
           <p class="mt-4 text-center text-sm text-gray-600">
             Don't have an account?
             <button
@@ -119,9 +147,7 @@
           </p>
         </form>
       } @else {
-        <!-- Register Form -->
         <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
-          <!-- Account type -->
           <div class="mb-5">
             <p
               id="account-type-label"
@@ -209,7 +235,7 @@
                 />
               </div>
             </div>
-            <div>
+            <div class="relative">
               <label class="block text-sm font-base text-ink mb-2">Email</label>
               <input
                 formControlName="email"
@@ -233,15 +259,35 @@
               />
             </div>
             <div>
-              <label class="block text-sm font-base text-ink mb-2"
-                >Password</label
-              >
-              <input
-                formControlName="password"
-                type="password"
-                placeholder="••••••••"
-                class="w-full px-4 py-1.5 rounded-lg border border-ink/60 placeholder:text-ink/50 focus:outline-none focus:ring-1 focus:ring-brand/30 focus:border-brand"
-              />
+              <label class="block text-sm font-base text-ink mb-2">
+                Password
+              </label>
+
+              <div class="relative flex items-center">
+                <input
+                  formControlName="password"
+                  [type]="showPassword ? 'text' : 'password'"
+                  placeholder="••••••••"
+                  class="w-full px-4 py-1.5 pr-12 rounded-lg border border-ink/60 placeholder:text-ink/50 focus:outline-none focus:ring-1 focus:ring-brand/30 focus:border-brand"
+                />
+
+                <button
+                  type="button"
+                  class="absolute right-3 inset-y-0 flex items-center justify-center focus:outline-none group"
+                  (click)="togglePassword()"
+                  aria-label="Toggle password visibility"
+                >
+                  <img
+                    [src]="
+                      showPassword
+                        ? '/assets/icons/eye-hide.svg'
+                        : '/assets/icons/eye-view.svg'
+                    "
+                    alt=""
+                    class="w-5 h-5 opacity-60 group-hover:opacity-100 transition-opacity duration-200"
+                  />
+                </button>
+              </div>
             </div>
           </div>
 
@@ -256,9 +302,17 @@
 
           <button
             type="submit"
-            class="block w-full bg-brand-dark text-white py-1.5 rounded-md font-semibold hover:bg-ink shadow-lg transition-all duration-300"
+            [disabled]="registerForm.invalid || isRegisterSubmitting"
+            class="flex w-full items-center justify-center gap-2 bg-brand-dark text-white py-2 rounded-md font-semibold hover:bg-ink shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Register
+            @if (isRegisterSubmitting) {
+              <span
+                class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
+              ></span>
+              <span>Creating account...</span>
+            } @else {
+              <span>Register</span>
+            }
           </button>
 
           <p class="mt-4 text-center text-sm text-gray-600">
