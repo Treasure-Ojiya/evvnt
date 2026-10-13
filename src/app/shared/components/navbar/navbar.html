@@ -23,7 +23,7 @@
         @for (link of navLinks; track link.path) {
           <a
             [routerLink]="link.path"
-            class="block md:inline-block p-4 font-semibold text-ink hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
+            class="block md:inline-block p-4 font-semibold text-white hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
             (click)="closeMenu()"
           >
             {{ link.label }}
@@ -35,7 +35,7 @@
           <button
             type="button"
             (click)="toggleCreateMenu($event)"
-            class="w-full md:w-auto text-left md:text-center block md:inline-block p-4 font-semibold text-ink hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
+            class="w-full md:w-auto text-left md:text-center block md:inline-block p-4 font-semibold text-white hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
           >
             Create
             <i

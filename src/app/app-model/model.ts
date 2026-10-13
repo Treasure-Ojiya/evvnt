@@ -86,10 +86,12 @@ export interface CreateEventModel {
   location: string;
   event_date: string;
   duration: string;
-  event_type: string;
-  video_url: string;
-  category_ids: string[];
-  ticket_types: CreateTicketTypeModel[];
+  event_type: 'free' | 'paid';
+  status: 'draft' | 'published';
+  featured: boolean;
+  image_url?: string | null;
+  category_ids?: string[]; // keep if backend accepts it
+  ticket_types?: CreateTicketTypeModel[];
 }
 
 export interface CreateTicketTypeModel {

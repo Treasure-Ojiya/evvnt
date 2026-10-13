@@ -28,7 +28,7 @@
             [ngClass]="
               statusFilter() === option.id
                 ? 'border-brand-dark bg-brand-dark text-white font-medium'
-                : 'border-gray-300 bg-white text-ink hover:border-brand'
+                : 'border-gray-300 bg-white text-ink hover:border-brand-dark'
             "
           >
             {{ option.label }}
@@ -39,29 +39,11 @@
 
     <a
       routerLink="/events/organizer/create-event"
-      class="inline-flex w-fit items-center rounded-full bg-brand-dark px-5 py-2 text-sm font-semibold text-white hover:bg-ink transition-colors"
+      class="inline-flex w-fit items-center rounded-full bg-brand px-5 py-2 text-sm font-semibold text-white hover:bg-brand-dark transition-colors"
     >
       + Create Event
     </a>
   </div>
-
-  @if (notice()) {
-    <p
-      class="mb-4 rounded-xl bg-success/10 px-4 py-3 text-sm text-success-dark"
-      role="status"
-    >
-      {{ notice() }}
-    </p>
-  }
-
-  @if (actionError()) {
-    <p
-      class="mb-4 rounded-xl border border-danger/30 bg-danger/5 px-4 py-3 text-sm text-danger-dark"
-      role="alert"
-    >
-      {{ actionError() }}
-    </p>
-  }
 
   @if (isLoading()) {
     <div class="space-y-3" aria-hidden="true">
@@ -499,12 +481,6 @@
               }
             </div>
           </div>
-        }
-
-        @if (editNotice()) {
-          <p class="mt-4 text-sm text-success-dark" role="status">
-            {{ editNotice() }}
-          </p>
         }
 
         @if (editError()) {

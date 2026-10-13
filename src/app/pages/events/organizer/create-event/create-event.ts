@@ -39,6 +39,7 @@ import {
 } from '../../../../app-model/model';
 
 import { CreateService } from '../../../../core/services/create-service/create-service';
+import { ToastService } from '../../../../core/services/toast-service/toast-service';
 
 @Component({
   selector: 'app-create-event',
@@ -65,6 +66,7 @@ export class CreateEvent implements OnInit {
   private formBuilder = inject(FormBuilder);
   private eventService = inject(CreateService);
   private router = inject(Router);
+  private toast = inject(ToastService);
   private cdr = inject(ChangeDetectorRef);
 
   // =========================
@@ -133,26 +135,10 @@ export class CreateEvent implements OnInit {
   // Lifecycle
   // =========================
 
-  constructor() {
-    // Ticket rows only apply to paid events. While they are enabled, their
-    // required fields block a free event from being submitted.
-    this.syncTicketTypes(this.eventForm.controls.event_type.value);
-
-    this.eventForm.controls.event_type.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((type) => this.syncTicketTypes(type));
-  }
+  constructor() {}
 
   ngOnInit(): void {
     this.loadCategories();
-  }
-
-  private syncTicketTypes(type: string | null): void {
-    if (type === 'paid') {
-      this.ticketTypes.enable();
-    } else {
-      this.ticketTypes.disable();
-    }
   }
 
   // =========================
@@ -271,15 +257,21 @@ export class CreateEvent implements OnInit {
         this.showCreateCategory = false;
 
         this.isCreatingCategory = false;
+        this.toast.show(`Category "${category.name}" added.`, 'success');
+        this.cdr.markForCheck();
       },
 
       error: (error) => {
         console.error('Failed to create category:', error);
 
-        this.categoryError =
-          'Unable to create this category. Please try again.';
+        this.toast.show(
+          this.errorText(error, 'Unable to create this category.'),
+          'error',
+          5000,
+        );
 
         this.isCreatingCategory = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -360,9 +352,6 @@ export class CreateEvent implements OnInit {
     this.formError = '';
 
     this.eventForm.markAllAsTouched();
-
-    // Free events have no ticket rows (they are disabled, so they are not
-    // checked). Paid events need every ticket row filled in.
     if (this.eventForm.invalid) {
       const missing = this.invalidFieldLabels();
 
@@ -389,30 +378,24 @@ export class CreateEvent implements OnInit {
       host_name: formValue.host_name!.trim(),
       description: formValue.description!.trim(),
       location: formValue.location!.trim(),
-
       event_date: this.buildEventDate(
         formValue.event_date!,
         formValue.event_time!,
       ),
-
       duration: formValue.duration!.trim(),
-      event_type: formValue.event_type!,
-      video_url: '', // video is uploaded as a file, not a URL
+      event_type: formValue.event_type as 'free' | 'paid',
+      status: publish ? 'published' : 'draft',
+      featured: false,
       category_ids: formValue.category_ids ?? [],
-
-      ticket_types:
-        formValue.event_type === 'paid'
-          ? formValue.ticket_types.map(
-              (ticket): CreateTicketTypeModel => ({
-                name: ticket['name']!.trim(),
-                price: Number(ticket['price']),
-                total_quantity: Number(ticket['total_quantity']),
-              }),
-            )
-          : [],
+      ticket_types: formValue.ticket_types.map(
+        (ticket): CreateTicketTypeModel => ({
+          name: ticket['name']!.trim(),
+          price: Number(ticket['price']),
+          total_quantity: Number(ticket['total_quantity']),
+        }),
+      ),
     };
 
-    // Create the event once, then optionally publish it.
     const event$ = this.createdEventId
       ? of(this.createdEventId)
       : this.eventService
@@ -437,20 +420,30 @@ export class CreateEvent implements OnInit {
           this.createdEventId = null;
           this.cdr.markForCheck();
 
-          // Manage Events is where organizers edit, publish and review events.
+          this.toast.show(
+            publish ? 'Event published.' : 'Draft saved.',
+            'success',
+          );
           this.router.navigate(['/events/organizer/manage-events']);
         },
 
         error: (error) => {
           console.error('Create or publish failed:', error);
 
-          // Show what the server actually said, not just a generic line.
-          this.formError = this.createdEventId
-            ? `Your event was saved as a draft, but it could not be published: ${this.errorText(error, 'please try again')}`
-            : this.errorText(
-                error,
-                'Something went wrong while creating your event.',
-              );
+          // Missing fields stay on the form as an inline message. Problems
+          // reported by the server are shown as a toast.
+          this.formError = '';
+
+          this.toast.show(
+            this.createdEventId
+              ? `Your event was saved as a draft, but it could not be published: ${this.errorText(error, 'please try again')}`
+              : this.errorText(
+                  error,
+                  'Something went wrong while creating your event.',
+                ),
+            'error',
+            6000,
+          );
 
           this.isSubmitting = false;
           this.submitMode = null;
@@ -458,10 +451,6 @@ export class CreateEvent implements OnInit {
         },
       });
   }
-
-  // =========================
-  // Validation messages
-  // =========================
 
   private readonly fieldLabels: Record<string, string> = {
     title: 'Title',
@@ -480,14 +469,13 @@ export class CreateEvent implements OnInit {
       .filter(([name]) => this.eventForm.get(name)?.invalid)
       .map(([, label]) => label);
 
-    if (this.ticketTypes.enabled && this.ticketTypes.invalid) {
+    if (this.ticketTypes.invalid) {
       labels.push('Ticket details');
     }
 
     return labels;
   }
 
-  // Brings the first problem field into view, since the form is long.
   private scrollToFirstError(): void {
     setTimeout(() => {
       const field = document.querySelector<HTMLElement>(
@@ -499,7 +487,6 @@ export class CreateEvent implements OnInit {
     }, 0);
   }
 
-  // The backend reports problems in `detail`: a string, or a list of field errors.
   private errorText(error: any, fallback: string): string {
     const detail = error?.error?.detail;
 
@@ -515,10 +502,6 @@ export class CreateEvent implements OnInit {
 
     return error?.error?.message ?? fallback;
   }
-
-  // =========================
-  // Build API Date
-  // =========================
 
   private buildEventDate(date: Date, time: string): string {
     const [hours, minutes] = time.split(':').map(Number);

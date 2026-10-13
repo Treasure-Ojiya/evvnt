@@ -291,15 +291,6 @@
             </div>
           </div>
 
-          @if (registerError) {
-            <p
-              class="mb-4 rounded-lg border border-danger/30 bg-danger/5 px-3 py-2 text-sm text-danger-dark"
-              role="alert"
-            >
-              {{ registerError }}
-            </p>
-          }
-
           <button
             type="submit"
             [disabled]="registerForm.invalid || isRegisterSubmitting"

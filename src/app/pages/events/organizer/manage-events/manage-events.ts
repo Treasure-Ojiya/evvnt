@@ -17,6 +17,7 @@ import {
 } from '../../../../app-model/model';
 import { ExploreService } from '../../../../core/services/explore-service/explore-service';
 import { CreateService } from '../../../../core/services/create-service/create-service';
+import { ToastService } from '../../../../core/services/toast-service/toast-service';
 import {
   ConfirmModal,
   ConfirmModalData,
@@ -48,6 +49,7 @@ export class ManageEvents {
   private createService = inject(CreateService);
   private formBuilder = inject(FormBuilder);
   private dialog = inject(MatDialog);
+  private toast = inject(ToastService);
 
   // =========================
   // List state
@@ -56,9 +58,6 @@ export class ManageEvents {
   events = signal<EventListItem[]>([]);
   isLoading = signal(true);
   loadError = signal('');
-  actionError = signal('');
-  notice = signal('');
-
   // GET /events/me returns every event the user owns and takes no
   // parameters, so search and the status chips filter the list here.
   query = signal('');
@@ -102,8 +101,9 @@ export class ManageEvents {
   isSaving = signal(false);
   isChangingCover = signal(false);
   savingTicketId = signal<string | null>(null);
+  // Problems inside the edit panel (a missing field, a load failure).
+  // Results of saves and other actions are shown as toasts.
   editError = signal('');
-  editNotice = signal('');
 
   coverUrl = signal<string | null>(null);
   tickets = signal<EditableTicket[]>([]);
@@ -184,8 +184,6 @@ export class ManageEvents {
 
   private publish(event: EventListItem): void {
     this.publishingId.set(event.uuid);
-    this.actionError.set('');
-    this.notice.set('');
 
     this.createService.publishEvent(event.uuid).subscribe({
       next: (updated) => {
@@ -194,13 +192,15 @@ export class ManageEvents {
             e.uuid === updated.uuid ? { ...e, status: updated.status } : e,
           ),
         );
-        this.notice.set(`"${updated.title}" is now live.`);
+        this.toast.show(`"${updated.title}" is now live.`, 'success');
         this.publishingId.set(null);
       },
       error: (error) => {
         console.error('Publish failed:', error);
-        this.actionError.set(
+        this.toast.show(
           this.errorText(error, 'Could not publish this event.'),
+          'error',
+          5000,
         );
         this.publishingId.set(null);
       },
@@ -223,19 +223,19 @@ export class ManageEvents {
 
   private delete(event: EventListItem): void {
     this.deletingId.set(event.uuid);
-    this.actionError.set('');
-    this.notice.set('');
 
     this.createService.deleteEvent(event.uuid).subscribe({
       next: () => {
         this.events.update((list) => list.filter((e) => e.uuid !== event.uuid));
-        this.notice.set(`"${event.title}" was deleted.`);
+        this.toast.show(`"${event.title}" was deleted.`, 'success');
         this.deletingId.set(null);
       },
       error: (error) => {
         console.error('Delete failed:', error);
-        this.actionError.set(
+        this.toast.show(
           this.errorText(error, 'Could not delete this event.'),
+          'error',
+          5000,
         );
         this.deletingId.set(null);
       },
@@ -246,7 +246,6 @@ export class ManageEvents {
     this.editingId.set(event.uuid);
     this.isLoadingEdit.set(true);
     this.editError.set('');
-    this.editNotice.set('');
     this.coverUrl.set(null);
     this.tickets.set([]);
 
@@ -322,14 +321,16 @@ export class ManageEvents {
               : e,
           ),
         );
-        this.notice.set(`Saved changes to "${updated.title}".`);
+        this.toast.show(`Saved changes to "${updated.title}".`, 'success');
         this.isSaving.set(false);
         this.closeEdit();
       },
       error: (error) => {
         console.error('Save failed:', error);
-        this.editError.set(
+        this.toast.show(
           this.errorText(error, 'Could not save your changes.'),
+          'error',
+          5000,
         );
         this.isSaving.set(false);
       },
@@ -346,19 +347,20 @@ export class ManageEvents {
 
     this.isChangingCover.set(true);
     this.editError.set('');
-    this.editNotice.set('');
 
     this.createService.updateEventImage(id, file).subscribe({
       next: (updated) => {
         this.coverUrl.set(updated.image_url ?? this.coverUrl());
-        this.editNotice.set('Cover image updated.');
+        this.toast.show('Cover image updated.', 'success');
         this.isChangingCover.set(false);
         input.value = '';
       },
       error: (error) => {
         console.error('Cover update failed:', error);
-        this.editError.set(
+        this.toast.show(
           this.errorText(error, 'Could not update the cover image.'),
+          'error',
+          5000,
         );
         this.isChangingCover.set(false);
         input.value = '';
@@ -394,7 +396,6 @@ export class ManageEvents {
 
     this.savingTicketId.set(ticket.uuid);
     this.editError.set('');
-    this.editNotice.set('');
 
     this.createService.updateTicketType(id, ticket.uuid, changes).subscribe({
       next: (updated) => {
@@ -408,13 +409,15 @@ export class ManageEvents {
           );
         }
 
-        this.editNotice.set(`Ticket "${changes.name}" updated.`);
+        this.toast.show(`Ticket "${changes.name}" updated.`, 'success');
         this.savingTicketId.set(null);
       },
       error: (error) => {
         console.error('Ticket update failed:', error);
-        this.editError.set(
+        this.toast.show(
           this.errorText(error, 'Could not update this ticket.'),
+          'error',
+          5000,
         );
         this.savingTicketId.set(null);
       },

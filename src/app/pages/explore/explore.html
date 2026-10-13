@@ -134,7 +134,7 @@
             </div>
           </fieldset>
 
-          <label
+          <!-- <label
             class="flex items-center gap-3 text-sm text-ink cursor-pointer"
           >
             <input
@@ -144,7 +144,7 @@
               (change)="setFeatured(!featuredOnly())"
             />
             Featured events only
-          </label>
+          </label> -->
         </div>
 
         <!-- Mobile apply -->
@@ -213,7 +213,7 @@
                 type="button"
                 (click)="chip.clear()"
                 [attr.aria-label]="'Remove filter ' + chip.label"
-                class="inline-flex items-center gap-1.5 rounded-full bg-brand/10 text-brand pl-3 pr-2 py-1 text-sm font-medium hover:bg-brand hover:text-white transition-colors"
+                class="inline-flex items-center gap-1.5 rounded-full bg-brand/10 text-brand pl-3 pr-2 py-1 text-sm font-medium hover:bg-brand-dark hover:text-white transition-colors"
               >
                 {{ chip.label }}
                 <svg
@@ -274,7 +274,7 @@
               <button
                 type="button"
                 (click)="retry()"
-                class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-ink transition-colors"
+                class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors"
               >
                 Try again
               </button>
@@ -303,7 +303,7 @@
               <button
                 type="button"
                 (click)="clearAll()"
-                class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-ink transition-colors"
+                class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors"
               >
                 Clear search and filters
               </button>

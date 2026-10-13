@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+/*
+Project color palette.
+
+Given colors: nav yellow #fbd046, cream #efecd9, blue #1c8cc8.
+Everything else is derived from those three, or is a meaning color.
+If unsure which to use, use ink or brand.
+*/
+@theme {
+  /* Navbar background. Text on it is always ink (dark), never white. */
+  --color-nav: #fbd046;
+
+  /* Page background. White cards sit on top of it. */
+  --color-surface: #efecd9;
+
+  /* Action: the only interactive color (buttons, links, focus, active tabs).
+     White text on brand is 3.7:1, fine for large or bold text. For small
+     text on a brand fill, use brand-dark. */
+  --color-brand: #1c8cc8;
+  --color-brand-dark: #126a97; /* hover for brand fills, and links on cream/white (5:1) */
+  --color-brand-soft: #e3f1f9; /* very light tint for backgrounds and icon circles */
+
+  /* Structure: headings, body text, footer, date tiles, outline buttons.
+     A deep navy taken from the blue, since the palette has no dark color. */
+  --color-ink: #10324a;
+
+  /* Meaning only. Never for decoration or hover states */
+  --color-accent: #fbd046; /* badges (Featured, Free) and "pending". Text on it is ink. */
+  --color-success: #00bfa6; /* paid, available, active */
+  --color-danger: #ff3b30; /* errors, sold out */
+
+  /* Darker shades for TEXT on white, cream or tinted backgrounds.
+     The bright versions are too light to read at small sizes.
+     Pattern: bg-success/10 text-success-dark */
+  --color-accent-dark: #7a5a00;
+  --color-success-dark: #007f6e;
+  --color-danger-dark: #d92d20;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.section-container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 90rem; /* same as max-w-7xl */
+  padding-left: 1.5rem; /* same as px-6 */
+  padding-right: 1.5rem;
+}
+
+/* Responsive versions */
+@media (min-width: 640px) {
+  /* sm */
+  .section-container {
+    padding-left: 2rem; /* same as sm:px-8 */
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* lg */
+  .section-container {
+    padding-left: 1.5rem; /* same as lg:px-10 */
+    padding-right: 1.5rem;
+  }
+}
+
+/* Fix Material Datepicker background */
+.mat-datepicker-content {
+  background-color: #ffffff !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 20px rgba(16, 50, 74, 0.15) !important;
+}
+
+.mat-datepicker-content .mat-calendar {
+  background-color: #ffffff !important;
+  border-radius: 16px !important;
+}
+
+.mat-calendar {
+  background-color: #ffffff !important;
+  color: var(--color-ink) !important;
+}
+
+/* ---------------------------------------------------------------
+   Swiper sliders (Featured, Recommended, Creators)
+   Global on purpose: the pagination lives inside the
+   swiper-container's shadow DOM, so it can only be styled through
+   CSS variables and ::part().
+   The prev/next arrows are not styled here: each slider has its own
+   buttons in its header, next to "See more".
+---------------------------------------------------------------- */
+swiper-container {
+  --swiper-pagination-color: var(--color-brand);
+  --swiper-pagination-bullet-size: 8px;
+  --swiper-pagination-bullet-inactive-color: var(--color-ink);
+  --swiper-pagination-bullet-inactive-opacity: 0.25;
+  --swiper-pagination-bottom: 4px;
+}
+
+/* Room under the cards for the dots.
+   This has to go on the inner container, not on swiper-container itself:
+   the dots are positioned inside it, so padding on the outer element
+   leaves them sitting on top of the cards. It also stops the card hover
+   shadow from being clipped at the bottom. */
+swiper-container::part(container) {
+  padding-bottom: 40px;
+}
+
+/* Pagination container */
+swiper-container::part(pagination) {
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 5px;
+}
+
+/* Pagination bullets */
+swiper-container::part(bullet) {
+  transition: all 0.3s ease;
+}
+
+swiper-container::part(bullet-active) {
+  width: 22px;
+  border-radius: 9999px;
+}

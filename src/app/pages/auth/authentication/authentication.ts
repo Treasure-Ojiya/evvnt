@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, Validators, FormBuilder } from '@angular/forms';
 
 import { AuthService } from '../../../core/services/auth-service/auth-service';
+import { ToastService } from '../../../core/services/toast-service/toast-service';
 import { AccountType, LoginModel, RegModel } from '../../../app-model/model';
 
 @Component({
@@ -25,6 +26,7 @@ export class Authentication {
   loader = false;
 
   private authService = inject(AuthService);
+  private toastService = inject(ToastService);
   private formBuilder = inject(FormBuilder);
   private router = inject(Router);
 
@@ -42,8 +44,6 @@ export class Authentication {
     account_type: ['individual' as AccountType, Validators.required],
     organization: [''],
   });
-
-  registerError = '';
 
   readonly accountTypes: { id: AccountType; label: string; hint: string }[] = [
     {
@@ -114,15 +114,29 @@ export class Authentication {
         if (res.status === 'success') {
           localStorage.setItem('access_token', res.access_token);
           this.authService.setLoggedIn();
+          this.toastService.show('Signed in successfully.', 'success');
           this.router.navigate(['/home']);
         } else {
           console.error('Login failed:', res.message);
+          this.toastService.show(
+            res.message || 'Login failed. Please try again.',
+            'error',
+            5000,
+          );
         }
       },
 
       error: (error) => {
         this.isLoginSubmitting = false;
         console.error('Login API error:', error);
+        this.toastService.show(
+          this.errorText(
+            error,
+            'We could not sign you in. Please check your details and try again.',
+          ),
+          'error',
+          5000,
+        );
       },
     });
   }
@@ -150,7 +164,6 @@ export class Authentication {
     }
 
     this.isRegisterSubmitting = true;
-    this.registerError = '';
 
     const value = this.registerForm.getRawValue();
 
@@ -171,7 +184,11 @@ export class Authentication {
         this.isRegisterSubmitting = false;
 
         console.log('Registration response:', res);
-        alert('Registration successful! Please verify your email.');
+        this.toastService.show(
+          'Account created! Please verify your email, login.',
+          'success',
+          6000,
+        );
         this.showLoginForm();
       },
 
@@ -180,9 +197,13 @@ export class Authentication {
 
         console.error('Registration API error:', error);
 
-        this.registerError = this.errorText(
-          error,
-          'We could not create your account. Please try again.',
+        this.toastService.show(
+          this.errorText(
+            error,
+            'We could not create your account. Please try again.',
+          ),
+          'error',
+          6000,
         );
       },
     });
