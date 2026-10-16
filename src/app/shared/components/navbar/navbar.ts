@@ -31,7 +31,7 @@ export class Navbar implements OnInit {
   showDropdown = false;
   showNavbar = true;
   createMenuOpen = false;
-  mobileSearchOpen = false;
+  searchOpen = false;
 
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -116,26 +116,41 @@ export class Navbar implements OnInit {
     this.menuOpen = !this.menuOpen;
   }
 
-  toggleMobileSearch(): void {
-    this.mobileSearchOpen = !this.mobileSearchOpen;
+  toggleSearch(event: Event): void {
+    event.stopPropagation();
+    this.searchOpen = !this.searchOpen;
+    this.menuOpen = false;
+    this.showDropdown = false;
+    this.createMenuOpen = false;
+  }
+
+  closeSearch(): void {
+    this.searchOpen = false;
   }
 
   closeMenu(): void {
     this.menuOpen = false;
     this.createMenuOpen = false;
-    this.mobileSearchOpen = false;
+    this.searchOpen = false;
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.searchOpen = false;
   }
 
   toggleDropdown(event: Event) {
     event.stopPropagation();
     this.showDropdown = !this.showDropdown;
     this.createMenuOpen = false;
+    this.searchOpen = false;
   }
 
   toggleCreateMenu(event: Event): void {
     event.stopPropagation();
     this.createMenuOpen = !this.createMenuOpen;
     this.showDropdown = false;
+    this.searchOpen = false;
   }
   closeDropdown() {
     this.showDropdown = false;
@@ -152,7 +167,7 @@ export class Navbar implements OnInit {
       this.menuOpen = false;
       this.showDropdown = false;
       this.createMenuOpen = false;
-      this.mobileSearchOpen = false;
+      this.searchOpen = false;
     }
   }
 }

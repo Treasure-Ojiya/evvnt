@@ -1,4 +1,11 @@
-import { Component, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  inject,
+  output,
+  viewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -19,10 +26,15 @@ import { ExploreService } from '../../../core/services/explore-service/explore-s
   templateUrl: './search-bar.html',
   styleUrl: './search-bar.css',
 })
-export class SearchBar {
+export class SearchBar implements AfterViewInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private exploreService = inject(ExploreService);
+
+  // Tells the navbar to close its search dropdown after a search.
+  searched = output<void>();
+
+  private searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
   searchText = '';
   showDropdown = false;
@@ -90,6 +102,11 @@ export class SearchBar {
     setTimeout(() => (this.showDropdown = false), 100);
   }
 
+  // The box opens inside a dropdown, so put the cursor in it straight away.
+  ngAfterViewInit(): void {
+    setTimeout(() => this.searchInput()?.nativeElement.focus());
+  }
+
   private go(queryParams: Record<string, string | null>): void {
     this.showDropdown = false;
 
@@ -97,5 +114,7 @@ export class SearchBar {
       queryParams,
       queryParamsHandling: 'merge',
     });
+
+    this.searched.emit();
   }
 }

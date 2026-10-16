@@ -14,12 +14,12 @@ import { ToastService } from '../../../core/services/toast-service/toast-service
       @for (toast of toastService.toasts(); track toast.id) {
         <div
           role="status"
-          class="cursor-pointer rounded-lg px-4 py-3 text-sm font-bold shadow-lg transition-all duration-300 "
+          class="cursor-pointer rounded-lg px-4 py-3 text-sm font-bold shadow-lg transition-all duration-300"
           [ngClass]="{
-            'bg-success-dark text-white': toast.type === 'success',
-            'bg-danger-dark text-white': toast.type === 'error',
-            'bg-brand-dark text-white': toast.type === 'info',
-            'bg-accent text-ink': toast.type === 'warning',
+            'bg-success-dark text-white!': toast.type === 'success',
+            'bg-danger-dark text-white!': toast.type === 'error',
+            'bg-brand-dark text-white!': toast.type === 'info',
+            'bg-accent text-ink!': toast.type === 'warning',
           }"
           (click)="toastService.remove(toast.id)"
         >

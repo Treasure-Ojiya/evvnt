@@ -7,13 +7,11 @@
       class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between"
     >
       <!-- Logo -->
-      <!-- The logo file is white, so brightness-0 turns it black on the yellow bar.
-           Replace with a dark logo file and remove the class when you have one. -->
       <a routerLink="/home" class="shrink-0">
         <img
           src="assets/logo/evvnt-logo-white-1.png"
           alt="EVVNT Logo"
-          class="block w-20 h-auto brightness-0"
+          class="block w-20 h-auto"
         />
       </a>
 
@@ -68,94 +66,106 @@
         </div>
       </nav>
 
-      <!-- Desktop Search -->
-      <div class="hidden md:block">
-        <app-search-bar></app-search-bar>
-      </div>
+      <!-- Right side: search icon, profile (desktop), menu (mobile) -->
+      <div class="flex items-center gap-1 md:gap-3">
+        <!-- Search: an icon that opens a dropdown -->
+        <div class="relative">
+          <button
+            type="button"
+            aria-label="Search events"
+            [attr.aria-expanded]="searchOpen"
+            (click)="toggleSearch($event)"
+            class="flex h-10 w-10 items-center justify-center rounded-full text-white transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-accent"
+            [ngClass]="{ 'bg-white/15': searchOpen }"
+          >
+            @if (searchOpen) {
+              <svg
+                viewBox="0 0 24 24"
+                class="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            } @else {
+              <svg
+                viewBox="0 0 24 24"
+                class="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20l-3.5-3.5" />
+              </svg>
+            }
+          </button>
 
-      <!-- Desktop Profile -->
-      <div class="hidden md:flex items-center">
-        <div class="relative" (click)="toggleDropdown($event)">
-          <img
-            src="assets/icons/profile.svg"
-            alt="Profile"
-            class="cursor-pointer w-10 h-auto brightness-0"
-          />
-
-          @if (showDropdown) {
+          @if (searchOpen) {
             <div
-              class="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg py-2 z-50 text-ink"
+              class="fixed inset-x-4 top-16 z-50 rounded-2xl bg-white p-3 shadow-xl md:absolute md:inset-x-auto md:right-0 md:top-full md:mt-2 md:w-96"
               (click)="$event.stopPropagation()"
             >
-              @if (!isLoggedIn) {
-                <a
-                  (click)="goToAuth(); closeDropdown()"
-                  class="block px-4 py-2 hover:bg-brand-soft cursor-pointer"
-                >
-                  Login / Register
-                </a>
-              } @else {
-                <button
-                  (click)="logout(); closeDropdown()"
-                  class="block w-full text-left px-4 py-2 hover:bg-brand-soft cursor-pointer"
-                >
-                  Logout
-                </button>
-
-                <a
-                  routerLink="/profile"
-                  (click)="closeDropdown()"
-                  class="block px-4 py-2 hover:bg-brand-soft cursor-pointer"
-                >
-                  Profile
-                </a>
-              }
+              <app-search-bar (searched)="closeSearch()"></app-search-bar>
             </div>
           }
         </div>
-      </div>
 
-      <!-- Mobile Actions -->
-      <div class="flex md:hidden items-center gap-3">
-        <!-- Search Icon -->
-        <button
-          type="button"
-          aria-label="Search"
-          class="w-10 h-10 flex items-center justify-center text-ink text-xl"
-          (click)="toggleMobileSearch()"
-        >
-          @if (mobileSearchOpen) {
-            <i class="fas fa-times"></i>
-          } @else {
+        <div class="hidden md:flex items-center">
+          <div class="relative" (click)="toggleDropdown($event)">
             <img
-              src="assets/icons/search.svg"
-              alt="Search"
-              class="w-6 h-6 brightness-0"
+              src="assets/icons/profile.svg"
+              alt="Profile"
+              class="cursor-pointer w-10 h-auto"
             />
-          }
-        </button>
 
-        <!-- Hamburger -->
+            @if (showDropdown) {
+              <div
+                class="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg py-2 z-50 text-ink"
+                (click)="$event.stopPropagation()"
+              >
+                @if (!isLoggedIn) {
+                  <a
+                    (click)="goToAuth(); closeDropdown()"
+                    class="block px-4 py-2 hover:bg-brand-soft cursor-pointer"
+                  >
+                    Login / Register
+                  </a>
+                } @else {
+                  <button
+                    (click)="logout(); closeDropdown()"
+                    class="block w-full text-left px-4 py-2 hover:bg-brand-soft cursor-pointer"
+                  >
+                    Logout
+                  </button>
+
+                  <a
+                    routerLink="/profile"
+                    (click)="closeDropdown()"
+                    class="block px-4 py-2 hover:bg-brand-soft cursor-pointer"
+                  >
+                    Profile
+                  </a>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Hamburger (mobile) -->
         <button
           type="button"
           aria-label="Menu"
-          class="w-10 h-10 flex items-center justify-center text-ink text-2xl focus:outline-none transition-all duration-300"
+          class="flex h-10 w-10 items-center justify-center text-2xl text-white transition-all duration-300 focus:outline-none md:hidden"
           (click)="toggleMenu()"
         >
           <i class="fas" [ngClass]="menuOpen ? 'fa-times' : 'fa-bars'"></i>
         </button>
-      </div>
-    </div>
-
-    <div
-      class="md:hidden absolute top-full left-0 w-full overflow-hidden transition-all duration-500 ease-in-out"
-      [ngClass]="{
-        'max-h-0 opacity-0 pointer-events-none': !mobileSearchOpen,
-        'max-h-24 opacity-100 pointer-events-auto': mobileSearchOpen,
-      }"
-    >
-      <div class="px-4 pb-3 pt-1 bg-nav">
-        <app-search-bar></app-search-bar>
       </div>
     </div>
 

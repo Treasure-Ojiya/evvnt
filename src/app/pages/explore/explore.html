@@ -159,7 +159,7 @@
 
       <!-- RESULTS -->
       <main class="flex-1 min-w-0">
-        <!-- Heading + mobile filters button (search lives in the navbar) -->
+        <!-- Heading + mobile filters button -->
         <div class="flex items-center justify-between gap-3">
           <h1 class="text-2xl font-bold text-ink lg:sr-only">Explore</h1>
 
@@ -177,6 +177,54 @@
               </span>
             }
           </button>
+        </div>
+
+        <!-- Search -->
+        <div class="relative mt-5">
+          <svg
+            viewBox="0 0 24 24"
+            class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <path d="M20 20l-3.5-3.5" />
+          </svg>
+
+          <input
+            type="search"
+            [value]="searchText()"
+            (input)="onSearchInput($event)"
+            (keydown.enter)="onSearchEnter()"
+            placeholder="Search events by name"
+            aria-label="Search events"
+            autocomplete="off"
+            class="w-full rounded-full border border-gray-300 bg-white py-3 pl-12 pr-11 text-sm text-ink placeholder:text-gray-400 focus:outline-2 focus:outline-brand [&::-webkit-search-cancel-button]:hidden"
+          />
+
+          @if (searchText()) {
+            <button
+              type="button"
+              (click)="clearSearchBox()"
+              aria-label="Clear search"
+              class="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-gray-500 hover:bg-brand-soft hover:text-ink transition-colors"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                class="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <path d="M7 7l10 10M17 7L7 17" />
+              </svg>
+            </button>
+          }
         </div>
 
         <!-- Result bar -->

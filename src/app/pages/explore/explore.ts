@@ -21,6 +21,7 @@ import {
   forkJoin,
   map,
   of,
+  Subject,
   switchMap,
   tap,
   throwError,
@@ -62,6 +63,11 @@ export class Explore {
     this.listenForEventRequests();
     this.loadMyBookedEvents();
 
+    // Typing updates the URL after a short pause; the URL then drives the list.
+    this.searchTyped$
+      .pipe(debounceTime(350), distinctUntilChanged(), takeUntilDestroyed())
+      .subscribe((value) => this.pushSearch(value));
+
     // Any change to what is listed starts the list from the first page again.
     effect(() => {
       this.dateRange();
@@ -86,6 +92,13 @@ export class Explore {
   // =========================
 
   query = signal('');
+
+  // What is typed in the page's own search box. It is kept apart from `query`
+  // (which comes from the URL) so typing is never overwritten while the URL
+  // catches up.
+  searchText = signal('');
+  private lastPushedSearch = '';
+  private searchTyped$ = new Subject<string>();
   dateRange = signal<DateRange>('any');
   categoryId = signal('');
   price = signal<PriceFilter>('any');
@@ -215,7 +228,16 @@ export class Explore {
       const eventType = params.get('event_type');
       const date = params.get('date');
 
-      this.query.set(params.get('search') ?? '');
+      const search = params.get('search') ?? '';
+
+      this.query.set(search);
+
+      // A change that did not come from this box (the navbar search, a link,
+      // removing the filter chip) updates what the box shows.
+      if (search !== this.lastPushedSearch) {
+        this.lastPushedSearch = search;
+        this.searchText.set(search);
+      }
       this.dateRange.set(
         this.dateOptions.some((o) => o.id === date)
           ? (date as DateRange)
@@ -323,6 +345,30 @@ export class Explore {
     const pool = available.length ? available : event.ticket_types;
 
     return pool.length ? Math.min(...pool.map((t) => t.price)) : null;
+  }
+
+  onSearchInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+
+    this.searchText.set(value);
+    this.searchTyped$.next(value);
+  }
+
+  // Enter searches straight away instead of waiting for the pause.
+  onSearchEnter(): void {
+    this.pushSearch(this.searchText());
+  }
+
+  clearSearchBox(): void {
+    this.searchText.set('');
+    this.pushSearch('');
+  }
+
+  private pushSearch(value: string): void {
+    const search = value.trim();
+
+    this.lastPushedSearch = search;
+    this.updateParams({ search: search || null });
   }
 
   onSort(event: Event): void {
