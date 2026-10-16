@@ -2,6 +2,7 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth-service/auth-service';
+import { environment } from '../../../environments/environment';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
@@ -10,12 +11,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   if (
     !accessToken ||
-    !req.url.startsWith('https://evvent-api.onrender.com') ||
-    req.url.endsWith('/auth/refresh')
+    !req.url.startsWith(environment.BASE_URL) ||
+    req.url.endsWith('/auth/refresh') ||
+    req.url.endsWith('/auth/logout')
   ) {
     return next(req);
   }
-
   const authReq = req.clone({
     setHeaders: {
       Authorization: `Bearer ${accessToken}`,
@@ -43,7 +44,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         }),
 
         catchError((refreshError) => {
-          authService.logoutUser();
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          localStorage.removeItem('user');
+          authService.setLoggedOut();
 
           return throwError(() => refreshError);
         }),

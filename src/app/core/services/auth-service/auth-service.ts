@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, finalize } from 'rxjs';
+import { BehaviorSubject, Observable, finalize, of, throwError } from 'rxjs';
 import {
   RegModel,
   RegResult,
@@ -48,6 +48,10 @@ export class AuthService {
   refreshToken(): Observable<RefreshResult> {
     const refreshToken = localStorage.getItem('refresh_token');
 
+    if (!refreshToken) {
+      return throwError(() => new Error('No refresh token available'));
+    }
+
     return this.http.post<RefreshResult>(`${this.baseUrl}/auth/refresh`, {
       refresh_token: refreshToken,
     });
@@ -56,23 +60,31 @@ export class AuthService {
   logoutUser(): Observable<any> {
     const refreshToken = localStorage.getItem('refresh_token');
 
+    const clearLocalSession = () => {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user');
+      this.loggedInSubject.next(false);
+    };
+
+    if (!refreshToken) {
+      clearLocalSession();
+      return of({ status: 'success', message: 'Logged out locally' });
+    }
+
     return this.http
       .post(`${this.baseUrl}/auth/logout`, {
         refresh_token: refreshToken,
       })
-      .pipe(
-        finalize(() => {
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
-          localStorage.removeItem('user');
-
-          this.loggedInSubject.next(false);
-        }),
-      );
+      .pipe(finalize(clearLocalSession));
   }
 
   setLoggedIn(): void {
     this.loggedInSubject.next(true);
+  }
+
+  setLoggedOut(): void {
+    this.loggedInSubject.next(false);
   }
 
   forgotPassword(user: ForgotPasswordModel): Observable<ForgotPasswordResult> {
