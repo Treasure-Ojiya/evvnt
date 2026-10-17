@@ -225,6 +225,7 @@ export class EventDetails {
   // =========================
   // Booking
   // =========================
+  /////////////////////////////
 
   book(): void {
     if (!this.isLoggedIn()) {

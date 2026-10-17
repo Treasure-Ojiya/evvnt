@@ -85,8 +85,8 @@ export class FeatureCard {
   ): void {
     Object.assign(swiperEl, {
       breakpoints: {
-        0: { slidesPerView: 1, spaceBetween: 16 },
-        640: { slidesPerView: 2, spaceBetween: 18 },
+        0: { slidesPerView: 1.5, spaceBetween: 16 },
+        640: { slidesPerView: 2.5, spaceBetween: 18 },
         1024: { slidesPerView: 3, spaceBetween: 20 },
       },
     });

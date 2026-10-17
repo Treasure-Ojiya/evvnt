@@ -480,12 +480,15 @@
           type="button"
           (click)="onSubmit(true)"
           [disabled]="isSubmitting"
-          class="px-7 py-3 rounded-full bg-brand hover:bg-brand-dark disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold transition-all duration-200"
+          class="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full bg-brand hover:bg-brand-dark disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold transition-all duration-200"
         >
           @if (isSubmitting && submitMode === "publish") {
-            Publishing...
+            <span
+              class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
+            ></span>
+            <span>Publishing...</span>
           } @else {
-            Publish Event
+            <span>Publish Event</span>
           }
         </button>
       </div>
