@@ -61,7 +61,7 @@
       <button
         type="button"
         (click)="retry()"
-        class="mt-5 rounded-full bg-brand-dark px-5 py-2 text-sm font-semibold text-white hover:bg-ink transition-colors"
+        class="mt-5 rounded-full bg-brand-dark px-5 py-2 text-sm font-semibold text-white hover:bg-brand-dark transition-colors"
       >
         Try again
       </button>
@@ -76,7 +76,7 @@
       </p>
       <a
         routerLink="/events/organizer/create-event"
-        class="mt-5 inline-flex rounded-full bg-brand-dark px-5 py-2 text-sm font-semibold text-white hover:bg-ink transition-colors"
+        class="mt-5 inline-flex rounded-full bg-brand px-5 py-2 text-sm font-semibold text-white hover:bg-brand-dark transition-colors"
       >
         Create an event
       </a>
@@ -191,7 +191,7 @@
                       type="button"
                       (click)="askPublish(event)"
                       [disabled]="publishingId() === event.uuid"
-                      class="rounded-full bg-brand-dark px-4 py-1.5 text-xs font-semibold text-white hover:bg-ink transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      class="rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-white hover:bg-brand-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {{
                         publishingId() === event.uuid
@@ -357,7 +357,7 @@
           <span class="flex-1 text-sm font-semibold text-ink">Cover image</span>
 
           <label
-            class="cursor-pointer rounded-full border border-ink px-4 py-1.5 text-sm font-semibold text-ink hover:bg-ink hover:text-white transition-colors"
+            class="cursor-pointer rounded-full border border-brand px-4 py-1.5 text-sm font-semibold text-ink hover:bg-brand-dark hover:text-white transition-colors"
             [ngClass]="{ 'pointer-events-none opacity-50': isChangingCover() }"
           >
             {{ isChangingCover() ? "Uploading..." : "Change" }}
@@ -377,7 +377,7 @@
         >
           <span class="text-sm font-semibold text-ink">More photos</span>
           <label
-            class="cursor-pointer rounded-full border border-ink px-4 py-1.5 text-sm font-semibold text-ink hover:bg-ink hover:text-white transition-colors"
+            class="cursor-pointer rounded-full border border-brand px-4 py-1.5 text-sm font-semibold text-ink hover:bg-brand-dark hover:text-white transition-colors"
             [ngClass]="{ 'pointer-events-none opacity-50': isUploading() }"
           >
             {{ isUploading() ? "Uploading..." : "Add photos" }}
@@ -468,7 +468,7 @@
                       [disabled]="
                         savingTicketId() === ticket.uuid || !ticket.form.dirty
                       "
-                      class="rounded-full border border-ink px-4 py-1.5 text-sm font-semibold text-ink hover:bg-ink hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-ink"
+                      class="rounded-full border border-brand px-4 py-1.5 text-sm font-semibold text-ink hover:bg-brand-dark hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-ink"
                     >
                       {{
                         savingTicketId() === ticket.uuid
@@ -501,7 +501,7 @@
             type="submit"
             form="edit-event-form"
             [disabled]="isSaving()"
-            class="rounded-full bg-brand-dark px-6 py-2.5 text-sm font-semibold text-white hover:bg-ink transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            class="rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {{ isSaving() ? "Saving..." : "Save changes" }}
           </button>

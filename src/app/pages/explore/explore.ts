@@ -115,7 +115,7 @@ export class Explore {
 
   mobileFiltersOpen = signal(false);
 
-  readonly pageSize = 10;
+  readonly pageSize = 12;
   visibleCount = signal(this.pageSize);
 
   justBooked = signal<{ title: string; free: boolean } | null>(null);

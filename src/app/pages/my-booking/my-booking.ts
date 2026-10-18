@@ -1,10 +1,16 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { EventCard } from '../../shared/components/event-card/event-card';
+import {
+  TicketPickerData,
+  TicketPickerModal,
+  TicketPickerResult,
+} from '../../shared/modals/ticket-picker-modal/ticket-picker-modal';
 import { BookingService } from '../../core/services/booking-service/booking-service';
 import { BookingDetailsResponse } from '../../app-model/model';
+import { ToastService } from '../../core/services/toast-service/toast-service';
 
 @Component({
   selector: 'app-my-booking',
@@ -15,6 +21,8 @@ import { BookingDetailsResponse } from '../../app-model/model';
 export class MyBooking implements OnInit {
   private bookingService = inject(BookingService);
   private dialog = inject(MatDialog);
+  private router = inject(Router);
+  private toastService = inject(ToastService);
 
   // =========================
   // State
@@ -23,12 +31,10 @@ export class MyBooking implements OnInit {
   bookings = signal<BookingDetailsResponse[]>([]);
   isLoading = signal(true);
   loadError = signal('');
-  actionError = signal('');
 
   // Booking ids with an action in progress.
   confirmingId = signal<string | null>(null);
   cancellingId = signal<string | null>(null);
-  payingId = signal<string | null>(null);
 
   // =========================
   // Derived lists
@@ -100,7 +106,6 @@ export class MyBooking implements OnInit {
   }
 
   askCancel(booking: BookingDetailsResponse): void {
-    this.actionError.set('');
     this.confirmingId.set(booking.uuid);
   }
 
@@ -110,7 +115,6 @@ export class MyBooking implements OnInit {
 
   confirmCancel(booking: BookingDetailsResponse): void {
     this.cancellingId.set(booking.uuid);
-    this.actionError.set('');
 
     this.bookingService.cancelBooking(booking.uuid).subscribe({
       next: (updated) => {
@@ -120,47 +124,65 @@ export class MyBooking implements OnInit {
         );
         this.cancellingId.set(null);
         this.confirmingId.set(null);
+        this.toastService.show('Booking cancelled.', 'info');
       },
       error: (error) => {
         console.error('Cancel failed:', error);
-        this.actionError.set(
-          error?.error?.message ??
-            'Could not cancel this booking. Please try again.',
+        this.toastService.show(
+          this.errorText(error, 'Could not cancel this booking.'),
+          'error',
+          5000,
         );
         this.cancellingId.set(null);
       },
     });
   }
 
+  // Asks which ticket type and how many, then opens the payment page.
   proceedToPayment(booking: BookingDetailsResponse): void {
-    this.payingId.set(booking.uuid);
-    this.actionError.set('');
+    this.dialog
+      .open<TicketPickerModal, TicketPickerData, TicketPickerResult>(
+        TicketPickerModal,
+        {
+          data: {
+            eventId: booking.event.uuid,
+            eventTitle: booking.event.title,
+            ticketTypeId: booking.ticket_type_id,
+            quantity: booking.quantity,
+          },
+          width: '480px',
+          maxWidth: '94vw',
+          autoFocus: 'dialog',
+        },
+      )
+      .afterClosed()
+      .subscribe((choice) => {
+        if (!choice) {
+          return;
+        }
 
-    this.bookingService.bookingPayment(booking.uuid).subscribe({
-      next: (payment) => {
-        console.log('Payment started:', payment);
-
-        // TODO: hand payment.reference / payment.provider to your payment
-        // flow (redirect or inline checkout), then reload on return.
-        this.payingId.set(null);
-        this.loadBookings();
-      },
-      error: (error) => {
-        console.error('Payment failed to start:', error);
-        this.actionError.set(
-          error?.error?.message ?? 'Could not start payment. Please try again.',
-        );
-        this.payingId.set(null);
-      },
-    });
+        this.router.navigate(['/payment'], {
+          queryParams: {
+            event: booking.event.uuid,
+            ticket: choice.ticketTypeId,
+            qty: choice.quantity,
+            booking: booking.uuid,
+          },
+        });
+      });
   }
 
   // =========================
   // Template helpers
   // =========================
 
+  // A pending booking can go on to payment (or confirmation, if it is free).
   canPay(booking: BookingDetailsResponse): boolean {
-    return booking.status.toLowerCase() === 'pending' && !booking.is_free;
+    return booking.status.toLowerCase() === 'pending';
+  }
+
+  payLabel(booking: BookingDetailsResponse): string {
+    return booking.is_free ? 'Confirm spot' : 'Proceed to payment';
   }
 
   formatAmount(booking: BookingDetailsResponse): string {
@@ -173,16 +195,16 @@ export class MyBooking implements OnInit {
     return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
   }
 
-  // Orange = pending, teal = confirmed/paid, gray = anything else.
+  // Yellow = pending, green = confirmed/paid, gray = anything else.
   statusClasses(status: string): string {
     const value = status.toLowerCase();
 
     if (value === 'pending') {
-      return 'bg-[#FF6B35]/10 text-[#B34700]';
+      return 'bg-accent/20 text-accent-dark';
     }
 
     if (['paid', 'confirmed', 'completed', 'success'].includes(value)) {
-      return 'bg-[#00BFA6]/10 text-[#00806e]';
+      return 'bg-success/10 text-success-dark';
     }
 
     return 'bg-gray-100 text-gray-500';
@@ -199,6 +221,16 @@ export class MyBooking implements OnInit {
   // =========================
   // Private helpers
   // =========================
+
+  private errorText(error: unknown, fallback: string): string {
+    const e = error as { error?: { detail?: unknown; message?: string } };
+
+    if (typeof e?.error?.detail === 'string') {
+      return e.error.detail;
+    }
+
+    return e?.error?.message ?? fallback;
+  }
 
   private startOfToday(): Date {
     const date = new Date();

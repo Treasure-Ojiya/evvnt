@@ -1,15 +1,6 @@
 <section class="">
   <h1 class="text-3xl font-bold text-ink mb-10">My Bookings</h1>
 
-  @if (actionError()) {
-    <p
-      class="mb-6 rounded-xl border border-[#FF3B30]/30 bg-[#FF3B30]/5 px-4 py-3 text-sm text-[#FF3B30]"
-      role="alert"
-    >
-      {{ actionError() }}
-    </p>
-  }
-
   @if (isLoading()) {
     <!-- Loading -->
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8" aria-hidden="true">
@@ -37,7 +28,7 @@
       <button
         type="button"
         (click)="loadBookings()"
-        class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-ink transition-colors"
+        class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors"
       >
         Try again
       </button>
@@ -53,7 +44,7 @@
       </p>
       <a
         routerLink="/explore"
-        class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-ink transition-colors"
+        class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors"
       >
         Explore events
       </a>
@@ -153,7 +144,7 @@
         <button
           type="button"
           (click)="openDetails(booking)"
-          class="px-4 py-2 border border-ink text-ink text-sm font-semibold rounded-full hover:bg-ink hover:text-white transition-colors"
+          class="px-4 py-2 border border-brand text-ink text-sm font-semibold rounded-full hover:bg-brand-dark hover:text-white transition-colors"
         >
           View details
         </button>
@@ -163,10 +154,9 @@
             <button
               type="button"
               (click)="proceedToPayment(booking)"
-              [disabled]="payingId() === booking.uuid"
-              class="px-4 py-2 bg-brand text-white text-sm font-semibold rounded-full hover:bg-ink transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-4 py-2 bg-brand text-white text-sm font-semibold rounded-full hover:bg-brand-dark transition-colors"
             >
-              {{ payingId() === booking.uuid ? "Starting..." : "Pay" }}
+              {{ payLabel(booking) }}
             </button>
           }
 
@@ -176,7 +166,7 @@
               type="button"
               (click)="confirmCancel(booking)"
               [disabled]="cancellingId() === booking.uuid"
-              class="px-3 py-2 text-sm font-semibold text-[#FF3B30] hover:underline underline-offset-4 disabled:opacity-50"
+              class="px-3 py-2 text-sm font-semibold text-danger-dark hover:underline underline-offset-4 disabled:opacity-50"
             >
               {{
                 cancellingId() === booking.uuid

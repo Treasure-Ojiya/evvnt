@@ -1,0 +1,154 @@
+<div class="p-6">
+  <h2 class="text-xl font-bold text-ink">How many tickets?</h2>
+  <p class="mt-1 truncate text-sm text-gray-500">{{ data.eventTitle }}</p>
+
+  @if (isLoading()) {
+    <div class="mt-6 space-y-3" aria-hidden="true">
+      @for (n of [1, 2]; track n) {
+        <div class="h-16 animate-pulse rounded-2xl bg-gray-200"></div>
+      }
+    </div>
+  } @else if (loadError()) {
+    <div class="mt-6 text-center" role="alert">
+      <p class="text-sm text-gray-500">{{ loadError() }}</p>
+      <button
+        type="button"
+        (click)="load()"
+        class="mt-4 rounded-full bg-brand px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand"
+      >
+        Try again
+      </button>
+    </div>
+  } @else if (tickets().length === 0) {
+    <p class="mt-6 text-sm text-gray-500">
+      Tickets are not on sale for this event yet.
+    </p>
+  } @else if (!selected()) {
+    <p class="mt-6 text-sm text-gray-500">
+      Every ticket for this event is sold out.
+    </p>
+  } @else {
+    <!-- Ticket types -->
+    <ul class="mt-5 space-y-3">
+      @for (ticket of tickets(); track ticket.uuid) {
+        <li>
+          <button
+            type="button"
+            (click)="select(ticket)"
+            [disabled]="ticket.available_quantity <= 0"
+            [attr.aria-pressed]="selectedId() === ticket.uuid"
+            class="flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed"
+            [ngClass]="
+              selectedId() === ticket.uuid
+                ? 'border-brand bg-brand/5 ring-1 ring-brand'
+                : ticket.available_quantity <= 0
+                  ? 'border-gray-200 bg-gray-50 opacity-60'
+                  : 'border-gray-200 hover:border-brand/50'
+            "
+          >
+            <span class="min-w-0">
+              <span class="block truncate font-semibold text-ink">{{
+                ticket.name
+              }}</span>
+              <span
+                class="text-xs"
+                [ngClass]="
+                  ticket.available_quantity <= 0
+                    ? 'font-semibold text-danger-dark'
+                    : 'text-gray-500'
+                "
+              >
+                {{
+                  ticket.available_quantity <= 0
+                    ? "Sold out"
+                    : ticket.available_quantity + " available"
+                }}
+              </span>
+            </span>
+            <span class="shrink-0 font-bold text-ink">{{
+              formatPrice(ticket.price)
+            }}</span>
+          </button>
+        </li>
+      }
+    </ul>
+
+    <!-- Quantity -->
+    <div class="mt-6 flex items-center justify-between">
+      <span class="text-sm font-semibold text-ink">Number of tickets</span>
+      <div class="inline-flex items-center rounded-full border border-gray-200">
+        <button
+          type="button"
+          (click)="change(-1)"
+          [disabled]="quantity() <= 1"
+          aria-label="Fewer tickets"
+          class="flex h-10 w-10 items-center justify-center rounded-full text-ink hover:bg-brand-soft disabled:opacity-40 disabled:hover:bg-transparent"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            class="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M5 12h14" />
+          </svg>
+        </button>
+        <span
+          class="w-9 text-center font-semibold text-ink"
+          aria-live="polite"
+          >{{ quantity() }}</span
+        >
+        <button
+          type="button"
+          (click)="change(1)"
+          [disabled]="quantity() >= maxQuantity()"
+          aria-label="More tickets"
+          class="flex h-10 w-10 items-center justify-center rounded-full text-ink hover:bg-brand-soft disabled:opacity-40 disabled:hover:bg-transparent"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            class="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Total -->
+    <div
+      class="mt-5 flex items-baseline justify-between border-t border-dashed border-gray-200 pt-4"
+    >
+      <span class="text-sm font-semibold text-gray-500">Total</span>
+      <span class="text-2xl font-bold text-ink">{{
+        formatPrice(total())
+      }}</span>
+    </div>
+  }
+
+  <div class="mt-6 flex justify-end gap-3">
+    <button
+      type="button"
+      (click)="cancel()"
+      class="rounded-full border border-gray-300 px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-gray-50"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      (click)="confirm()"
+      [disabled]="!selected()"
+      class="rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      Continue to payment
+    </button>
+  </div>
+</div>

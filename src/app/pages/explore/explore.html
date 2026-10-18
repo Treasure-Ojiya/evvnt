@@ -151,7 +151,7 @@
         <button
           type="button"
           (click)="closeFilters()"
-          class="lg:hidden mt-8 w-full rounded-full bg-brand text-white py-3 text-sm font-semibold hover:bg-ink transition-colors"
+          class="lg:hidden mt-8 w-full rounded-full bg-brand text-white py-3 text-sm font-semibold hover:bg-brand-dark transition-colors"
         >
           Show {{ resultCount() }} results
         </button>
@@ -460,7 +460,7 @@
                           type="button"
                           (click)="bookNow(event)"
                           [disabled]="bookingId() !== null"
-                          class="relative z-10 rounded-full bg-brand-dark px-5 py-2 text-sm font-semibold text-white hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          class="relative z-10 rounded-full bg-brand px-5 py-2 text-sm font-semibold text-white hover:bg-brand-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {{
                             bookingId() === event.uuid
@@ -486,7 +486,7 @@
                 <button
                   type="button"
                   (click)="loadMore()"
-                  class="rounded-full border border-ink px-6 py-2.5 text-sm font-semibold text-ink hover:bg-ink hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand transition-colors"
+                  class="rounded-full border border-brand px-6 py-2.5 text-sm font-semibold text-ink hover:bg-brand-dark hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand transition-colors"
                 >
                   Load more events
                 </button>

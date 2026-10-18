@@ -66,7 +66,7 @@ export class CreateEvent implements OnInit {
   private formBuilder = inject(FormBuilder);
   private eventService = inject(CreateService);
   private router = inject(Router);
-  private toast = inject(ToastService);
+  private toastService = inject(ToastService);
   private cdr = inject(ChangeDetectorRef);
 
   // =========================
@@ -257,14 +257,14 @@ export class CreateEvent implements OnInit {
         this.showCreateCategory = false;
 
         this.isCreatingCategory = false;
-        this.toast.show(`Category "${category.name}" added.`, 'success');
+        this.toastService.show(`Category "${category.name}" added.`, 'success');
         this.cdr.markForCheck();
       },
 
       error: (error) => {
         console.error('Failed to create category:', error);
 
-        this.toast.show(
+        this.toastService.show(
           this.errorText(error, 'Unable to create this category.'),
           'error',
           5000,
@@ -420,7 +420,7 @@ export class CreateEvent implements OnInit {
           this.createdEventId = null;
           this.cdr.markForCheck();
 
-          this.toast.show(
+          this.toastService.show(
             publish ? 'Event published.' : 'Draft saved.',
             'success',
           );
@@ -434,7 +434,7 @@ export class CreateEvent implements OnInit {
           // reported by the server are shown as a toast.
           this.formError = '';
 
-          this.toast.show(
+          this.toastService.show(
             this.createdEventId
               ? `Your event was saved as a draft, but it could not be published: ${this.errorText(error, 'please try again')}`
               : this.errorText(

@@ -36,6 +36,14 @@ export const routes: Routes = [
   },
 
   {
+    path: 'payment',
+    loadComponent: () =>
+      import('./pages/payments/payments').then((m) => m.Payment),
+    data: { hideFooter: true },
+    canActivate: [authGuard],
+  },
+
+  {
     path: 'profile',
     loadComponent: () =>
       import('./pages/profile/profile').then((m) => m.Profile),
@@ -160,7 +168,7 @@ export const routes: Routes = [
       {
         path: ':id',
         loadComponent: () =>
-          import('./pages/events/event-details/event-details/event-details').then(
+          import('./pages/events/event-details/event-details').then(
             (m) => m.EventDetails,
           ),
         data: { hideFooter: true },

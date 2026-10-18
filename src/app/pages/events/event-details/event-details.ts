@@ -3,12 +3,13 @@ import { DatePipe, NgClass } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { filter, switchMap } from 'rxjs';
-import { EventModel, EventTicketTypeModel } from '../../../../app-model/model';
-import { ExploreService } from '../../../../core/services/explore-service/explore-service';
-import { BookingService } from '../../../../core/services/booking-service/booking-service';
-import { AuthService } from '../../../../core/services/auth-service/auth-service';
-import { UserService } from '../../../../core/services/user-service/user-service';
-import { CreateService } from '../../../../core/services/create-service/create-service';
+import { EventModel, EventTicketTypeModel } from '../../../app-model/model';
+import { ExploreService } from '../../../core/services/explore-service/explore-service';
+import { BookingService } from '../../../core/services/booking-service/booking-service';
+import { AuthService } from '../../../core/services/auth-service/auth-service';
+import { UserService } from '../../../core/services/user-service/user-service';
+import { CreateService } from '../../../core/services/create-service/create-service';
+import { ToastService } from '../../../core/services/toast-service/toast-service';
 
 const MAX_PER_ORDER = 10;
 
@@ -26,6 +27,7 @@ export class EventDetails {
   private authService = inject(AuthService);
   private userService = inject(UserService);
   private createService = inject(CreateService);
+  private toastService = inject(ToastService);
 
   // =========================
   // State
@@ -38,8 +40,8 @@ export class EventDetails {
   selectedTicketId = signal<string | null>(null);
   quantity = signal(1);
 
+  // True while the event is being saved to My bookings.
   isBooking = signal(false);
-  bookingError = signal('');
   linkCopied = signal(false);
 
   isLoggedIn = toSignal(this.authService.isLoggedIn$, { initialValue: false });
@@ -138,17 +140,13 @@ export class EventDetails {
       return 'Sold out';
     }
 
-    if (this.isBooking()) {
-      return 'Booking...';
-    }
-
     if (!this.isLoggedIn()) {
-      return 'Sign in to book';
+      return 'Sign in to continue';
     }
 
     return this.total() === 0
       ? 'Reserve my spot'
-      : `Get tickets · ${this.formatPrice(this.total())}`;
+      : `Continue to payment · ${this.formatPrice(this.total())}`;
   });
 
   // The video is only embedded when it is a direct video file.
@@ -214,7 +212,6 @@ export class EventDetails {
 
     this.selectedTicketId.set(ticket.uuid);
     this.quantity.set(Math.min(this.quantity(), this.maxQuantityFor(ticket)));
-    this.bookingError.set('');
   }
 
   changeQuantity(delta: number): void {
@@ -223,11 +220,34 @@ export class EventDetails {
   }
 
   // =========================
-  // Booking
+  // Payment and saving for later
   // =========================
-  /////////////////////////////
 
-  book(): void {
+  // The main button: go to the payment page with the chosen ticket and quantity.
+  goToPayment(): void {
+    if (!this.isLoggedIn()) {
+      this.router.navigate(['/auth/authentication']);
+      return;
+    }
+
+    const event = this.event();
+    const ticket = this.selectedTicket();
+
+    if (!event || !ticket || !this.canBook()) {
+      return;
+    }
+
+    this.router.navigate(['/payment'], {
+      queryParams: {
+        event: event.uuid,
+        ticket: ticket.uuid,
+        qty: this.quantity(),
+      },
+    });
+  }
+
+  // A booking is a reservation: it is kept in My bookings and paid for later.
+  saveForLater(): void {
     if (!this.isLoggedIn()) {
       this.router.navigate(['/auth/authentication']);
       return;
@@ -241,7 +261,6 @@ export class EventDetails {
     }
 
     this.isBooking.set(true);
-    this.bookingError.set('');
 
     this.bookingService
       .createBooking({
@@ -252,15 +271,22 @@ export class EventDetails {
       .subscribe({
         next: () => {
           this.isBooking.set(false);
-          this.router.navigate(['/my-booking']);
+          this.toastService.show(
+            'Saved to My bookings. You can pay for it any time.',
+            'success',
+            4000,
+          );
         },
         error: (error) => {
-          console.error('Booking failed:', error);
-          this.bookingError.set(
-            error?.error?.message ??
-              'We could not complete your booking. Please try again.',
-          );
+          console.error('Saving the booking failed:', error);
           this.isBooking.set(false);
+          this.toastService.show(
+            typeof error?.error?.detail === 'string'
+              ? error.error.detail
+              : 'We could not save this booking. Please try again.',
+            'error',
+            5000,
+          );
         },
       });
   }

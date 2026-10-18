@@ -49,7 +49,7 @@ export class ManageEvents {
   private createService = inject(CreateService);
   private formBuilder = inject(FormBuilder);
   private dialog = inject(MatDialog);
-  private toast = inject(ToastService);
+  private toastService = inject(ToastService);
 
   // =========================
   // List state
@@ -192,12 +192,12 @@ export class ManageEvents {
             e.uuid === updated.uuid ? { ...e, status: updated.status } : e,
           ),
         );
-        this.toast.show(`"${updated.title}" is now live.`, 'success');
+        this.toastService.show(`"${updated.title}" is now live.`, 'success');
         this.publishingId.set(null);
       },
       error: (error) => {
         console.error('Publish failed:', error);
-        this.toast.show(
+        this.toastService.show(
           this.errorText(error, 'Could not publish this event.'),
           'error',
           5000,
@@ -227,12 +227,12 @@ export class ManageEvents {
     this.createService.deleteEvent(event.uuid).subscribe({
       next: () => {
         this.events.update((list) => list.filter((e) => e.uuid !== event.uuid));
-        this.toast.show(`"${event.title}" was deleted.`, 'success');
+        this.toastService.show(`"${event.title}" was deleted.`, 'success');
         this.deletingId.set(null);
       },
       error: (error) => {
         console.error('Delete failed:', error);
-        this.toast.show(
+        this.toastService.show(
           this.errorText(error, 'Could not delete this event.'),
           'error',
           5000,
@@ -321,13 +321,16 @@ export class ManageEvents {
               : e,
           ),
         );
-        this.toast.show(`Saved changes to "${updated.title}".`, 'success');
+        this.toastService.show(
+          `Saved changes to "${updated.title}".`,
+          'success',
+        );
         this.isSaving.set(false);
         this.closeEdit();
       },
       error: (error) => {
         console.error('Save failed:', error);
-        this.toast.show(
+        this.toastService.show(
           this.errorText(error, 'Could not save your changes.'),
           'error',
           5000,
@@ -351,13 +354,13 @@ export class ManageEvents {
     this.createService.updateEventImage(id, file).subscribe({
       next: (updated) => {
         this.coverUrl.set(updated.image_url ?? this.coverUrl());
-        this.toast.show('Cover image updated.', 'success');
+        this.toastService.show('Cover image updated.', 'success');
         this.isChangingCover.set(false);
         input.value = '';
       },
       error: (error) => {
         console.error('Cover update failed:', error);
-        this.toast.show(
+        this.toastService.show(
           this.errorText(error, 'Could not update the cover image.'),
           'error',
           5000,
@@ -409,12 +412,12 @@ export class ManageEvents {
           );
         }
 
-        this.toast.show(`Ticket "${changes.name}" updated.`, 'success');
+        this.toastService.show(`Ticket "${changes.name}" updated.`, 'success');
         this.savingTicketId.set(null);
       },
       error: (error) => {
         console.error('Ticket update failed:', error);
-        this.toast.show(
+        this.toastService.show(
           this.errorText(error, 'Could not update this ticket.'),
           'error',
           5000,
