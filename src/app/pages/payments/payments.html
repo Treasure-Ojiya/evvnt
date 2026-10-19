@@ -1,9 +1,9 @@
-<div class="min-h-screen bg-surface pb-28 lg:pb-14">
+<div class="min-h-screen overflow-x-clip bg-surface pb-28 lg:pb-14">
   <div class="mx-auto max-w-5xl px-4 pt-24 sm:px-6 lg:px-8 lg:pt-28">
     @if (isLoading()) {
       <div class="space-y-4" aria-hidden="true">
         <div class="h-8 w-48 animate-pulse rounded bg-gray-200"></div>
-        <div class="grid gap-6 lg:grid-cols-[1fr_380px]">
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
           <div class="h-72 animate-pulse rounded-3xl bg-gray-200"></div>
           <div class="h-72 animate-pulse rounded-3xl bg-gray-200"></div>
         </div>
@@ -132,9 +132,12 @@
         }
       </ol>
 
-      <div class="mt-6 grid gap-6 lg:grid-cols-[1fr_380px] lg:items-start">
+      <div
+        class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start"
+      >
         <!-- ============ DETAILS ============ -->
         <section
+          class="min-w-0"
           [ngClass]="step() === 1 ? 'block' : 'hidden lg:block'"
           aria-labelledby="attendee-heading"
         >
@@ -210,7 +213,7 @@
                   }
                 </div>
 
-                <div class="mt-5 grid gap-4 sm:grid-cols-2">
+                <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div class="sm:col-span-2">
                     <label
                       [for]="'name-' + i"
@@ -223,7 +226,7 @@
                       formControlName="name"
                       autocomplete="name"
                       placeholder="e.g. Ada Okafor"
-                      class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm placeholder:text-gray-400 focus:outline-2 focus:outline-brand"
+                      class="w-full min-w-0 rounded-xl border border-gray-300 px-4 py-2.5 text-sm placeholder:text-gray-400 focus:outline-2 focus:outline-brand"
                     />
                     @if (fieldError(group, "name"); as message) {
                       <p class="mt-1 text-xs text-danger-dark">{{ message }}</p>
@@ -242,7 +245,7 @@
                       formControlName="phone"
                       autocomplete="tel"
                       placeholder="+234 801 234 5678"
-                      class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm placeholder:text-gray-400 focus:outline-2 focus:outline-brand disabled:bg-gray-50 disabled:text-gray-500"
+                      class="w-full min-w-0 rounded-xl border border-gray-300 px-4 py-2.5 text-sm placeholder:text-gray-400 focus:outline-2 focus:outline-brand disabled:bg-gray-50 disabled:text-gray-500"
                     />
                     @if (fieldError(group, "phone"); as message) {
                       <p class="mt-1 text-xs text-danger-dark">{{ message }}</p>
@@ -261,7 +264,7 @@
                       formControlName="email"
                       autocomplete="email"
                       placeholder="you@example.com"
-                      class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm placeholder:text-gray-400 focus:outline-2 focus:outline-brand disabled:bg-gray-50 disabled:text-gray-500"
+                      class="w-full min-w-0 rounded-xl border border-gray-300 px-4 py-2.5 text-sm placeholder:text-gray-400 focus:outline-2 focus:outline-brand disabled:bg-gray-50 disabled:text-gray-500"
                     />
                     @if (fieldError(group, "email"); as message) {
                       <p class="mt-1 text-xs text-danger-dark">{{ message }}</p>
@@ -296,7 +299,7 @@
 
         <!-- ============ SUMMARY, REVIEW, PAYMENT ============ -->
         <aside
-          class="space-y-4 lg:sticky lg:top-28"
+          class="min-w-0 space-y-4 lg:sticky lg:top-28"
           [ngClass]="step() === 1 ? 'hidden lg:block' : 'block'"
         >
           <!-- Order summary -->
@@ -324,7 +327,7 @@
               class="mt-5 space-y-2 border-t border-dashed border-gray-200 pt-4 text-sm"
             >
               <div class="flex justify-between gap-3">
-                <dt class="text-gray-600">
+                <dt class="min-w-0 wrap-break text-gray-600">
                   {{ ticket()?.name }} × {{ quantity() }}
                 </dt>
                 <dd class="font-semibold text-ink">
@@ -458,7 +461,7 @@
 
       <!-- Step buttons (small screens only) -->
       <div
-        class="fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-white/95 px-4 py-3 backdrop-blur lg:hidden"
+        class="fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-white px-4 py-3 backdrop-blur lg:hidden"
       >
         @switch (step()) {
           @case (1) {
