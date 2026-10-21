@@ -1,5 +1,7 @@
-<div class="bg-surface">
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-10 lg:pt-28">
+<div
+  class="bg-surface max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-10 lg:pt-28"
+>
+  <section>
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-ink">My Bookings</h1>
       <p class="text-sm text-gray-500 mt-1">
@@ -86,14 +88,6 @@
                   {{ day(booking.event.event_date) }}
                 </p>
               </div>
-
-              <!-- Status -->
-              <span
-                class="absolute top-3 right-3 rounded-full px-3 py-1 text-xs font-semibold bg-white/95"
-                [ngClass]="statusClasses(booking.status)"
-              >
-                {{ statusLabel(booking.status) }}
-              </span>
             </div>
 
             <div class="flex flex-1 flex-col p-5">

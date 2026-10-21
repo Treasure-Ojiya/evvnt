@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { DatePipe, NgClass,  } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -12,7 +12,7 @@ import { BookingDetailsResponse } from '../../app-model/model';
 
 @Component({
   selector: 'app-my-booking',
-  imports: [DatePipe, NgClass, RouterLink],
+  imports: [DatePipe, RouterLink],
   templateUrl: './my-booking.html',
   styleUrl: './my-booking.css',
 })
@@ -125,18 +125,6 @@ export class MyBooking implements OnInit {
     return booking.is_free
       ? 'Free'
       : `₦${booking.total_amount.toLocaleString('en-NG')}`;
-  }
-
-  // Shows the booking status exactly as the API sends it.
-  statusLabel(status: string): string {
-    return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
-  }
-
-  // Pending is yellow. Anything else means the booking has moved on, so green.
-  statusClasses(status: string): string {
-    return status.toLowerCase() === 'pending'
-      ? 'bg-accent/20 text-accent-dark'
-      : 'bg-success/10 text-success-dark';
   }
 
   month(iso: string): string {
