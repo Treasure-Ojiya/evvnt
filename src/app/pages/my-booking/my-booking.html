@@ -1,197 +1,143 @@
-<section class="">
-  <h1 class="text-3xl font-bold text-ink mb-10">My Bookings</h1>
+<div class="bg-surface">
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-10 lg:pt-28">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-ink">My Bookings</h1>
+      <p class="text-sm text-gray-500 mt-1">
+        Not ready to pay yet? Book a ticket for later
+      </p>
+    </div>
 
-  @if (isLoading()) {
-    <!-- Loading -->
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8" aria-hidden="true">
-      @for (n of [1, 2, 3]; track n) {
-        <div
-          class="rounded-2xl border border-gray-200 overflow-hidden animate-pulse"
-        >
-          <div class="h-40 bg-gray-200"></div>
-          <div class="p-5 space-y-3">
-            <div class="h-5 w-2/3 rounded bg-gray-200"></div>
-            <div class="h-4 w-1/2 rounded bg-gray-100"></div>
-            <div class="h-4 w-1/3 rounded bg-gray-100"></div>
+    @if (isLoading()) {
+      <!-- Loading -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8" aria-hidden="true">
+        @for (n of [1, 2, 3]; track n) {
+          <div
+            class="rounded-2xl border border-gray-200 overflow-hidden animate-pulse"
+          >
+            <div class="h-40 bg-gray-200"></div>
+            <div class="p-5 space-y-3">
+              <div class="h-5 w-2/3 rounded bg-gray-200"></div>
+              <div class="h-4 w-1/2 rounded bg-gray-100"></div>
+              <div class="h-4 w-1/3 rounded bg-gray-100"></div>
+            </div>
           </div>
-        </div>
-      }
-    </div>
-  } @else if (loadError()) {
-    <!-- Error -->
-    <section
-      class="rounded-2xl border border-dashed border-gray-300 px-6 py-16 text-center"
-      role="alert"
-    >
-      <h2 class="text-lg font-bold text-ink">Bookings did not load</h2>
-      <p class="text-sm text-gray-500 mt-1">{{ loadError() }}</p>
-      <button
-        type="button"
-        (click)="loadBookings()"
-        class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors"
-      >
-        Try again
-      </button>
-    </section>
-  } @else if (bookings().length === 0) {
-    <!-- Empty -->
-    <section
-      class="rounded-2xl border border-dashed border-gray-300 px-6 py-16 text-center"
-    >
-      <h2 class="text-lg font-bold text-ink">No bookings yet</h2>
-      <p class="text-sm text-gray-500 mt-1">
-        Events you book will show up here.
-      </p>
-      <a
-        routerLink="/explore"
-        class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors"
-      >
-        Explore events
-      </a>
-    </section>
-  } @else {
-    <!-- Upcoming -->
-    <section>
-      <h2 class="text-xl font-bold text-ink mb-5">Upcoming</h2>
-
-      @if (upcoming().length === 0) {
-        <p class="text-gray-500">No upcoming bookings.</p>
-      } @else {
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          @for (booking of upcoming(); track booking.uuid) {
-            <ng-container
-              [ngTemplateOutlet]="bookingCard"
-              [ngTemplateOutletContext]="{ $implicit: booking, past: false }"
-            />
-          }
-        </div>
-      }
-    </section>
-
-    <!-- Past and cancelled -->
-    @if (past().length > 0) {
-      <section class="mt-14">
-        <h2 class="text-xl font-bold text-ink mb-5">Past and cancelled</h2>
-
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          @for (booking of past(); track booking.uuid) {
-            <ng-container
-              [ngTemplateOutlet]="bookingCard"
-              [ngTemplateOutletContext]="{ $implicit: booking, past: true }"
-            />
-          }
-        </div>
-      </section>
-    }
-  }
-</section>
-
-<!-- One booking card, shared by both lists -->
-<ng-template #bookingCard let-booking let-past="past">
-  <article
-    class="flex flex-col bg-white rounded-2xl border border-gray-200 overflow-hidden"
-    [ngClass]="{ 'opacity-75': past }"
-  >
-    <div class="relative">
-      @if (booking.event.images.length > 0) {
-        <img
-          [src]="booking.event.images[0]"
-          [alt]="booking.event.title"
-          class="h-40 w-full object-cover bg-gray-100"
-        />
-      } @else {
-        <div class="h-40 w-full bg-brand-soft"></div>
-      }
-
-      <!-- Date tile -->
-      <div
-        class="absolute top-3 left-3 w-12 rounded-xl bg-white text-center py-1.5 shadow-sm"
-      >
-        <p class="text-xs font-medium text-gray-500">
-          {{ month(booking.event.event_date) }}
-        </p>
-        <p class="text-lg font-bold leading-none text-ink">
-          {{ day(booking.event.event_date) }}
-        </p>
-      </div>
-
-      <!-- Status -->
-      <span
-        class="absolute top-3 right-3 rounded-full px-3 py-1 text-xs font-semibold bg-white/95"
-        [ngClass]="statusClasses(booking.status)"
-      >
-        {{ statusLabel(booking.status) }}
-      </span>
-    </div>
-
-    <div class="flex flex-1 flex-col p-5">
-      <h3 class="text-lg font-bold text-ink">{{ booking.event.title }}</h3>
-
-      <p class="text-sm text-gray-500 mt-1">
-        {{ booking.event.event_date | date: "mediumDate" }},
-        {{ booking.event.event_date | date: "shortTime" }}
-      </p>
-      <p class="text-sm text-gray-500">{{ booking.event.location }}</p>
-
-      <p class="mt-3 text-sm text-gray-500">
-        {{ booking.quantity }}
-        {{ booking.quantity === 1 ? "ticket" : "tickets" }}
-        <span class="mx-1.5 text-gray-300" aria-hidden="true">|</span>
-        <span class="font-semibold text-ink">{{ formatAmount(booking) }}</span>
-      </p>
-
-      <div class="mt-auto pt-5 flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          (click)="openDetails(booking)"
-          class="px-4 py-2 border border-brand text-ink text-sm font-semibold rounded-full hover:bg-brand-dark hover:text-white transition-colors"
-        >
-          View details
-        </button>
-
-        @if (!past) {
-          @if (canPay(booking)) {
-            <button
-              type="button"
-              (click)="proceedToPayment(booking)"
-              class="px-4 py-2 bg-brand text-white text-sm font-semibold rounded-full hover:bg-brand-dark transition-colors"
-            >
-              {{ payLabel(booking) }}
-            </button>
-          }
-
-          @if (confirmingId() === booking.uuid) {
-            <span class="text-sm text-gray-500">Cancel this booking?</span>
-            <button
-              type="button"
-              (click)="confirmCancel(booking)"
-              [disabled]="cancellingId() === booking.uuid"
-              class="px-3 py-2 text-sm font-semibold text-danger-dark hover:underline underline-offset-4 disabled:opacity-50"
-            >
-              {{
-                cancellingId() === booking.uuid
-                  ? "Cancelling..."
-                  : "Yes, cancel"
-              }}
-            </button>
-            <button
-              type="button"
-              (click)="keepBooking()"
-              class="px-3 py-2 text-sm font-semibold text-gray-500 hover:text-ink"
-            >
-              Keep
-            </button>
-          } @else {
-            <button
-              type="button"
-              (click)="askCancel(booking)"
-              class="px-3 py-2 text-sm font-semibold text-gray-500 hover:text-ink"
-            >
-              Cancel
-            </button>
-          }
         }
       </div>
-    </div>
-  </article>
-</ng-template>
+    } @else if (loadError()) {
+      <!-- Error -->
+      <section
+        class="rounded-2xl border border-dashed border-gray-300 px-6 py-16 text-center"
+        role="alert"
+      >
+        <h2 class="text-lg font-bold text-ink">Bookings did not load</h2>
+        <p class="text-sm text-gray-500 mt-1">{{ loadError() }}</p>
+        <button
+          type="button"
+          (click)="loadBookings()"
+          class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors"
+        >
+          Try again
+        </button>
+      </section>
+    } @else if (upcoming().length === 0) {
+      <!-- Empty -->
+      <section
+        class="rounded-2xl border border-dashed border-gray-300 px-6 py-16 text-center"
+      >
+        <h2 class="text-lg font-bold text-ink">No upcoming bookings</h2>
+        <p class="text-sm text-gray-500 mt-1">
+          Events you book will show up here.
+        </p>
+        <a
+          routerLink="/explore"
+          class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors"
+        >
+          Explore events
+        </a>
+      </section>
+    } @else {
+      <!-- Upcoming -->
+      <h2 class="text-xl font-bold text-ink mb-5">Upcoming</h2>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        @for (booking of upcoming(); track booking.uuid) {
+          <article
+            class="flex flex-col bg-white rounded-2xl border border-gray-200 overflow-hidden"
+          >
+            <div class="relative">
+              @if (booking.event.images.length > 0) {
+                <img
+                  [src]="booking.event.images[0]"
+                  [alt]="booking.event.title"
+                  class="h-40 w-full object-cover bg-gray-100"
+                />
+              } @else {
+                <div class="h-40 w-full bg-brand-soft"></div>
+              }
+
+              <!-- Date tile -->
+              <div
+                class="absolute top-3 left-3 w-12 rounded-xl bg-white text-center py-1.5 shadow-sm"
+              >
+                <p class="text-xs font-medium text-gray-500">
+                  {{ month(booking.event.event_date) }}
+                </p>
+                <p class="text-lg font-bold leading-none text-ink">
+                  {{ day(booking.event.event_date) }}
+                </p>
+              </div>
+
+              <!-- Status -->
+              <span
+                class="absolute top-3 right-3 rounded-full px-3 py-1 text-xs font-semibold bg-white/95"
+                [ngClass]="statusClasses(booking.status)"
+              >
+                {{ statusLabel(booking.status) }}
+              </span>
+            </div>
+
+            <div class="flex flex-1 flex-col p-5">
+              <h3 class="text-lg font-bold text-ink">
+                {{ booking.event.title }}
+              </h3>
+
+              <p class="text-sm text-gray-500 mt-1">
+                {{ booking.event.event_date | date: "mediumDate" }},
+                {{ booking.event.event_date | date: "shortTime" }}
+              </p>
+              <p class="text-sm text-gray-500">{{ booking.event.location }}</p>
+
+              <p class="mt-3 text-sm text-gray-500">
+                {{ booking.quantity }}
+                {{ booking.quantity === 1 ? "ticket" : "tickets" }}
+                <span class="mx-1.5 text-gray-300" aria-hidden="true">|</span>
+                <span class="font-semibold text-ink">{{
+                  formatAmount(booking)
+                }}</span>
+              </p>
+
+              <div class="mt-auto pt-5 flex flex-wrap items-center gap-2">
+                <a
+                  [routerLink]="['/events', booking.event.uuid]"
+                  class="px-4 py-2 border border-brand text-ink text-sm font-semibold rounded-full hover:bg-brand-dark hover:text-white hover:border-brand-dark transition-colors"
+                >
+                  View details
+                </a>
+
+                @if (canPay(booking)) {
+                  <button
+                    type="button"
+                    (click)="proceedToPayment(booking)"
+                    class="px-4 py-2 bg-brand text-white text-sm font-semibold rounded-full hover:bg-brand-dark transition-colors"
+                  >
+                    {{ payLabel(booking) }}
+                  </button>
+                }
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</div>

@@ -26,28 +26,28 @@ export class OrganizerLayout implements OnInit {
   user = '';
 
   navItems = [
-    { label: 'Home', link: '/home', icon: 'assets/icons/home.svg' },
+    { label: 'Home', link: '/home', icon: 'assets/icons/home-white.svg' },
     {
       label: 'Dashboard',
       link: 'dashboard',
-      icon: 'assets/icons/dashboard.svg',
+      icon: 'assets/icons/dashboard-white.svg',
     },
     {
       label: 'Create Event',
       link: 'create-event',
-      icon: 'assets/icons/create.svg',
+      icon: 'assets/icons/create-white.svg',
     },
     {
       label: 'Manage Events',
       link: 'manage-events',
-      icon: 'assets/icons/manage.svg',
+      icon: 'assets/icons/manage-white.svg',
     },
-    { label: 'Orders', link: 'orders', icon: 'assets/icons/order.svg' },
+    { label: 'Orders', link: 'orders', icon: 'assets/icons/order-white.svg' },
     { label: 'Finance', link: 'finance', icon: 'assets/icons/finance.svg' },
     {
       label: 'Settings',
       link: 'setting',
-      icon: 'assets/icons/settings-event.svg',
+      icon: 'assets/icons/setting-white.svg',
     },
   ];
 

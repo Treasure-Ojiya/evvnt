@@ -2,7 +2,7 @@
 <div class="fixed inset-0 flex flex-col overflow-hidden bg-surface">
   <!-- HEADER -->
   <header
-    class="shrink-0 flex items-center justify-between bg-nav text-ink px-6 py-2 shadow-md z-40"
+    class="shrink-0 flex items-center justify-between bg-nav text-white font-semibold px-6 py-2 z-40"
   >
     <div class="flex items-center space-x-4">
       <button
@@ -17,7 +17,7 @@
         src="assets/logo/evvnt-logo-white-1.png"
         alt="Evvnt Logo"
         routerLink="/home"
-        class="block w-20 h-auto cursor-pointer brightness-0"
+        class="block w-20 h-auto cursor-pointer"
       />
     </div>
 
@@ -27,7 +27,7 @@
         alt=""
         width="20"
         height="20"
-        class="brightness-0"
+        class=""
       />
       <span class="text-md font-medium"> Welcome, {{ user }} </span>
     </div>
@@ -45,21 +45,20 @@
 
     <!-- SIDEBAR -->
     <aside
-      class="shrink-0 bg-linear-to-br from-surface to-brand-soft border-r border-gray-200 shadow-lg flex flex-col gap-6 py-6 px-3 overflow-y-auto fixed md:static inset-y-0 left-0 z-50 md:z-auto w-64 transform transition-all duration-500 md:translate-x-0"
+      class="shrink-0 bg-nav border-gray-200 shadow-lg flex flex-col gap-6 py-6 px-3 overflow-y-auto fixed md:static inset-y-0 left-0 z-50 md:z-auto w-52 transform transition-all duration-500 md:translate-x-0"
       [ngClass]="{
         'translate-x-0': mobileMenuOpen,
         '-translate-x-full': !mobileMenuOpen,
-        'md:w-64 md:px-4': !isCollapsed,
+        'md:w-52 md:px-4': !isCollapsed,
         'md:w-20': isCollapsed,
       }"
     >
-      <!-- NAVIGATION (Home is just another item now) -->
-      <nav class="flex flex-col space-y-2 w-full text-ink">
+      <nav class="flex flex-col space-y-2 w-full text-white">
         @for (item of navItems; track item.link) {
           <a
             [routerLink]="item.link"
-            routerLinkActive="bg-brand/10"
-            class="flex items-center space-x-3 p-3 rounded-xl hover:bg-ink/5 transition w-full"
+            routerLinkActive="bg-white/10"
+            class="flex items-center space-x-3 p-3 rounded-xl hover:bg-white/20 transition w-full"
             [ngClass]="{ 'md:justify-center md:space-x-0': isCollapsed }"
             (click)="closeMobileMenu()"
           >
@@ -76,11 +75,11 @@
       <button
         type="button"
         (click)="logout()"
-        class="mt-auto flex items-center space-x-3 p-3 rounded-xl w-full text-ink/70 hover:bg-ink/5 hover:text-ink transition"
+        class="mt-auto flex items-center space-x-3 p-3 rounded-xl w-full text-white hover:bg-white/20 transition"
         [ngClass]="{ 'md:justify-center md:space-x-0': isCollapsed }"
       >
         <img
-          src="assets/icons/logout.svg"
+          src="assets/icons/logout-white.svg"
           alt="Logout"
           width="20"
           height="20"

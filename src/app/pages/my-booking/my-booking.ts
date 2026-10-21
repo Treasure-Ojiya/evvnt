@@ -1,8 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
+import { DatePipe, NgClass,  } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { EventCard } from '../../shared/components/event-card/event-card';
 import {
   TicketPickerData,
   TicketPickerModal,
@@ -10,11 +9,10 @@ import {
 } from '../../shared/modals/ticket-picker-modal/ticket-picker-modal';
 import { BookingService } from '../../core/services/booking-service/booking-service';
 import { BookingDetailsResponse } from '../../app-model/model';
-import { ToastService } from '../../core/services/toast-service/toast-service';
 
 @Component({
   selector: 'app-my-booking',
-  imports: [DatePipe, NgClass, NgTemplateOutlet, RouterLink],
+  imports: [DatePipe, NgClass, RouterLink],
   templateUrl: './my-booking.html',
   styleUrl: './my-booking.css',
 })
@@ -22,7 +20,6 @@ export class MyBooking implements OnInit {
   private bookingService = inject(BookingService);
   private dialog = inject(MatDialog);
   private router = inject(Router);
-  private toastService = inject(ToastService);
 
   // =========================
   // State
@@ -32,30 +29,18 @@ export class MyBooking implements OnInit {
   isLoading = signal(true);
   loadError = signal('');
 
-  // Booking ids with an action in progress.
-  confirmingId = signal<string | null>(null);
-  cancellingId = signal<string | null>(null);
-
   // =========================
   // Derived lists
   // =========================
 
-  // Not cancelled, and the event has not happened yet. Soonest first.
+  // Bookings that are not cancelled, for events that have not happened yet.
+  // Soonest first. Pending (saved, not yet paid) bookings are included.
   upcoming = computed(() => {
     const startOfToday = this.startOfToday();
 
     return this.bookings()
       .filter((b) => this.isActive(b, startOfToday))
       .sort((a, b) => a.event.event_date.localeCompare(b.event.event_date));
-  });
-
-  // Cancelled or already happened. Most recent first.
-  past = computed(() => {
-    const startOfToday = this.startOfToday();
-
-    return this.bookings()
-      .filter((b) => !this.isActive(b, startOfToday))
-      .sort((a, b) => b.event.event_date.localeCompare(a.event.event_date));
   });
 
   // =========================
@@ -88,55 +73,6 @@ export class MyBooking implements OnInit {
   // =========================
   // Actions
   // =========================
-
-  openDetails(booking: BookingDetailsResponse): void {
-    // Mapped to the shape EventCard already expects.
-    this.dialog.open(EventCard, {
-      data: {
-        id: booking.event.uuid,
-        title: booking.event.title,
-        date: new Date(booking.event.event_date),
-        image: booking.event.images[0] ?? '',
-        price: booking.is_free ? 0 : booking.total_amount,
-        description: '',
-      },
-      width: '500px',
-      panelClass: 'event-dialog',
-    });
-  }
-
-  askCancel(booking: BookingDetailsResponse): void {
-    this.confirmingId.set(booking.uuid);
-  }
-
-  keepBooking(): void {
-    this.confirmingId.set(null);
-  }
-
-  confirmCancel(booking: BookingDetailsResponse): void {
-    this.cancellingId.set(booking.uuid);
-
-    this.bookingService.cancelBooking(booking.uuid).subscribe({
-      next: (updated) => {
-        // Swap in the updated booking instead of refetching the list.
-        this.bookings.update((list) =>
-          list.map((b) => (b.uuid === updated.uuid ? updated : b)),
-        );
-        this.cancellingId.set(null);
-        this.confirmingId.set(null);
-        this.toastService.show('Booking cancelled.', 'info');
-      },
-      error: (error) => {
-        console.error('Cancel failed:', error);
-        this.toastService.show(
-          this.errorText(error, 'Could not cancel this booking.'),
-          'error',
-          5000,
-        );
-        this.cancellingId.set(null);
-      },
-    });
-  }
 
   // Asks which ticket type and how many, then opens the payment page.
   proceedToPayment(booking: BookingDetailsResponse): void {
@@ -191,23 +127,16 @@ export class MyBooking implements OnInit {
       : `₦${booking.total_amount.toLocaleString('en-NG')}`;
   }
 
+  // Shows the booking status exactly as the API sends it.
   statusLabel(status: string): string {
     return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
   }
 
-  // Yellow = pending, green = confirmed/paid, gray = anything else.
+  // Pending is yellow. Anything else means the booking has moved on, so green.
   statusClasses(status: string): string {
-    const value = status.toLowerCase();
-
-    if (value === 'pending') {
-      return 'bg-accent/20 text-accent-dark';
-    }
-
-    if (['paid', 'confirmed', 'completed', 'success'].includes(value)) {
-      return 'bg-success/10 text-success-dark';
-    }
-
-    return 'bg-gray-100 text-gray-500';
+    return status.toLowerCase() === 'pending'
+      ? 'bg-accent/20 text-accent-dark'
+      : 'bg-success/10 text-success-dark';
   }
 
   month(iso: string): string {
@@ -221,16 +150,6 @@ export class MyBooking implements OnInit {
   // =========================
   // Private helpers
   // =========================
-
-  private errorText(error: unknown, fallback: string): string {
-    const e = error as { error?: { detail?: unknown; message?: string } };
-
-    if (typeof e?.error?.detail === 'string') {
-      return e.error.detail;
-    }
-
-    return e?.error?.message ?? fallback;
-  }
 
   private startOfToday(): Date {
     const date = new Date();
