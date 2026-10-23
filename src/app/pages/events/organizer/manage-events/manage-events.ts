@@ -16,7 +16,7 @@ import {
   UpdateTicketTypeModel,
 } from '../../../../app-model/model';
 import { ExploreService } from '../../../../core/services/explore-service/explore-service';
-import { CreateService } from '../../../../core/services/create-service/create-service';
+import { OrganizerService } from '../../../../core/services/organizer-service/organizer-service';
 import { ToastService } from '../../../../core/services/toast-service/toast-service';
 import {
   ConfirmModal,
@@ -46,7 +46,7 @@ interface EditableTicket {
 })
 export class ManageEvents {
   private exploreService = inject(ExploreService);
-  private createService = inject(CreateService);
+  private organizerService = inject(OrganizerService);
   private formBuilder = inject(FormBuilder);
   private dialog = inject(MatDialog);
   private toastService = inject(ToastService);
@@ -129,7 +129,7 @@ export class ManageEvents {
     this.isLoading.set(true);
     this.loadError.set('');
 
-    this.createService.getMyEvents().subscribe({
+    this.organizerService.getMyEvents().subscribe({
       next: (events) => {
         this.events.set(events);
         this.isLoading.set(false);
@@ -185,7 +185,7 @@ export class ManageEvents {
   private publish(event: EventListItem): void {
     this.publishingId.set(event.uuid);
 
-    this.createService.publishEvent(event.uuid).subscribe({
+    this.organizerService.publishEvent(event.uuid).subscribe({
       next: (updated) => {
         this.events.update((list) =>
           list.map((e) =>
@@ -224,7 +224,7 @@ export class ManageEvents {
   private delete(event: EventListItem): void {
     this.deletingId.set(event.uuid);
 
-    this.createService.deleteEvent(event.uuid).subscribe({
+    this.organizerService.deleteEvent(event.uuid).subscribe({
       next: () => {
         this.events.update((list) => list.filter((e) => e.uuid !== event.uuid));
         this.toastService.show(`"${event.title}" was deleted.`, 'success');
@@ -312,7 +312,7 @@ export class ManageEvents {
     this.isSaving.set(true);
     this.editError.set('');
 
-    this.createService.updateEvent(id, changes).subscribe({
+    this.organizerService.updateEvent(id, changes).subscribe({
       next: (updated) => {
         this.events.update((list) =>
           list.map((e) =>
@@ -351,7 +351,7 @@ export class ManageEvents {
     this.isChangingCover.set(true);
     this.editError.set('');
 
-    this.createService.updateEventImage(id, file).subscribe({
+    this.organizerService.updateEventImage(id, file).subscribe({
       next: (updated) => {
         this.coverUrl.set(updated.image_url ?? this.coverUrl());
         this.toastService.show('Cover image updated.', 'success');
@@ -400,7 +400,7 @@ export class ManageEvents {
     this.savingTicketId.set(ticket.uuid);
     this.editError.set('');
 
-    this.createService.updateTicketType(id, ticket.uuid, changes).subscribe({
+    this.organizerService.updateTicketType(id, ticket.uuid, changes).subscribe({
       next: (updated) => {
         const fresh = updated.ticket_types.find((t) => t.uuid === ticket.uuid);
 

@@ -438,14 +438,14 @@
             <button
               type="button"
               (click)="saveForLater()"
-              [disabled]="isPast() || isBooking() || !selectedTicket()"
+              [disabled]="isPast() || isQueueing() || !selectedTicket()"
               class="mt-2 w-full rounded-full border border-brand py-3 text-sm font-semibold text-ink transition-colors hover:bg-brand-dark hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-ink"
             >
-              {{ isBooking() ? "Saving..." : "Save for later" }}
+              {{ isQueueing() ? "Adding..." : "Keep in queue" }}
             </button>
 
             <p class="mt-3 text-center text-xs text-gray-500">
-              Not ready? Save it and pay from My bookings.
+              Not ready? Save it and pay from your queue.
             </p>
           </div>
         </div>

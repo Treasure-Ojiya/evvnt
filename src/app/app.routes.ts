@@ -14,10 +14,17 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/home/home').then((m) => m.Home),
   },
 
+  // {
+  //   path: 'my-booking',
+  //   loadComponent: () =>
+  //     import('./pages/my-booking/my-booking').then((m) => m.MyBooking),
+  //   data: { hideFooter: true },
+  //   canActivate: [authGuard],
+  // },
+
   {
-    path: 'my-booking',
-    loadComponent: () =>
-      import('./pages/my-booking/my-booking').then((m) => m.MyBooking),
+    path: 'queue',
+    loadComponent: () => import('./pages/queue/queue').then((m) => m.Queue),
     data: { hideFooter: true },
     canActivate: [authGuard],
   },
@@ -32,7 +39,6 @@ export const routes: Routes = [
     path: 'explore',
     loadComponent: () =>
       import('./pages/explore/explore').then((m) => m.Explore),
-    // canActivate: [authGuard],
   },
 
   {

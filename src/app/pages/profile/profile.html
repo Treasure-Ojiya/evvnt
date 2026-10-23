@@ -85,39 +85,38 @@
       <section>
         <div class="flex items-center justify-between mb-5">
           <h2 class="text-xl font-bold text-ink">Upcoming</h2>
-
           <a
-            routerLink="/my-booking"
+            routerLink="/queue"
             class="text-sm font-semibold text-brand-dark hover:underline underline-offset-4"
           >
-            View all bookings
+            View all in queue
           </a>
         </div>
 
-        @if (bookingsLoading()) {
+        @if (queueLoading()) {
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-4" aria-hidden="true">
             @for (n of [1, 2]; track n) {
               <div class="h-24 rounded-2xl bg-gray-200 animate-pulse"></div>
             }
           </div>
-        } @else if (bookingsError()) {
+        } @else if (queueError()) {
           <p class="text-sm text-gray-500">
-            {{ bookingsError() }}
+            {{ queueError() }}
             <button
               type="button"
-              (click)="loadBookings()"
+              (click)="loadQueue()"
               class="font-semibold text-brand-dark hover:underline underline-offset-4"
             >
               Try again
             </button>
           </p>
-        } @else if (upcomingBookings().length === 0) {
+        } @else if (upcomingQueue().length === 0) {
           <section
             class="bg-white rounded-2xl border border-dashed border-gray-300 px-6 py-10 text-center"
           >
-            <p class="font-semibold text-ink">No upcoming bookings</p>
+            <p class="font-semibold text-ink">Your queue is empty</p>
             <p class="text-sm text-gray-500 mt-1">
-              Book an event now and pay for it later.
+              Save tickets from any event and pay when you're ready.
             </p>
             <a
               routerLink="/explore"
@@ -128,10 +127,10 @@
           </section>
         } @else {
           <ul class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            @for (booking of upcomingBookings(); track booking.uuid) {
+            @for (item of upcomingQueue(); track item.uuid) {
               <ng-container
-                [ngTemplateOutlet]="bookingRow"
-                [ngTemplateOutletContext]="{ $implicit: booking }"
+                [ngTemplateOutlet]="queueRow"
+                [ngTemplateOutletContext]="{ $implicit: item }"
               />
             }
           </ul>
@@ -221,30 +220,28 @@
           }
         </div>
       </section> -->
-    } @else if (activeTab === "bookings") {
-      <!-- All bookings -->
+    } @else if (activeTab === "queue") {
       <section>
         <div class="flex items-center justify-between mb-5">
-          <h2 class="text-xl font-bold text-ink">Your bookings</h2>
-
+          <h2 class="text-xl font-bold text-ink">Your queue</h2>
           <a
-            routerLink="/my-booking"
+            routerLink="/queue"
             class="text-sm font-semibold text-brand-dark hover:underline underline-offset-4"
           >
-            Manage bookings
+            Manage queue
           </a>
         </div>
 
-        @if (bookingsLoading()) {
+        @if (queueLoading()) {
           <div
             class="h-24 rounded-2xl bg-gray-200 animate-pulse"
             aria-hidden="true"
           ></div>
-        } @else if (allBookings().length === 0) {
+        } @else if (allQueue().length === 0) {
           <section
             class="bg-white rounded-2xl border border-dashed border-gray-300 px-6 py-10 text-center"
           >
-            <p class="font-semibold text-ink">No bookings yet</p>
+            <p class="font-semibold text-ink">Nothing in your queue</p>
             <a
               routerLink="/explore"
               class="inline-flex mt-4 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors"
@@ -254,10 +251,10 @@
           </section>
         } @else {
           <ul class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            @for (booking of allBookings(); track booking.uuid) {
+            @for (item of allQueue(); track item.uuid) {
               <ng-container
-                [ngTemplateOutlet]="bookingRow"
-                [ngTemplateOutletContext]="{ $implicit: booking }"
+                [ngTemplateOutlet]="queueRow"
+                [ngTemplateOutletContext]="{ $implicit: item }"
               />
             }
           </ul>
@@ -284,43 +281,51 @@
 </div>
 
 <!-- One booking row, used by the Overview and Bookings tabs -->
-<ng-template #bookingRow let-booking>
+<ng-template #queueRow let-item>
   <li
-    class="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-200"
+    class="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-200 cursor-pointer hover:border-brand transition-colors"
+    (click)="goToQueueItem(item)"
   >
     <!-- Date tile -->
     <div class="w-16 shrink-0 rounded-xl bg-ink text-white text-center py-2.5">
       <p class="text-xs font-medium text-white/70">
-        {{ month(booking.event.event_date) }}
+        {{ month(item.event.event_date) }}
       </p>
       <p class="text-2xl font-bold leading-none mt-0.5">
-        {{ day(booking.event.event_date) }}
+        {{ day(item.event.event_date) }}
       </p>
     </div>
 
     <div class="min-w-0 flex-1">
-      <h3 class="font-bold text-ink truncate">{{ booking.event.title }}</h3>
+      <h3 class="font-bold text-ink truncate">{{ item.event.title }}</h3>
       <p class="text-sm text-gray-500 mt-0.5 truncate">
-        {{ booking.event.location }}
+        {{ item.event.location }}
         <span class="mx-1.5 text-gray-300" aria-hidden="true">|</span>
-        {{ booking.quantity }}
-        {{ booking.quantity === 1 ? "ticket" : "tickets" }}
+        {{ item.quantity }} {{ item.quantity === 1 ? "ticket" : "tickets" }}
         <span class="mx-1.5 text-gray-300" aria-hidden="true">|</span>
-        {{ formatAmount(booking) }}
+        {{ formatAmount(item) }}
       </p>
 
-      <span
-        class="inline-flex items-center mt-2 px-2.5 py-0.5 rounded-full text-xs font-semibold"
-        [ngClass]="statusClasses(booking)"
-      >
-        {{ statusLabel(booking) }}
-      </span>
+      @if (formsNeeded(item) > 0) {
+        <span
+          class="inline-flex items-center mt-2 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-accent/20 text-accent-dark"
+        >
+          {{ formsNeeded(item) }} attendee
+          {{ formsNeeded(item) === 1 ? "form" : "forms" }} needed
+        </span>
+      } @else {
+        <span
+          class="inline-flex items-center mt-2 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-success/10 text-success-dark"
+        >
+          Ready to check out
+        </span>
+      }
     </div>
 
-    @if (booking.event.images.length > 0) {
+    @if (item.event.image_url) {
       <img
-        [src]="booking.event.images[0]"
-        [alt]="booking.event.title"
+        [src]="item.event.image_url"
+        [alt]="item.event.title"
         class="hidden sm:block w-24 h-20 rounded-xl object-cover shrink-0 bg-gray-100"
       />
     }

@@ -34,9 +34,9 @@ import {
   EventModel,
   EventTicketTypeModel,
 } from '../../app-model/model';
-import { CreateService } from '../../core/services/create-service/create-service';
+import { OrganizerService } from '../../core/services/organizer-service/organizer-service';
 import { ExploreService } from '../../core/services/explore-service/explore-service';
-import { BookingService } from '../../core/services/booking-service/booking-service';
+import { CartService } from '../../core/services/cart-service/cart-service';
 import { AuthService } from '../../core/services/auth-service/auth-service';
 
 type DateRange = 'any' | 'today' | 'week' | 'weekend' | 'month';
@@ -56,12 +56,10 @@ interface FilterChip {
 })
 export class Explore {
   constructor() {
-    console.log('EXPLORE COMPONENT CREATED');
-
     this.loadCategories();
     this.listenToQueryParams();
     this.listenForEventRequests();
-    this.loadMyBookedEvents();
+    this.loadMyQueue();
 
     // Typing updates the URL after a short pause; the URL then drives the list.
     this.searchTyped$
@@ -81,8 +79,8 @@ export class Explore {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private exploreService = inject(ExploreService);
-  private createService = inject(CreateService);
-  private bookingService = inject(BookingService);
+  private organizerService = inject(OrganizerService);
+  private cartService = inject(CartService);
   private authService = inject(AuthService);
 
   isLoggedIn = toSignal(this.authService.isLoggedIn$, { initialValue: false });
@@ -92,10 +90,6 @@ export class Explore {
   // =========================
 
   query = signal('');
-
-  // What is typed in the page's own search box. It is kept apart from `query`
-  // (which comes from the URL) so typing is never overwritten while the URL
-  // catches up.
   searchText = signal('');
   private lastPushedSearch = '';
   private searchTyped$ = new Subject<string>();
@@ -107,9 +101,13 @@ export class Explore {
 
   failedImages = signal<string[]>([]);
 
-  bookingId = signal<string | null>(null);
-  bookedEventIds = signal<string[]>([]);
-  bookingMessages = signal<Record<string, string>>({});
+  // =========================
+  // Queue state (was: booking state)
+  // =========================
+  queueingId = signal<string | null>(null);
+  queuedEventIds = signal<string[]>([]);
+  queueMessages = signal<Record<string, string>>({});
+  justQueued = signal<{ title: string } | null>(null);
 
   startingPrices = signal<Record<string, number>>({});
 
@@ -117,8 +115,6 @@ export class Explore {
 
   readonly pageSize = 12;
   visibleCount = signal(this.pageSize);
-
-  justBooked = signal<{ title: string; free: boolean } | null>(null);
 
   events = signal<EventListItem[]>([]);
   isLoading = signal(true);
@@ -217,7 +213,7 @@ export class Explore {
   }));
 
   private loadCategories(): void {
-    this.createService.getEventCategory().subscribe({
+    this.organizerService.getEventCategory().subscribe({
       next: (categories) => this.categories.set(categories),
       error: (error) => console.error('Failed to load categories:', error),
     });
@@ -227,13 +223,10 @@ export class Explore {
     this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((params) => {
       const eventType = params.get('event_type');
       const date = params.get('date');
-
       const search = params.get('search') ?? '';
 
       this.query.set(search);
 
-      // A change that did not come from this box (the navbar search, a link,
-      // removing the filter chip) updates what the box shows.
       if (search !== this.lastPushedSearch) {
         this.lastPushedSearch = search;
         this.searchText.set(search);
@@ -260,47 +253,39 @@ export class Explore {
           this.isLoading.set(true);
           this.eventsError.set('');
         }),
-        switchMap(({ filters }) => {
-          console.log('CALLING GET EVENTS WITH:', filters);
-
-          return this.exploreService.getEvents(filters).pipe(
+        switchMap(({ filters }) =>
+          this.exploreService.getEvents(filters).pipe(
             catchError((error) => {
               console.error('GET EVENTS ERROR:', error);
-
               this.eventsError.set(
                 'We could not load events right now. Please try again.',
               );
-
               return of<EventListItem[]>([]);
             }),
-          );
-        }),
+          ),
+        ),
         takeUntilDestroyed(),
       )
       .subscribe((events) => {
-        console.log('EVENTS RESPONSE:', events);
-
         this.events.set(events);
         this.isLoading.set(false);
         this.loadStartingPrices(events);
       });
   }
 
-  private loadMyBookedEvents(): void {
+  // Was: loadMyBookedEvents. Now reads the cart so "Queued, view" works.
+  private loadMyQueue(): void {
     this.authService.isLoggedIn$
       .pipe(
         filter((loggedIn) => loggedIn),
         switchMap(() =>
-          this.bookingService.getBookings().pipe(catchError(() => of([]))),
+          this.cartService.getCart().pipe(catchError(() => of([]))),
         ),
         takeUntilDestroyed(),
       )
-      .subscribe((bookings) => {
-        const ids = bookings
-          .filter((b) => b.status.toLowerCase() !== 'cancelled')
-          .map((b) => b.event.uuid);
-
-        this.bookedEventIds.update((current) => [
+      .subscribe((items) => {
+        const ids = items.map((i) => i.event.uuid);
+        this.queuedEventIds.update((current) => [
           ...new Set([...current, ...ids]),
         ]);
       });
@@ -326,13 +311,11 @@ export class Explore {
     ).subscribe((results) => {
       this.startingPrices.update((current) => {
         const next = { ...current };
-
         for (const result of results) {
           if (result && result.price !== null) {
             next[result.id] = result.price;
           }
         }
-
         return next;
       });
     });
@@ -343,18 +326,33 @@ export class Explore {
       (t) => t.available_quantity > 0,
     );
     const pool = available.length ? available : event.ticket_types;
-
     return pool.length ? Math.min(...pool.map((t) => t.price)) : null;
+  }
+
+  // Tickets still available for this event.
+  availableTickets(event: EventListItem): number {
+    return Number(event.total_available) || 0;
+  }
+
+  // True when no ticket can be queued.
+  isSoldOut(event: EventListItem): boolean {
+    return this.availableTickets(event) <= 0 && !this.isPast(event);
+  }
+
+  // Show the "X left" pill only when stock is tight (5 or less, or under 10% of sold+available).
+  isFewLeft(event: EventListItem): boolean {
+    const left = this.availableTickets(event);
+    if (left <= 0) return false;
+    const total = left + (event.tickets_sold ?? 0);
+    return left <= Math.max(5, total * 0.1);
   }
 
   onSearchInput(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
-
     this.searchText.set(value);
     this.searchTyped$.next(value);
   }
 
-  // Enter searches straight away instead of waiting for the pause.
   onSearchEnter(): void {
     this.pushSearch(this.searchText());
   }
@@ -366,7 +364,6 @@ export class Explore {
 
   private pushSearch(value: string): void {
     const search = value.trim();
-
     this.lastPushedSearch = search;
     this.updateParams({ search: search || null });
   }
@@ -374,6 +371,7 @@ export class Explore {
   onSort(event: Event): void {
     this.sort.set((event.target as HTMLSelectElement).value as SortKey);
   }
+
   private updateParams(changes: Record<string, string | null>): void {
     this.router.navigate([], {
       relativeTo: this.route,
@@ -418,22 +416,29 @@ export class Explore {
     });
   }
 
-  isBooked(event: EventListItem): boolean {
-    return this.bookedEventIds().includes(event.uuid);
+  // =========================
+  // Queue (was: book)
+  // =========================
+  isQueued(event: EventListItem): boolean {
+    return this.queuedEventIds().includes(event.uuid);
   }
-  bookNow(event: EventListItem): void {
+
+  queueNow(event: EventListItem): void {
     if (!this.isLoggedIn()) {
       this.router.navigate(['/auth/authentication']);
       return;
     }
-
-    if (this.bookingId() !== null || this.isBooked(event)) {
+    if (this.isSoldOut(event)) {
+      this.setQueueMessage(event.uuid, 'This event is sold out.');
+      return;
+    }
+    if (this.queueingId() !== null || this.isQueued(event)) {
       return;
     }
 
-    this.bookingId.set(event.uuid);
-    this.justBooked.set(null);
-    this.setBookingMessage(event.uuid, '');
+    this.queueingId.set(event.uuid);
+    this.justQueued.set(null);
+    this.setQueueMessage(event.uuid, '');
 
     this.exploreService
       .getEvent(event.uuid)
@@ -442,14 +447,11 @@ export class Explore {
           if (full.ticket_types.length === 0) {
             return throwError(() => new Error('NO_TICKETS'));
           }
-
           const ticket = this.cheapestTicketType(full);
-
           if (!ticket) {
             return throwError(() => new Error('SOLD_OUT'));
           }
-
-          return this.bookingService.createBooking({
+          return this.cartService.addToCart({
             event_id: full.uuid,
             ticket_type_id: ticket.uuid,
             quantity: 1,
@@ -457,26 +459,24 @@ export class Explore {
         }),
       )
       .subscribe({
-        next: (booking) => {
-          // My bookings and Profile read /bookings/me when they open, so
-          // this booking shows up there as soon as the user navigates.
-          this.bookedEventIds.update((ids) => [...ids, event.uuid]);
-          this.justBooked.set({ title: event.title, free: booking.is_free });
-          this.bookingId.set(null);
+        next: () => {
+          this.queuedEventIds.update((ids) => [...ids, event.uuid]);
+          this.justQueued.set({ title: event.title });
+          this.queueingId.set(null);
         },
         error: (error) => {
-          console.error('Booking failed:', error);
-          this.setBookingMessage(event.uuid, this.bookingErrorText(error));
-          this.bookingId.set(null);
+          console.error('Queue failed:', error);
+          this.setQueueMessage(event.uuid, this.queueErrorText(error));
+          this.queueingId.set(null);
         },
       });
   }
 
-  private setBookingMessage(id: string, message: string): void {
-    this.bookingMessages.update((current) => ({ ...current, [id]: message }));
+  private setQueueMessage(id: string, message: string): void {
+    this.queueMessages.update((current) => ({ ...current, [id]: message }));
   }
 
-  private bookingErrorText(error: unknown): string {
+  private queueErrorText(error: unknown): string {
     const e = error as {
       message?: string;
       error?: { detail?: unknown; message?: string };
@@ -485,23 +485,21 @@ export class Explore {
     if (e?.message === 'NO_TICKETS') {
       return 'Booking is not open for this event yet.';
     }
-
     if (e?.message === 'SOLD_OUT') {
       return 'This event is sold out.';
     }
-
     if (typeof e?.error?.detail === 'string') {
       return e.error.detail;
     }
-
-    return e?.error?.message ?? 'Could not book this event. Please try again.';
+    return (
+      e?.error?.message ?? 'Could not add this to your queue. Please try again.'
+    );
   }
 
   private cheapestTicketType(event: EventModel): EventTicketTypeModel | null {
     const available = event.ticket_types.filter(
       (t) => t.available_quantity > 0,
     );
-
     return available.length
       ? available.reduce((best, t) => (t.price < best.price ? t : best))
       : null;
@@ -521,7 +519,6 @@ export class Explore {
       'Event image failed to load:',
       event ? this.primaryImage(event) : id,
     );
-
     this.failedImages.update((ids) => (ids.includes(id) ? ids : [...ids, id]));
   }
 

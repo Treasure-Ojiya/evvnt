@@ -6,9 +6,10 @@ import { filter, switchMap } from 'rxjs';
 import { EventModel, EventTicketTypeModel } from '../../../app-model/model';
 import { ExploreService } from '../../../core/services/explore-service/explore-service';
 import { BookingService } from '../../../core/services/booking-service/booking-service';
+import { CartService } from '../../../core/services/cart-service/cart-service';
 import { AuthService } from '../../../core/services/auth-service/auth-service';
 import { UserService } from '../../../core/services/user-service/user-service';
-import { CreateService } from '../../../core/services/create-service/create-service';
+import { OrganizerService } from '../../../core/services/organizer-service/organizer-service';
 import { ToastService } from '../../../core/services/toast-service/toast-service';
 
 const MAX_PER_ORDER = 10;
@@ -23,10 +24,11 @@ export class EventDetails {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private exploreService = inject(ExploreService);
+  private cartService = inject(CartService);
   private bookingService = inject(BookingService);
   private authService = inject(AuthService);
   private userService = inject(UserService);
-  private createService = inject(CreateService);
+  private organizerService = inject(OrganizerService);
   private toastService = inject(ToastService);
 
   // =========================
@@ -40,8 +42,8 @@ export class EventDetails {
   selectedTicketId = signal<string | null>(null);
   quantity = signal(1);
 
-  // True while the event is being saved to My bookings.
-  isBooking = signal(false);
+  // True while the event is being saved to queue.
+  isQueueing = signal(false);
   linkCopied = signal(false);
 
   isLoggedIn = toSignal(this.authService.isLoggedIn$, { initialValue: false });
@@ -122,7 +124,7 @@ export class EventDetails {
   canBook = computed(
     () =>
       !this.isPast() &&
-      !this.isBooking() &&
+      // !this.isQueueing() &&
       !!this.selectedTicket() &&
       (this.selectedTicket()?.available_quantity ?? 0) > 0,
   );
@@ -148,11 +150,6 @@ export class EventDetails {
       ? 'Reserve my spot'
       : `Continue to payment · ${this.formatPrice(this.total())}`;
   });
-
-  // The video is only embedded when it is a direct video file.
-  hasVideoFile = computed(() =>
-    /\.(mp4|webm|mov)(\?|$)/i.test(this.event()?.video_url ?? ''),
-  );
 
   mapsUrl = computed(() => {
     const location = this.event()?.location;
@@ -223,19 +220,15 @@ export class EventDetails {
   // Payment and saving for later
   // =========================
 
-  // The main button: go to the payment page with the chosen ticket and quantity.
+  // ---- Direct to payment (bypasses cart entirely) ----
   goToPayment(): void {
     if (!this.isLoggedIn()) {
       this.router.navigate(['/auth/authentication']);
       return;
     }
-
     const event = this.event();
     const ticket = this.selectedTicket();
-
-    if (!event || !ticket || !this.canBook()) {
-      return;
-    }
+    if (!event || !ticket || !this.canBook()) return;
 
     this.router.navigate(['/payment'], {
       queryParams: {
@@ -246,51 +239,45 @@ export class EventDetails {
     });
   }
 
-  // A booking is a reservation: it is kept in My bookings and paid for later.
+  // ---- Keep for later (only this one touches the cart) ----
   saveForLater(): void {
     if (!this.isLoggedIn()) {
       this.router.navigate(['/auth/authentication']);
       return;
     }
-
     const event = this.event();
     const ticket = this.selectedTicket();
+    if (!event || !ticket || !this.canBook()) return;
 
-    if (!event || !ticket || !this.canBook()) {
-      return;
-    }
+    this.isQueueing.set(true);
 
-    this.isBooking.set(true);
-
-    this.bookingService
-      .createBooking({
+    this.cartService
+      .addToCart({
         event_id: event.uuid,
         ticket_type_id: ticket.uuid,
         quantity: this.quantity(),
       })
       .subscribe({
         next: () => {
-          this.isBooking.set(false);
+          this.isQueueing.set(false);
           this.toastService.show(
-            'Saved to My bookings. You can pay for it any time.',
+            'Added to your queue. You can pay for it any time.',
             'success',
             4000,
           );
         },
         error: (error) => {
-          console.error('Saving the booking failed:', error);
-          this.isBooking.set(false);
+          this.isQueueing.set(false);
           this.toastService.show(
             typeof error?.error?.detail === 'string'
               ? error.error.detail
-              : 'We could not save this booking. Please try again.',
+              : 'We could not add this to your queue. Please try again.',
             'error',
             5000,
           );
         },
       });
   }
-
   // =========================
   // Organizer tools
   // =========================
@@ -305,7 +292,7 @@ export class EventDetails {
     this.isPublishing.set(true);
     this.ownerError.set('');
 
-    this.createService.publishEvent(event.uuid).subscribe({
+    this.organizerService.publishEvent(event.uuid).subscribe({
       next: (updated) => {
         this.event.set(updated);
         this.isPublishing.set(false);

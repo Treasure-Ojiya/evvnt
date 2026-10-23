@@ -65,7 +65,7 @@ export class Navbar implements OnInit {
     { label: 'Home', path: '/home' },
     { label: 'Explore', path: '/explore' },
     // { label: 'Spaces', path: '/spaces' },
-    { label: 'Bookings', path: '/my-booking' },
+    { label: 'Queue', path: '/queue' },
   ];
 
   createMenuItems = [

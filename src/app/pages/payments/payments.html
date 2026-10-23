@@ -18,15 +18,15 @@
         <div class="mt-6 flex justify-center gap-3">
           <a
             routerLink="/explore"
-            class="rounded-full bg-brand-dark px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-ink"
+            class="rounded-full bg-brand px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
           >
             Explore events
           </a>
           <a
             routerLink="/my-booking"
-            class="rounded-full border border-ink px-5 py-2 text-sm font-semibold text-ink transition-colors hover:bg-ink hover:text-white"
+            class="rounded-full border border-brand px-5 py-2 text-sm font-semibold text-ink transition-colors hover:bg-brand-dark hover:text-white"
           >
-            My bookings
+            My queue
           </a>
         </div>
       </section>
@@ -69,20 +69,20 @@
         </p>
         <div class="mt-6 flex justify-center gap-3">
           <a
-            routerLink="/my-booking"
-            class="rounded-full bg-brand-dark px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-ink"
+            routerLink="/queue"
+            class="rounded-full bg-brand px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
           >
-            View my bookings
+            View my queue
           </a>
           <a
             routerLink="/explore"
-            class="rounded-full border border-ink px-5 py-2 text-sm font-semibold text-ink transition-colors hover:bg-ink hover:text-white"
+            class="rounded-full border border-brand px-5 py-2 text-sm font-semibold text-ink transition-colors hover:bg-brand-dark hover:text-white"
           >
             Keep exploring
           </a>
         </div>
       </section>
-    } @else if (event(); as e) {
+    } @else if (viewEvent(); as e) {
       <!-- Header -->
       <button
         type="button"
@@ -270,6 +270,26 @@
                       <p class="mt-1 text-xs text-danger-dark">{{ message }}</p>
                     }
                   </div>
+
+                  <div>
+                    <label
+                      [for]="'confirm-email-' + i"
+                      class="mb-1 block text-sm font-semibold text-ink"
+                    >
+                      Confirm email
+                    </label>
+                    <input
+                      [id]="'confirm-email-' + i"
+                      type="email"
+                      formControlName="confirmEmail"
+                      autocomplete="email"
+                      placeholder="you@example.com"
+                      class="w-full min-w-0 rounded-xl border border-gray-300 px-4 py-2.5 text-sm placeholder:text-gray-400 focus:outline-2 focus:outline-brand disabled:bg-gray-50 disabled:text-gray-500"
+                    />
+                    @if (fieldError(group, "confirmEmail"); as message) {
+                      <p class="mt-1 text-xs text-danger-dark">{{ message }}</p>
+                    }
+                  </div>
                 </div>
               </div>
             }
@@ -413,7 +433,7 @@
               type="button"
               (click)="submit()"
               [disabled]="!formValid || isPaying()"
-              class="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-brand-dark py-3.5 text-base font-semibold text-white transition-colors hover:bg-ink disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-brand-dark"
+              class="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-brand py-3.5 text-base font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-brand-dark"
             >
               @if (isPaying()) {
                 <span
@@ -469,7 +489,7 @@
               type="button"
               (click)="next()"
               [disabled]="!formValid"
-              class="w-full rounded-full bg-brand-dark py-3.5 text-base font-semibold text-white transition-colors hover:bg-ink disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-brand-dark"
+              class="w-full rounded-full bg-brand py-3.5 text-base font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-brand-dark"
             >
               Continue
             </button>

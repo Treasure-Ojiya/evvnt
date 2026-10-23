@@ -36,9 +36,11 @@ import {
   CreateTicketTypeModel,
   EventCategories,
   CreateCategory,
+  BookingOrderId,
+  BookingOrderIdAttendees,
 } from '../../../../app-model/model';
 
-import { CreateService } from '../../../../core/services/create-service/create-service';
+import { OrganizerService } from '../../../../core/services/organizer-service/organizer-service';
 import { ToastService } from '../../../../core/services/toast-service/toast-service';
 
 @Component({
@@ -64,7 +66,7 @@ import { ToastService } from '../../../../core/services/toast-service/toast-serv
 })
 export class CreateEvent implements OnInit {
   private formBuilder = inject(FormBuilder);
-  private eventService = inject(CreateService);
+  private eventService = inject(OrganizerService);
   private router = inject(Router);
   private toastService = inject(ToastService);
   private cdr = inject(ChangeDetectorRef);
@@ -163,7 +165,7 @@ export class CreateEvent implements OnInit {
     this.ticketTypes.push(this.createTicket());
   }
 
-  removeTicket(index: number): void {
+  removeTicketType(index: number): void {
     if (this.ticketTypes.length === 1) {
       return;
     }

@@ -1,12 +1,12 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { NgClass, NgTemplateOutlet } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { UserService } from '../../core/services/user-service/user-service';
 import { DatePipe } from '../../shared/pipes/date-pipe';
-import { BookingService } from '../../core/services/booking-service/booking-service';
-import { BookingDetailsResponse } from '../../app-model/model';
+import { CartService } from '../../core/services/cart-service/cart-service';
+import { CartItem } from '../../app-model/model';
 
-type ProfileTab = 'overview' | 'bookings' | 'saved' | 'following';
+type ProfileTab = 'overview' | 'queue' | 'saved' | 'following';
 
 @Component({
   selector: 'app-profile',
@@ -16,28 +16,24 @@ type ProfileTab = 'overview' | 'bookings' | 'saved' | 'following';
 })
 export class Profile implements OnInit {
   private userService = inject(UserService);
-  private bookingService = inject(BookingService);
+  private cartService = inject(CartService);
+  private router = inject(Router);
 
   firstName = '';
   lastName = '';
   email = '';
   phone = '';
   createdAt = '';
-
-  // Placeholder until the API provides it.
   location = 'Lagos, Nigeria';
 
   // =========================
   // Tabs
   // =========================
-
   activeTab: ProfileTab = 'overview';
 
   tabs: { id: ProfileTab; label: string }[] = [
     { id: 'overview', label: 'Overview' },
-    { id: 'bookings', label: 'Bookings' },
-    // { id: 'saved', label: 'Saved' },
-    // { id: 'following', label: 'Following' },
+    { id: 'queue', label: 'Queue' },
   ];
 
   get activeTabLabel(): string {
@@ -45,9 +41,8 @@ export class Profile implements OnInit {
   }
 
   // =========================
-  // Placeholder data (replace with API data later)
+  // Placeholder stats (still fine)
   // =========================
-
   stats = [
     { value: 12, label: 'Events attended' },
     { value: 8, label: 'Saved' },
@@ -55,34 +50,27 @@ export class Profile implements OnInit {
   ];
 
   // =========================
-  // Bookings (API)
+  // Queue (cart)
   // =========================
-  // A booking works like a reservation: it is made now and paid for later,
-  // so pending bookings show up here too.
+  queue = signal<CartItem[]>([]);
+  queueLoading = signal(true);
+  queueError = signal('');
 
-  bookings = signal<BookingDetailsResponse[]>([]);
-  bookingsLoading = signal(true);
-  bookingsError = signal('');
-
-  // Next few bookings that are not cancelled and have not happened yet.
-  upcomingBookings = computed(() => {
+  // First few upcoming cart items for the Overview tab.
+  upcomingQueue = computed(() => {
     const startOfToday = new Date();
     startOfToday.setHours(0, 0, 0, 0);
 
-    return this.bookings()
-      .filter(
-        (b) =>
-          b.status.toLowerCase() !== 'cancelled' &&
-          new Date(b.event.event_date) >= startOfToday,
-      )
+    return this.queue()
+      .filter((i) => new Date(i.event.event_date) >= startOfToday)
       .sort((a, b) => a.event.event_date.localeCompare(b.event.event_date))
       .slice(0, 4);
   });
 
-  // Every booking, soonest first, for the Bookings tab.
-  allBookings = computed(() =>
-    [...this.bookings()].sort((a, b) =>
-      b.event.event_date.localeCompare(a.event.event_date),
+  // Every cart item, soonest first, for the Queue tab.
+  allQueue = computed(() =>
+    [...this.queue()].sort((a, b) =>
+      a.event.event_date.localeCompare(b.event.event_date),
     ),
   );
 
@@ -104,53 +92,37 @@ export class Profile implements OnInit {
     },
   ];
 
-  saved = [
-    {
-      title: 'Theatre Production',
-      place: 'Lagos, Nigeria',
-      image: 'assets/images/event-6.jpg',
-    },
-    {
-      title: 'Afrobeat Live',
-      place: 'Lagos, Nigeria',
-      image: 'assets/images/event-7.jpg',
-    },
-  ];
-
   // =========================
   // Lifecycle
   // =========================
-
   ngOnInit(): void {
     this.userDetails();
-    this.loadBookings();
+    this.loadQueue();
   }
 
-  loadBookings(): void {
-    this.bookingsLoading.set(true);
-    this.bookingsError.set('');
+  loadQueue(): void {
+    this.queueLoading.set(true);
+    this.queueError.set('');
 
-    this.bookingService.getBookings().subscribe({
-      next: (bookings) => {
-        this.bookings.set(bookings);
-        this.bookingsLoading.set(false);
+    this.cartService.getCart().subscribe({
+      next: (items) => {
+        this.queue.set(items);
+        this.queueLoading.set(false);
       },
       error: (error) => {
-        console.error('Failed to load bookings:', error);
-        this.bookingsError.set('We could not load your bookings.');
-        this.bookingsLoading.set(false);
+        console.error('Failed to load queue:', error);
+        this.queueError.set('We could not load your queue.');
+        this.queueLoading.set(false);
       },
     });
   }
 
   // =========================
-  // Booking row helpers
+  // Row helpers
   // =========================
-
-  formatAmount(booking: BookingDetailsResponse): string {
-    return booking.is_free
-      ? 'Free'
-      : `₦${booking.total_amount.toLocaleString('en-NG')}`;
+  formatAmount(item: CartItem): string {
+    const total = item.ticket_type.price * item.quantity;
+    return total === 0 ? 'Free' : `₦${total.toLocaleString('en-NG')}`;
   }
 
   month(iso: string): string {
@@ -161,31 +133,21 @@ export class Profile implements OnInit {
     return String(new Date(iso).getDate());
   }
 
-  statusLabel(booking: BookingDetailsResponse): string {
-    const status = booking.status.toLowerCase();
-
-    if (status === 'pending') {
-      return booking.is_free ? 'Reserved' : 'Awaiting payment';
-    }
-
-    return status.charAt(0).toUpperCase() + status.slice(1);
+  // How many attendee forms are still empty on this cart item.
+  formsNeeded(item: CartItem): number {
+    return item.forms_needed;
   }
 
-  // Yellow = pending, green = confirmed or paid, gray = anything else.
-  statusClasses(booking: BookingDetailsResponse): string {
-    const status = booking.status.toLowerCase();
-
-    if (status === 'pending') {
-      return 'bg-accent/20 text-accent-dark';
-    }
-
-    if (['paid', 'confirmed', 'completed', 'success'].includes(status)) {
-      return 'bg-success/10 text-success-dark';
-    }
-
-    return 'bg-gray-100 text-gray-500';
+  // Scrolls into the queue page at this item, or navigates there.
+  goToQueueItem(item: CartItem): void {
+    this.router.navigate(['/queue'], {
+      fragment: `item-${item.uuid}`,
+    });
   }
 
+  // =========================
+  // User
+  // =========================
   userDetails(): void {
     this.userService.getUser().subscribe({
       next: (user) => {
@@ -195,19 +157,13 @@ export class Profile implements OnInit {
         this.phone = user.phone;
         this.createdAt = user.created_at;
       },
-      error: (error) => {
-        console.error('Error fetching user details:', error);
-      },
+      error: (error) => console.error('Error fetching user details:', error),
     });
   }
 
   createInitials(): string {
-    const firstInitial = this.firstName
-      ? this.firstName.charAt(0).toUpperCase()
-      : '';
-    const lastInitial = this.lastName
-      ? this.lastName.charAt(0).toUpperCase()
-      : '';
-    return firstInitial + lastInitial;
+    const first = this.firstName ? this.firstName.charAt(0).toUpperCase() : '';
+    const last = this.lastName ? this.lastName.charAt(0).toUpperCase() : '';
+    return first + last;
   }
 }

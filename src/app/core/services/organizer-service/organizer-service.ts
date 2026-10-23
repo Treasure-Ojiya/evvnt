@@ -10,12 +10,14 @@ import {
   EventListItem,
   UpdateEventModel,
   UpdateTicketTypeModel,
+  BookingOrderId,
+  BookingOrderIdAttendees,
 } from '../../../app-model/model';
 
 @Injectable({
   providedIn: 'root',
 })
-export class CreateService {
+export class OrganizerService {
   private baseUrl = environment.BASE_URL;
 
   constructor(private http: HttpClient) {}
@@ -77,7 +79,7 @@ export class CreateService {
   }
   ////////////////////////////////////////manage events
 
-  // POST /events/{event_id}/publish: makes a draft event public.
+  // POST /events/{event_id}/publish: publish a draft event public.
   publishEvent(eventId: string): Observable<EventModel> {
     return this.http.post<EventModel>(
       `${this.baseUrl}/events/${eventId}/publish`,
@@ -93,6 +95,18 @@ export class CreateService {
     return this.http.post<EventCategories>(
       `${this.baseUrl}/categories/`,
       newCategory,
+    );
+  }
+
+  getEventOrders(orderId: string): Observable<BookingOrderId> {
+    return this.http.get<BookingOrderId>(`${this.baseUrl}/booking/${orderId}`);
+  }
+
+  getEventOrderAttendees(
+    orderId: string,
+  ): Observable<BookingOrderIdAttendees[]> {
+    return this.http.get<BookingOrderIdAttendees[]>(
+      `${this.baseUrl}/booking/${orderId}/attendees`,
     );
   }
 }

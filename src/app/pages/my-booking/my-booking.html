@@ -1,4 +1,4 @@
-<div
+<!-- <div
   class="bg-surface max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-10 lg:pt-28"
 >
   <section>
@@ -10,7 +10,6 @@
     </div>
 
     @if (isLoading()) {
-      <!-- Loading -->
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8" aria-hidden="true">
         @for (n of [1, 2, 3]; track n) {
           <div
@@ -26,7 +25,6 @@
         }
       </div>
     } @else if (loadError()) {
-      <!-- Error -->
       <section
         class="rounded-2xl border border-dashed border-gray-300 px-6 py-16 text-center"
         role="alert"
@@ -42,7 +40,6 @@
         </button>
       </section>
     } @else if (upcoming().length === 0) {
-      <!-- Empty -->
       <section
         class="rounded-2xl border border-dashed border-gray-300 px-6 py-16 text-center"
       >
@@ -58,7 +55,6 @@
         </a>
       </section>
     } @else {
-      <!-- Upcoming -->
       <h2 class="text-xl font-bold text-ink mb-5">Upcoming</h2>
 
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -77,7 +73,6 @@
                 <div class="h-40 w-full bg-brand-soft"></div>
               }
 
-              <!-- Date tile -->
               <div
                 class="absolute top-3 left-3 w-12 rounded-xl bg-white text-center py-1.5 shadow-sm"
               >
@@ -134,4 +129,4 @@
       </div>
     }
   </section>
-</div>
+</div> -->

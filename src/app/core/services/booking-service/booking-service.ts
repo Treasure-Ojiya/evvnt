@@ -1,21 +1,19 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import {
   BookingDetailsResponse,
   BookingModel,
-  BookingPayment,
+  PaystackInitResponse,
 } from '../../../app-model/model';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class BookingService {
-  constructor(private http: HttpClient) {}
-
+  private http = inject(HttpClient);
   private baseUrl = environment.BASE_URL;
 
+  // POST /bookings/  — direct mode (payment page "direct")
   createBooking(booking: BookingModel): Observable<BookingDetailsResponse> {
     return this.http.post<BookingDetailsResponse>(
       `${this.baseUrl}/bookings/`,
@@ -23,22 +21,18 @@ export class BookingService {
     );
   }
 
-  getBookings(): Observable<BookingDetailsResponse[]> {
-    return this.http.get<BookingDetailsResponse[]>(
-      `${this.baseUrl}/bookings/me`,
-    );
-  }
-
-  cancelBooking(orderId: string): Observable<BookingDetailsResponse> {
-    return this.http.post<BookingDetailsResponse>(
-      `${this.baseUrl}/bookings/${orderId}/cancel`,
+  // POST /bookings/{order_id}/pay/paystack
+  initPaystack(orderId: string): Observable<PaystackInitResponse> {
+    return this.http.post<PaystackInitResponse>(
+      `${this.baseUrl}/bookings/${orderId}/pay/paystack`,
       {},
     );
   }
 
-  bookingPayment(orderId: string): Observable<BookingPayment> {
-    return this.http.post<BookingPayment>(
-      `${this.baseUrl}/bookings/${orderId}/payment`,
+  // POST /bookings/{order_id}/cancel
+  cancelBooking(orderId: string): Observable<BookingDetailsResponse> {
+    return this.http.post<BookingDetailsResponse>(
+      `${this.baseUrl}/bookings/${orderId}/cancel`,
       {},
     );
   }
