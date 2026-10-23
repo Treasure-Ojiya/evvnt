@@ -18,17 +18,19 @@ export class Footer implements OnInit {
   private activatedRoute = inject(ActivatedRoute);
   private scrollService = inject(ScrollService);
 
+  readonly currentYear = new Date().getFullYear();
+
   onScroll(sectionId: string, event: Event) {
     event.preventDefault();
-    this.scrollService.goToSection(sectionId); // 🔥 one-liner now
+    this.scrollService.goToSection(sectionId);
   }
 
   ngOnInit() {
     this.router.events
       .pipe(
         filter(
-          (event): event is NavigationEnd => event instanceof NavigationEnd
-        )
+          (event): event is NavigationEnd => event instanceof NavigationEnd,
+        ),
       )
       .subscribe(() => {
         const currentRoute = this.getDeepestChild(this.activatedRoute);
@@ -38,7 +40,6 @@ export class Footer implements OnInit {
       });
   }
 
-  // helper: find the deepest child route (useful for nested routes)
   private getDeepestChild(route: ActivatedRoute): ActivatedRoute {
     while (route.firstChild) {
       route = route.firstChild;

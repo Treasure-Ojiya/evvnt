@@ -97,6 +97,19 @@ export class Authentication {
     this.isLogin = false;
   }
 
+  private resumeOrHome(): void {
+    const target = sessionStorage.getItem('postLoginRedirect');
+    sessionStorage.removeItem('postLoginRedirect');
+
+    // Never resume into a one-shot page.
+    const disallowed = ['/payment', '/auth/'];
+    if (target && !disallowed.some((p) => target.startsWith(p))) {
+      this.router.navigateByUrl(target);
+      return;
+    }
+    this.router.navigate(['/home']);
+  }
+
   onLogin(): void {
     if (this.loginForm.invalid || this.isLoginSubmitting) {
       this.loginForm.markAllAsTouched();
@@ -113,9 +126,10 @@ export class Authentication {
 
         if (res.status === 'success') {
           localStorage.setItem('access_token', res.access_token);
+          localStorage.setItem('refresh_token', res.refresh_token);
           this.authService.setLoggedIn();
           this.toastService.show('Signed in successfully.', 'success');
-          this.router.navigate(['/home']);
+          this.resumeOrHome();
         } else {
           console.error('Login failed:', res.message);
           this.toastService.show(

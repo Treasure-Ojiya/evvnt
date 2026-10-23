@@ -280,30 +280,6 @@
           </div>
         }
 
-        @if (justQueued(); as queued) {
-          <div
-            class="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-success/10 px-4 py-3 text-sm text-success-dark"
-            role="status"
-          >
-            <p>“{{ queued.title }}” is in your queue.</p>
-            <div class="flex items-center gap-4">
-              <a
-                routerLink="/queue"
-                class="font-semibold underline underline-offset-4"
-              >
-                View queue
-              </a>
-              <button
-                type="button"
-                (click)="justQueued.set(null)"
-                class="font-semibold hover:underline underline-offset-4"
-              >
-                Dismiss
-              </button>
-            </div>
-          </div>
-        }
-
         <!-- Grid -->
         <div class="mt-6">
           @if (eventsError()) {

@@ -1,11 +1,26 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { catchError, switchMap, throwError } from 'rxjs';
+import { Router } from '@angular/router';
+import {
+  catchError,
+  finalize,
+  Observable,
+  shareReplay,
+  switchMap,
+  take,
+  throwError,
+} from 'rxjs';
 import { AuthService } from '../services/auth-service/auth-service';
+import { ToastService } from '../services/toast-service/toast-service';
 import { environment } from '../../../environments/environment';
+
+// Shared across all interceptor invocations — one refresh in flight at a time.
+let refreshing$: Observable<string> | null = null;
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
+  const router = inject(Router);
+  const toastService = inject(ToastService);
 
   const accessToken = localStorage.getItem('access_token');
 
@@ -17,10 +32,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   ) {
     return next(req);
   }
+
   const authReq = req.clone({
-    setHeaders: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    setHeaders: { Authorization: `Bearer ${accessToken}` },
   });
 
   return next(authReq).pipe(
@@ -29,28 +43,50 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => error);
       }
 
-      return authService.refreshToken().pipe(
-        switchMap((response) => {
-          localStorage.setItem('access_token', response.access_token);
-          localStorage.setItem('refresh_token', response.refresh_token);
+      // Reuse an in-flight refresh, or start one.
+      if (!refreshing$) {
+        refreshing$ = authService.refreshToken().pipe(
+          switchMap((response) => {
+            localStorage.setItem('access_token', response.access_token);
+            localStorage.setItem('refresh_token', response.refresh_token);
+            return [response.access_token];
+          }),
+          catchError((refreshError) => {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('user');
+            authService.setLoggedOut();
 
-          const retryReq = req.clone({
-            setHeaders: {
-              Authorization: `Bearer ${response.access_token}`,
-            },
-          });
+            const currentUrl = router.url;
+            if (currentUrl && !currentUrl.startsWith('/auth/')) {
+              sessionStorage.setItem('postLoginRedirect', currentUrl);
+            }
 
-          return next(retryReq);
-        }),
+            toastService.show(
+              'Session expired. Please sign in again.',
+              'error',
+              5000,
+            );
+            router.navigate(['/auth/authentication']);
 
-        catchError((refreshError) => {
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
-          localStorage.removeItem('user');
-          authService.setLoggedOut();
+            return throwError(() => refreshError);
+          }),
+          finalize(() => {
+            refreshing$ = null;
+          }),
+          shareReplay(1),
+        );
+      }
 
-          return throwError(() => refreshError);
-        }),
+      return refreshing$.pipe(
+        take(1),
+        switchMap((newToken) =>
+          next(
+            req.clone({
+              setHeaders: { Authorization: `Bearer ${newToken}` },
+            }),
+          ),
+        ),
       );
     }),
   );

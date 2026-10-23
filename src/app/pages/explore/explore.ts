@@ -38,6 +38,7 @@ import { OrganizerService } from '../../core/services/organizer-service/organize
 import { ExploreService } from '../../core/services/explore-service/explore-service';
 import { CartService } from '../../core/services/cart-service/cart-service';
 import { AuthService } from '../../core/services/auth-service/auth-service';
+import { ToastService } from '../../core/services/toast-service/toast-service';
 
 type DateRange = 'any' | 'today' | 'week' | 'weekend' | 'month';
 type PriceFilter = 'any' | 'free' | 'paid';
@@ -82,6 +83,7 @@ export class Explore {
   private organizerService = inject(OrganizerService);
   private cartService = inject(CartService);
   private authService = inject(AuthService);
+  private toastService = inject(ToastService);
 
   isLoggedIn = toSignal(this.authService.isLoggedIn$, { initialValue: false });
 
@@ -101,13 +103,9 @@ export class Explore {
 
   failedImages = signal<string[]>([]);
 
-  // =========================
-  // Queue state (was: booking state)
-  // =========================
   queueingId = signal<string | null>(null);
   queuedEventIds = signal<string[]>([]);
   queueMessages = signal<Record<string, string>>({});
-  justQueued = signal<{ title: string } | null>(null);
 
   startingPrices = signal<Record<string, number>>({});
 
@@ -429,7 +427,7 @@ export class Explore {
       return;
     }
     if (this.isSoldOut(event)) {
-      this.setQueueMessage(event.uuid, 'This event is sold out.');
+      this.toastService.show('This event is sold out.', 'error', 4000);
       return;
     }
     if (this.queueingId() !== null || this.isQueued(event)) {
@@ -437,8 +435,6 @@ export class Explore {
     }
 
     this.queueingId.set(event.uuid);
-    this.justQueued.set(null);
-    this.setQueueMessage(event.uuid, '');
 
     this.exploreService
       .getEvent(event.uuid)
@@ -461,17 +457,20 @@ export class Explore {
       .subscribe({
         next: () => {
           this.queuedEventIds.update((ids) => [...ids, event.uuid]);
-          this.justQueued.set({ title: event.title });
           this.queueingId.set(null);
+          this.toastService.show(
+            `"${event.title}" is in your queue.`,
+            'success',
+            4000,
+          );
         },
         error: (error) => {
           console.error('Queue failed:', error);
-          this.setQueueMessage(event.uuid, this.queueErrorText(error));
           this.queueingId.set(null);
+          this.toastService.show(this.queueErrorText(error), 'error', 5000);
         },
       });
   }
-
   private setQueueMessage(id: string, message: string): void {
     this.queueMessages.update((current) => ({ ...current, [id]: message }));
   }
