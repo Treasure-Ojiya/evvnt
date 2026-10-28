@@ -11,8 +11,16 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { Subscription, map, of, switchMap } from 'rxjs';
-import { CartItem } from '../../app-model/model';
+import {
+  Observable,
+  Subscription,
+  map,
+  of,
+  switchMap,
+  tap,
+  throwError,
+} from 'rxjs';
+import { BookingDetailsResponse, CartItem } from '../../app-model/model';
 import { ExploreService } from '../../core/services/explore-service/explore-service';
 import { CartService } from '../../core/services/cart-service/cart-service';
 import { BookingService } from '../../core/services/booking-service/booking-service';
@@ -42,6 +50,14 @@ function emailsMatch(group: AbstractControl): ValidationErrors | null {
     : null;
 }
 
+/**
+ * Checkout. Two ways in:
+ *  - direct: ?event=...&ticket=...&qty=...  (from the event page)
+ *  - cart:   ?cart=<cart item id>           (from the queue)
+ * One details form per ticket. On desktop everything is on one screen
+ * (forms left, summary and payment right); on a phone it goes step by step:
+ * details, review, payment.
+ */
 @Component({
   selector: 'app-payment',
   imports: [DatePipe, NgClass, ReactiveFormsModule, RouterLink],
@@ -97,7 +113,13 @@ export class Payment {
   private mirrorSub: Subscription | null = null;
 
   isPaying = signal(false);
-  paymentStarted = signal<{ reference: string; amount: number } | null>(null);
+  // True once Paystack has given us a link and the browser is leaving.
+  redirecting = signal(false);
+
+  // Set as soon as the order exists. If starting the payment fails, pressing
+  // Pay again reuses this order instead of creating a second one. In cart
+  // mode the cart item is already gone by then, so a retry has to reuse it.
+  private orderId: string | null = null;
 
   // ============ Derived (works for both modes) ============
   ticket = computed(() => {
@@ -111,7 +133,7 @@ export class Payment {
     );
   });
 
-  // add to payments.ts
+  // The event shown in the summary (same fields in both modes).
   viewEvent = computed(() => {
     if (this.mode() === 'cart') {
       const c = this.cartItem();
@@ -129,7 +151,7 @@ export class Payment {
   }
 
   // ================================================
-  // LOAD — branches on which query params exist
+  // LOAD: branches on which query params exist
   // ================================================
   load(): void {
     const p = this.route.snapshot.queryParamMap;
@@ -150,16 +172,33 @@ export class Payment {
             this.fail('This event has already taken place.');
             return;
           }
+
+          const max = Math.min(
+            MAX_PER_ORDER,
+            item.ticket_type.available_quantity,
+          );
+
+          if (max <= 0) {
+            this.fail('This ticket is sold out.');
+            return;
+          }
+
+          // The saved quantity may be more than what is left now.
+          const quantity = Math.min(Math.max(1, item.quantity), max);
+
           this.cartItem.set(item);
           this.ticketId.set(item.ticket_type.uuid);
-          this.quantity.set(item.quantity);
-          this.maxQuantity.set(
-            Math.min(MAX_PER_ORDER, item.ticket_type.available_quantity),
-          );
-          this.buildAttendees(item.quantity, item.attendees);
+          this.quantity.set(quantity);
+          this.maxQuantity.set(max);
+          this.buildAttendees(quantity, item.attendees);
           this.isLoading.set(false);
         },
-        error: () => this.fail('We could not load this cart item.'),
+        error: (error) =>
+          this.fail(
+            error?.status === 404
+              ? 'This item is no longer in your queue.'
+              : 'We could not load this queue item. Please try again.',
+          ),
       });
       return;
     }
@@ -359,6 +398,8 @@ export class Payment {
     this.scrollToTop();
   }
   goBack(): void {
+        if (this.redirecting() || this.isPaying()) return; // <-- ADD THIS LINE
+
     this.location.back();
   }
   private scrollToTop(): void {
@@ -366,10 +407,11 @@ export class Payment {
   }
 
   // ================================================
-  // SUBMIT — the only place modes diverge
+  // SUBMIT: the only place the two modes differ
   // ================================================
   submit(): void {
     if (this.isPaying()) return;
+
     if (this.attendees.invalid) {
       this.attendees.markAllAsTouched();
       this.step.set(1);
@@ -378,56 +420,74 @@ export class Payment {
 
     this.isPaying.set(true);
 
-    const order$ =
-      this.mode() === 'cart' ? this.orderFromCart() : this.orderDirect();
-
-    order$
+    this.getOrder()
       .pipe(
         switchMap((order) =>
           order.is_free
-            ? of({ order, paystack: null })
+            ? of({ paystack: null })
             : this.bookingService
                 .initPaystack(order.uuid)
-                .pipe(map((paystack) => ({ order, paystack }))),
+                .pipe(map((paystack) => ({ paystack }))),
         ),
       )
       .subscribe({
-        next: ({ order, paystack }) => {
-          this.isPaying.set(false);
+        next: ({ paystack }) => {
           if (!paystack) {
+            // A free booking needs no payment.
+            this.isPaying.set(false);
             this.toastService.show(
               "You're in! Your spot is reserved.",
               'success',
               4000,
             );
-            this.router.navigate(['/queue']);
+            this.router.navigate(['/profile'], {
+              queryParams: { tab: 'bookings' },
+            });
             return;
           }
-          this.paymentStarted.set({
-            reference: paystack.reference,
-            amount: paystack.amount,
-          });
+
+          // Keep the button locked while the browser leaves for Paystack.
+          this.redirecting.set(true);
           window.location.href = paystack.authorization_url;
         },
         error: (error) => {
           console.error('Checkout failed:', error);
           this.isPaying.set(false);
+          this.redirecting.set(false);
+
           this.toastService.show(
-            typeof error?.error?.detail === 'string'
-              ? error.error.detail
-              : 'We could not start your payment. Please try again.',
+            this.orderId
+              ? 'Your order was created, but payment could not start. Press Pay to try again.'
+              : typeof error?.error?.detail === 'string'
+                ? error.error.detail
+                : 'We could not start your payment. Please try again.',
             'error',
-            5000,
+            6000,
           );
         },
       });
   }
 
-  // mode: direct — create the order with attendees in one call
-  private orderDirect() {
+  // Creates the order once. A retry after a failed payment start reuses it.
+  private getOrder(): Observable<{ uuid: string; is_free: boolean }> {
+    if (this.orderId) {
+      return of({ uuid: this.orderId, is_free: this.isFree() });
+    }
+
+    const created$ =
+      this.mode() === 'cart' ? this.orderFromCart() : this.orderDirect();
+
+    return created$.pipe(tap((order) => (this.orderId = order.uuid)));
+  }
+
+  // Direct mode: create the booking with every attendee in one call.
+  private orderDirect(): Observable<BookingDetailsResponse> {
     const event = this.eventFull();
     const ticket = this.ticket();
-    if (!event || !ticket) throw new Error('Checkout is not ready.');
+
+    if (!event || !ticket) {
+      return throwError(() => new Error('Checkout is not ready.'));
+    }
 
     return this.bookingService.createBooking({
       event_id: event.uuid,
@@ -442,13 +502,19 @@ export class Payment {
     });
   }
 
-  // mode: cart — save progress, then checkout the cart item (deletes it)
-  private orderFromCart() {
+  // Cart mode: save the quantity and attendees, then check the item out.
+  // The quantity must go with the attendees, because the server caps the
+  // attendee list at the saved quantity.
+  private orderFromCart(): Observable<BookingDetailsResponse> {
     const id = this.cartItem()?.uuid;
-    if (!id) throw new Error('Checkout is not ready.');
+
+    if (!id) {
+      return throwError(() => new Error('Checkout is not ready.'));
+    }
 
     return this.cartService
       .updateCartItem(id, {
+        quantity: this.quantity(),
         attendees: this.attendees.getRawValue().map((a) => ({
           full_name: a.name,
           email: a.email,
@@ -464,4 +530,5 @@ export class Payment {
   formatPrice(amount: number): string {
     return amount === 0 ? 'Free' : `₦${amount.toLocaleString('en-NG')}`;
   }
+
 }

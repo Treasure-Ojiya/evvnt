@@ -14,14 +14,6 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/home/home').then((m) => m.Home),
   },
 
-  // {
-  //   path: 'my-booking',
-  //   loadComponent: () =>
-  //     import('./pages/my-booking/my-booking').then((m) => m.MyBooking),
-  //   data: { hideFooter: true },
-  //   canActivate: [authGuard],
-  // },
-
   {
     path: 'queue',
     loadComponent: () => import('./pages/queue/queue').then((m) => m.Queue),
@@ -47,6 +39,15 @@ export const routes: Routes = [
       import('./pages/payments/payments').then((m) => m.Payment),
     data: { hideFooter: true },
     canActivate: [authGuard],
+  },
+
+  {
+    path: 'payments/payment-callback',
+    loadComponent: () =>
+      import('./pages/payments/payment-callback/payment-callback').then(
+        (m) => m.PaymentCallback,
+      ),
+    data: { hideLayout: true },
   },
 
   {

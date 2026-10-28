@@ -23,24 +23,60 @@
             Explore events
           </a>
           <a
-            routerLink="/my-booking"
+            routerLink="/queue"
             class="rounded-full border border-brand px-5 py-2 text-sm font-semibold text-ink transition-colors hover:bg-brand-dark hover:text-white"
           >
             My queue
           </a>
         </div>
       </section>
-    } @else if (paymentStarted(); as payment) {
-      <!-- Payment created. Paystack opens from here once it is connected. -->
-      <section
-        class="mx-auto max-w-md rounded-3xl border border-gray-200 bg-white p-8 text-center"
-      >
-        <span
-          class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-success/10 text-success-dark"
+    } @else if (viewEvent(); as e) {
+      @if (redirecting()) {
+        <!-- ============ REDIRECTING SCREEN ============ -->
+        <section
+          class="mt-12 mx-auto max-w-md rounded-3xl border border-gray-200 bg-white p-8 text-center shadow-sm"
+        >
+          <svg
+            class="mx-auto h-12 w-12 animate-spin text-brand"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            />
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+            />
+          </svg>
+          <h1 class="mt-6 text-2xl font-bold text-ink">
+            Redirecting to payment
+          </h1>
+          <p class="mt-2 text-sm text-gray-500">
+            Please do not close this tab or press back. You are being securely
+            redirected to Paystack to complete your payment of
+            <strong>{{ formatPrice(total()) }}</strong
+            >.
+          </p>
+        </section>
+      } @else {
+        <!-- ============ MAIN CHECKOUT SCREEN ============ -->
+
+        <button
+          type="button"
+          (click)="goBack()"
+          [disabled]="isPaying()"
+          class="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-600 transition-colors hover:text-ink disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <svg
             viewBox="0 0 24 24"
-            class="h-7 w-7"
+            class="h-4 w-4"
             fill="none"
             stroke="currentColor"
             stroke-width="2.5"
@@ -48,481 +84,446 @@
             stroke-linejoin="round"
             aria-hidden="true"
           >
-            <path d="M5 12l5 5L20 7" />
+            <path d="M15 18l-6-6 6-6" />
           </svg>
-        </span>
-        <h1 class="mt-5 text-2xl font-bold text-ink">Payment started</h1>
-        <p class="mt-2 text-sm text-gray-500">
-          Your payment of
-          <strong class="text-ink">{{ formatPrice(payment.amount) }}</strong>
-          has been set up. We will confirm your booking as soon as it goes
-          through.
+          Back
+        </button>
+
+        <h1 class="mt-3 text-3xl font-bold text-ink">
+          {{ isFree() ? "Reserve your spot" : "Checkout" }}
+        </h1>
+        <p class="mt-1 text-sm text-gray-500">
+          {{ quantity() }} × {{ ticket()?.name }} for {{ e.title }}
         </p>
-        <p
-          class="mt-5 rounded-xl bg-brand-soft px-4 py-3 text-xs text-gray-600"
+
+        <!-- Steps (small screens only) -->
+        <ol
+          class="mt-6 grid grid-cols-3 gap-2 lg:hidden"
+          aria-label="Checkout steps"
         >
-          Reference
-          <span
-            class="mt-0.5 block break-all font-mono text-sm font-semibold text-ink"
-            >{{ payment.reference }}</span
-          >
-        </p>
-        <div class="mt-6 flex justify-center gap-3">
-          <a
-            routerLink="/queue"
-            class="rounded-full bg-brand px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
-          >
-            View my queue
-          </a>
-          <a
-            routerLink="/explore"
-            class="rounded-full border border-brand px-5 py-2 text-sm font-semibold text-ink transition-colors hover:bg-brand-dark hover:text-white"
-          >
-            Keep exploring
-          </a>
-        </div>
-      </section>
-    } @else if (viewEvent(); as e) {
-      <!-- Header -->
-      <button
-        type="button"
-        (click)="goBack()"
-        class="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-600 transition-colors hover:text-ink"
-      >
-        <svg
-          viewBox="0 0 24 24"
-          class="h-4 w-4"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M15 18l-6-6 6-6" />
-        </svg>
-        Back
-      </button>
-
-      <h1 class="mt-3 text-3xl font-bold text-ink">
-        {{ isFree() ? "Reserve your spot" : "Checkout" }}
-      </h1>
-      <p class="mt-1 text-sm text-gray-500">
-        {{ quantity() }} × {{ ticket()?.name }} for {{ e.title }}
-      </p>
-
-      <!-- Steps (small screens only) -->
-      <ol
-        class="mt-6 grid grid-cols-3 gap-2 lg:hidden"
-        aria-label="Checkout steps"
-      >
-        @for (s of steps; track s.id) {
-          <li>
-            <div
-              class="h-1.5 rounded-full transition-colors"
-              [ngClass]="step() >= s.id ? 'bg-brand-dark' : 'bg-gray-300'"
-            ></div>
-            <p
-              class="mt-1.5 text-xs font-semibold"
-              [ngClass]="step() === s.id ? 'text-ink' : 'text-gray-500'"
-            >
-              {{ s.id }}. {{ s.label }}
-            </p>
-          </li>
-        }
-      </ol>
-
-      <div
-        class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start"
-      >
-        <!-- ============ DETAILS ============ -->
-        <section
-          class="min-w-0"
-          [ngClass]="step() === 1 ? 'block' : 'hidden lg:block'"
-          aria-labelledby="attendee-heading"
-        >
-          <h2 id="attendee-heading" class="text-lg font-bold text-ink">
-            {{ quantity() === 1 ? "Your details" : "Who is attending?" }}
-          </h2>
-          <p class="mt-1 text-sm text-gray-500">
-            {{
-              quantity() === 1
-                ? "We will send your ticket to this email."
-                : "One form for each ticket."
-            }}
-          </p>
-
-          @if (quantity() > 1) {
-            <label
-              class="mt-4 flex cursor-pointer items-center gap-3 text-sm text-ink"
-            >
-              <input
-                type="checkbox"
-                class="h-4 w-4 rounded border-gray-300 accent-brand"
-                [checked]="sameContact()"
-                (change)="toggleSameContact($any($event.target).checked)"
-              />
-              Use the same phone number and email for every ticket
-            </label>
-          }
-
-          <div class="mt-5 space-y-4">
-            @for (group of attendees.controls; track $index; let i = $index) {
+          @for (s of steps; track s.id) {
+            <li>
               <div
-                [formGroup]="group"
-                class="rounded-3xl border border-gray-200 bg-white p-5 sm:p-6"
+                class="h-1.5 rounded-full transition-colors"
+                [ngClass]="step() >= s.id ? 'bg-brand-dark' : 'bg-gray-300'"
+              ></div>
+              <p
+                class="mt-1.5 text-xs font-semibold"
+                [ngClass]="step() === s.id ? 'text-ink' : 'text-gray-500'"
               >
-                <div class="flex items-center justify-between gap-3">
-                  <div class="flex min-w-0 items-center gap-3">
-                    <span
-                      class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-soft text-sm font-bold text-brand-dark"
-                    >
-                      {{ i + 1 }}
-                    </span>
-                    <p class="truncate font-semibold text-ink">
-                      Ticket {{ i + 1 }}
-                      <span class="font-normal text-gray-500"
-                        >· {{ ticket()?.name }}</span
-                      >
-                    </p>
-                  </div>
-
-                  @if (attendees.length > 1) {
-                    <button
-                      type="button"
-                      (click)="removeTicket(i)"
-                      [attr.aria-label]="'Remove ticket ' + (i + 1)"
-                      class="inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-gray-500 transition-colors hover:bg-danger/10 hover:text-danger-dark"
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        class="h-4 w-4"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path
-                          d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 002 2h6a2 2 0 002-2l1-12M9 7V4h6v3"
-                        />
-                      </svg>
-                      Remove
-                    </button>
-                  }
-                </div>
-
-                <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div class="sm:col-span-2">
-                    <label
-                      [for]="'name-' + i"
-                      class="mb-1 block text-sm font-semibold text-ink"
-                      >Full name</label
-                    >
-                    <input
-                      [id]="'name-' + i"
-                      type="text"
-                      formControlName="name"
-                      autocomplete="name"
-                      placeholder="e.g. Ada Okafor"
-                      class="w-full min-w-0 rounded-xl border border-gray-300 px-4 py-2.5 text-sm placeholder:text-gray-400 focus:outline-2 focus:outline-brand"
-                    />
-                    @if (fieldError(group, "name"); as message) {
-                      <p class="mt-1 text-xs text-danger-dark">{{ message }}</p>
-                    }
-                  </div>
-
-                  <div>
-                    <label
-                      [for]="'phone-' + i"
-                      class="mb-1 block text-sm font-semibold text-ink"
-                      >Phone number</label
-                    >
-                    <input
-                      [id]="'phone-' + i"
-                      type="tel"
-                      formControlName="phone"
-                      autocomplete="tel"
-                      placeholder="+234 801 234 5678"
-                      class="w-full min-w-0 rounded-xl border border-gray-300 px-4 py-2.5 text-sm placeholder:text-gray-400 focus:outline-2 focus:outline-brand disabled:bg-gray-50 disabled:text-gray-500"
-                    />
-                    @if (fieldError(group, "phone"); as message) {
-                      <p class="mt-1 text-xs text-danger-dark">{{ message }}</p>
-                    }
-                  </div>
-
-                  <div>
-                    <label
-                      [for]="'email-' + i"
-                      class="mb-1 block text-sm font-semibold text-ink"
-                      >Email</label
-                    >
-                    <input
-                      [id]="'email-' + i"
-                      type="email"
-                      formControlName="email"
-                      autocomplete="email"
-                      placeholder="you@example.com"
-                      class="w-full min-w-0 rounded-xl border border-gray-300 px-4 py-2.5 text-sm placeholder:text-gray-400 focus:outline-2 focus:outline-brand disabled:bg-gray-50 disabled:text-gray-500"
-                    />
-                    @if (fieldError(group, "email"); as message) {
-                      <p class="mt-1 text-xs text-danger-dark">{{ message }}</p>
-                    }
-                  </div>
-
-                  <div>
-                    <label
-                      [for]="'confirm-email-' + i"
-                      class="mb-1 block text-sm font-semibold text-ink"
-                    >
-                      Confirm email
-                    </label>
-                    <input
-                      [id]="'confirm-email-' + i"
-                      type="email"
-                      formControlName="confirmEmail"
-                      autocomplete="email"
-                      placeholder="you@example.com"
-                      class="w-full min-w-0 rounded-xl border border-gray-300 px-4 py-2.5 text-sm placeholder:text-gray-400 focus:outline-2 focus:outline-brand disabled:bg-gray-50 disabled:text-gray-500"
-                    />
-                    @if (fieldError(group, "confirmEmail"); as message) {
-                      <p class="mt-1 text-xs text-danger-dark">{{ message }}</p>
-                    }
-                  </div>
-                </div>
-              </div>
-            }
-          </div>
-
-          @if (quantity() < maxQuantity()) {
-            <button
-              type="button"
-              (click)="addTicket()"
-              class="mt-4 inline-flex items-center gap-2 rounded-full border border-dashed border-gray-300 px-4 py-2 text-sm font-semibold text-ink transition-colors hover:border-brand hover:text-brand-dark"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                class="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                aria-hidden="true"
-              >
-                <path d="M12 5v14M5 12h14" />
-              </svg>
-              Add another ticket
-            </button>
+                {{ s.id }}. {{ s.label }}
+              </p>
+            </li>
           }
-        </section>
+        </ol>
 
-        <!-- ============ SUMMARY, REVIEW, PAYMENT ============ -->
-        <aside
-          class="min-w-0 space-y-4 lg:sticky lg:top-28"
-          [ngClass]="step() === 1 ? 'hidden lg:block' : 'block'"
+        <div
+          class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start"
         >
-          <!-- Order summary -->
-          <div class="rounded-3xl border border-gray-200 bg-white p-5 sm:p-6">
-            <div class="flex gap-4">
-              @if (e.image_url) {
-                <img
-                  [src]="e.image_url"
-                  [alt]="e.title"
-                  class="h-20 w-24 shrink-0 rounded-2xl bg-gray-100 object-cover"
+          <!-- ============ DETAILS ============ -->
+          <section
+            class="min-w-0"
+            [ngClass]="step() === 1 ? 'block' : 'hidden lg:block'"
+            aria-labelledby="attendee-heading"
+          >
+            <h2 id="attendee-heading" class="text-lg font-bold text-ink">
+              {{ quantity() === 1 ? "Your details" : "Who is attending?" }}
+            </h2>
+            <p class="mt-1 text-sm text-gray-500">
+              {{
+                quantity() === 1
+                  ? "We will send your ticket to this email."
+                  : "One form for each ticket."
+              }}
+            </p>
+
+            @if (quantity() > 1) {
+              <label
+                class="mt-4 flex cursor-pointer items-center gap-3 text-sm text-ink"
+              >
+                <input
+                  type="checkbox"
+                  class="h-4 w-4 rounded border-gray-300 accent-brand"
+                  [checked]="sameContact()"
+                  (change)="toggleSameContact($any($event.target).checked)"
                 />
-              } @else {
-                <div class="h-20 w-24 shrink-0 rounded-2xl bg-brand-soft"></div>
+                Use the same phone number and email for every ticket
+              </label>
+            }
+
+            <div class="mt-5 space-y-4">
+              @for (group of attendees.controls; track $index; let i = $index) {
+                <div
+                  [formGroup]="group"
+                  class="rounded-3xl border border-gray-200 bg-white p-5 sm:p-6"
+                >
+                  <div class="flex items-center justify-between gap-3">
+                    <div class="flex min-w-0 items-center gap-3">
+                      <span
+                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-soft text-sm font-bold text-brand-dark"
+                      >
+                        {{ i + 1 }}
+                      </span>
+                      <p class="truncate font-semibold text-ink">
+                        Ticket {{ i + 1 }}
+                        <span class="font-normal text-gray-500"
+                          >· {{ ticket()?.name }}</span
+                        >
+                      </p>
+                    </div>
+
+                    @if (attendees.length > 1) {
+                      <button
+                        type="button"
+                        (click)="removeTicket(i)"
+                        [attr.aria-label]="'Remove ticket ' + (i + 1)"
+                        class="inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-gray-500 transition-colors hover:bg-danger/10 hover:text-danger-dark"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          class="h-4 w-4"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 002 2h6a2 2 0 002-2l1-12M9 7V4h6v3"
+                          />
+                        </svg>
+                        Remove
+                      </button>
+                    }
+                  </div>
+
+                  <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div class="sm:col-span-2">
+                      <label
+                        [for]="'name-' + i"
+                        class="mb-1 block text-sm font-semibold text-ink"
+                        >Full name</label
+                      >
+                      <input
+                        [id]="'name-' + i"
+                        type="text"
+                        formControlName="name"
+                        autocomplete="name"
+                        placeholder="e.g. Ada Okafor"
+                        class="w-full min-w-0 rounded-xl border border-gray-300 px-4 py-2.5 text-sm placeholder:text-gray-400 focus:outline-2 focus:outline-brand"
+                      />
+                      @if (fieldError(group, "name"); as message) {
+                        <p class="mt-1 text-xs text-danger-dark">
+                          {{ message }}
+                        </p>
+                      }
+                    </div>
+
+                    <div>
+                      <label
+                        [for]="'phone-' + i"
+                        class="mb-1 block text-sm font-semibold text-ink"
+                        >Phone number</label
+                      >
+                      <input
+                        [id]="'phone-' + i"
+                        type="tel"
+                        formControlName="phone"
+                        autocomplete="tel"
+                        placeholder="+234 801 234 5678"
+                        class="w-full min-w-0 rounded-xl border border-gray-300 px-4 py-2.5 text-sm placeholder:text-gray-400 focus:outline-2 focus:outline-brand disabled:bg-gray-50 disabled:text-gray-500"
+                      />
+                      @if (fieldError(group, "phone"); as message) {
+                        <p class="mt-1 text-xs text-danger-dark">
+                          {{ message }}
+                        </p>
+                      }
+                    </div>
+
+                    <div>
+                      <label
+                        [for]="'email-' + i"
+                        class="mb-1 block text-sm font-semibold text-ink"
+                        >Email</label
+                      >
+                      <input
+                        [id]="'email-' + i"
+                        type="email"
+                        formControlName="email"
+                        autocomplete="email"
+                        placeholder="you@example.com"
+                        class="w-full min-w-0 rounded-xl border border-gray-300 px-4 py-2.5 text-sm placeholder:text-gray-400 focus:outline-2 focus:outline-brand disabled:bg-gray-50 disabled:text-gray-500"
+                      />
+                      @if (fieldError(group, "email"); as message) {
+                        <p class="mt-1 text-xs text-danger-dark">
+                          {{ message }}
+                        </p>
+                      }
+                    </div>
+
+                    <div>
+                      <label
+                        [for]="'confirm-email-' + i"
+                        class="mb-1 block text-sm font-semibold text-ink"
+                      >
+                        Confirm email
+                      </label>
+                      <input
+                        [id]="'confirm-email-' + i"
+                        type="email"
+                        formControlName="confirmEmail"
+                        autocomplete="email"
+                        placeholder="you@example.com"
+                        class="w-full min-w-0 rounded-xl border border-gray-300 px-4 py-2.5 text-sm placeholder:text-gray-400 focus:outline-2 focus:outline-brand disabled:bg-gray-50 disabled:text-gray-500"
+                      />
+                      @if (fieldError(group, "confirmEmail"); as message) {
+                        <p class="mt-1 text-xs text-danger-dark">
+                          {{ message }}
+                        </p>
+                      }
+                    </div>
+                  </div>
+                </div>
               }
-              <div class="min-w-0">
-                <h2 class="line-clamp-2 font-bold text-ink">{{ e.title }}</h2>
-                <p class="mt-1 text-xs text-gray-500">
-                  {{ e.event_date | date: "EEE, d MMM y · h:mm a" }}
-                </p>
-                <p class="truncate text-xs text-gray-500">{{ e.location }}</p>
-              </div>
             </div>
 
-            <dl
-              class="mt-5 space-y-2 border-t border-dashed border-gray-200 pt-4 text-sm"
-            >
-              <div class="flex justify-between gap-3">
-                <dt class="min-w-0 wrap-break text-gray-600">
-                  {{ ticket()?.name }} × {{ quantity() }}
-                </dt>
-                <dd class="font-semibold text-ink">
-                  {{ formatPrice(unitPrice() * quantity()) }}
-                </dd>
-              </div>
-              @if (quantity() > 1) {
-                <div class="flex justify-between text-xs text-gray-500">
-                  <dt>Price per ticket</dt>
-                  <dd>{{ formatPrice(unitPrice()) }}</dd>
-                </div>
-              }
-              <div
-                class="flex items-baseline justify-between border-t border-gray-100 pt-3"
-              >
-                <dt class="font-semibold text-gray-500">Total</dt>
-                <dd class="text-2xl font-bold text-ink">
-                  {{ formatPrice(total()) }}
-                </dd>
-              </div>
-            </dl>
-          </div>
-
-          <!-- Review (small screens, step 2) -->
-          <div
-            class="rounded-3xl border border-gray-200 bg-white p-5 lg:hidden sm:p-6"
-            [ngClass]="step() === 2 ? 'block' : 'hidden'"
-          >
-            <div class="flex items-center justify-between">
-              <h2 class="font-bold text-ink">Check your details</h2>
+            @if (quantity() < maxQuantity()) {
               <button
                 type="button"
-                (click)="editDetails()"
-                class="text-sm font-semibold text-brand-dark hover:underline underline-offset-4"
-              >
-                Edit
-              </button>
-            </div>
-
-            <ul class="mt-4 divide-y divide-gray-100">
-              @for (person of summaries(); track $index; let i = $index) {
-                <li class="py-3 text-sm">
-                  <p class="font-semibold text-ink">
-                    <span class="text-gray-500">Ticket {{ i + 1 }} · </span
-                    >{{ person.name }}
-                  </p>
-                  <p class="text-gray-600">{{ person.email }}</p>
-                  <p class="text-gray-600">{{ person.phone }}</p>
-                </li>
-              }
-            </ul>
-          </div>
-
-          <!-- Payment -->
-          <div
-            class="rounded-3xl border border-gray-200 bg-white p-5 sm:p-6"
-            [ngClass]="step() === 3 ? 'block' : 'hidden lg:block'"
-          >
-            <h2 class="font-bold text-ink">
-              {{ isFree() ? "Confirm" : "Payment" }}
-            </h2>
-
-            @if (isFree()) {
-              <p class="mt-1 text-sm text-gray-500">
-                This ticket is free. Confirm your details to reserve your spot.
-              </p>
-            } @else {
-              <p class="mt-1 text-sm text-gray-500">Pay securely with:</p>
-              <div class="mt-3 flex flex-wrap gap-2">
-                @for (
-                  method of ["Card", "Bank transfer", "USSD"];
-                  track method
-                ) {
-                  <span
-                    class="rounded-full bg-brand-soft px-3 py-1 text-xs font-semibold text-brand-dark"
-                    >{{ method }}</span
-                  >
-                }
-              </div>
-            }
-
-            <button
-              type="button"
-              (click)="submit()"
-              [disabled]="!formValid || isPaying()"
-              class="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-brand py-3.5 text-base font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-brand-dark"
-            >
-              @if (isPaying()) {
-                <span
-                  class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
-                ></span>
-                <span>Processing...</span>
-              } @else {
-                <span>{{
-                  isFree()
-                    ? "Confirm registration"
-                    : "Pay " + formatPrice(total())
-                }}</span>
-              }
-            </button>
-
-            @if (!formValid) {
-              <p class="mt-2 text-center text-xs text-gray-500">
-                Fill in every ticket's details to continue.
-              </p>
-            }
-
-            @if (!isFree()) {
-              <p
-                class="mt-4 flex items-center justify-center gap-1.5 text-xs text-gray-500"
+                (click)="addTicket()"
+                class="mt-4 inline-flex items-center gap-2 rounded-full border border-dashed border-gray-300 px-4 py-2 text-sm font-semibold text-ink transition-colors hover:border-brand hover:text-brand-dark"
               >
                 <svg
                   viewBox="0 0 24 24"
-                  class="h-3.5 w-3.5"
+                  class="h-4 w-4"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width="2"
+                  stroke-width="2.5"
                   stroke-linecap="round"
-                  stroke-linejoin="round"
                   aria-hidden="true"
                 >
-                  <rect x="5" y="11" width="14" height="10" rx="2" />
-                  <path d="M8 11V8a4 4 0 018 0v3" />
+                  <path d="M12 5v14M5 12h14" />
                 </svg>
-                Payments are processed securely by Paystack
-              </p>
+                Add another ticket
+              </button>
             }
-          </div>
-        </aside>
-      </div>
+          </section>
 
-      <!-- Step buttons (small screens only) -->
-      <div
-        class="fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-white px-4 py-3 backdrop-blur lg:hidden"
-      >
-        @switch (step()) {
-          @case (1) {
-            <button
-              type="button"
-              (click)="next()"
-              [disabled]="!formValid"
-              class="w-full rounded-full bg-brand py-3.5 text-base font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-brand-dark"
+          <!-- ============ SUMMARY, REVIEW, PAYMENT ============ -->
+          <aside
+            class="min-w-0 space-y-4 lg:sticky lg:top-28"
+            [ngClass]="step() === 1 ? 'hidden lg:block' : 'block'"
+          >
+            <!-- Order summary -->
+            <div class="rounded-3xl border border-gray-200 bg-white p-5 sm:p-6">
+              <div class="flex gap-4">
+                @if (e.image_url) {
+                  <img
+                    [src]="e.image_url"
+                    [alt]="e.title"
+                    class="h-20 w-24 shrink-0 rounded-2xl bg-gray-100 object-cover"
+                  />
+                } @else {
+                  <div
+                    class="h-20 w-24 shrink-0 rounded-2xl bg-brand-soft"
+                  ></div>
+                }
+                <div class="min-w-0">
+                  <h2 class="line-clamp-2 font-bold text-ink">{{ e.title }}</h2>
+                  <p class="mt-1 text-xs text-gray-500">
+                    {{ e.event_date | date: "EEE, d MMM y · h:mm a" }}
+                  </p>
+                  <p class="truncate text-xs text-gray-500">{{ e.location }}</p>
+                </div>
+              </div>
+
+              <dl
+                class="mt-5 space-y-2 border-t border-dashed border-gray-200 pt-4 text-sm"
+              >
+                <div class="flex justify-between gap-3">
+                  <dt class="min-w-0 wrap-break text-gray-600">
+                    {{ ticket()?.name }} × {{ quantity() }}
+                  </dt>
+                  <dd class="font-semibold text-ink">
+                    {{ formatPrice(unitPrice() * quantity()) }}
+                  </dd>
+                </div>
+                @if (quantity() > 1) {
+                  <div class="flex justify-between text-xs text-gray-500">
+                    <dt>Price per ticket</dt>
+                    <dd>{{ formatPrice(unitPrice()) }}</dd>
+                  </div>
+                }
+                <div
+                  class="flex items-baseline justify-between border-t border-gray-100 pt-3"
+                >
+                  <dt class="font-semibold text-gray-500">Total</dt>
+                  <dd class="text-2xl font-bold text-ink">
+                    {{ formatPrice(total()) }}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+
+            <!-- Review (small screens, step 2) -->
+            <div
+              class="rounded-3xl border border-gray-200 bg-white p-5 lg:hidden sm:p-6"
+              [ngClass]="step() === 2 ? 'block' : 'hidden'"
             >
-              Continue
-            </button>
-          }
-          @case (2) {
-            <div class="flex gap-3">
+              <div class="flex items-center justify-between">
+                <h2 class="font-bold text-ink">Check your details</h2>
+                <button
+                  type="button"
+                  (click)="editDetails()"
+                  class="text-sm font-semibold text-brand-dark hover:underline underline-offset-4"
+                >
+                  Edit
+                </button>
+              </div>
+
+              <ul class="mt-4 divide-y divide-gray-100">
+                @for (person of summaries(); track $index; let i = $index) {
+                  <li class="py-3 text-sm">
+                    <p class="font-semibold text-ink">
+                      <span class="text-gray-500">Ticket {{ i + 1 }} · </span
+                      >{{ person.name }}
+                    </p>
+                    <p class="text-gray-600">{{ person.email }}</p>
+                    <p class="text-gray-600">{{ person.phone }}</p>
+                  </li>
+                }
+              </ul>
+            </div>
+
+            <!-- Payment -->
+            <div
+              class="rounded-3xl border border-gray-200 bg-white p-5 sm:p-6"
+              [ngClass]="step() === 3 ? 'block' : 'hidden lg:block'"
+            >
+              <h2 class="font-bold text-ink">
+                {{ isFree() ? "Confirm" : "Payment" }}
+              </h2>
+
+              @if (isFree()) {
+                <p class="mt-1 text-sm text-gray-500">
+                  This ticket is free. Confirm your details to reserve your
+                  spot.
+                </p>
+              } @else {
+                <p class="mt-1 text-sm text-gray-500">Pay securely with:</p>
+                <div class="mt-3 flex flex-wrap gap-2">
+                  @for (
+                    method of ["Card", "Bank transfer", "USSD"];
+                    track method
+                  ) {
+                    <span
+                      class="rounded-full bg-brand-soft px-3 py-1 text-xs font-semibold text-brand-dark"
+                      >{{ method }}</span
+                    >
+                  }
+                </div>
+              }
+
               <button
                 type="button"
-                (click)="editDetails()"
-                class="flex-1 rounded-full border border-ink py-3.5 text-base font-semibold text-ink transition-colors hover:bg-ink hover:text-white"
+                (click)="submit()"
+                [disabled]="!formValid || isPaying()"
+                class="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-brand py-3.5 text-base font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-brand-dark"
               >
-                Edit
+                @if (isPaying()) {
+                  <span
+                    class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
+                  ></span>
+                  <span>{{
+                    redirecting()
+                      ? "Redirecting to Paystack..."
+                      : "Processing..."
+                  }}</span>
+                } @else {
+                  <span>{{
+                    isFree()
+                      ? "Confirm registration"
+                      : "Pay " + formatPrice(total())
+                  }}</span>
+                }
               </button>
+
+              @if (!formValid) {
+                <p class="mt-2 text-center text-xs text-gray-500">
+                  Fill in every ticket's details to continue.
+                </p>
+              }
+
+              @if (!isFree()) {
+                <p
+                  class="mt-4 flex items-center justify-center gap-1.5 text-xs text-gray-500"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    class="h-3.5 w-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <rect x="5" y="11" width="14" height="10" rx="2" />
+                    <path d="M8 11V8a4 4 0 018 0v3" />
+                  </svg>
+                  Payments are processed securely by Paystack
+                </p>
+              }
+            </div>
+          </aside>
+        </div>
+
+        <!-- Step buttons (small screens only) -->
+        <div
+          class="fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-white px-4 py-3 backdrop-blur lg:hidden"
+        >
+          @switch (step()) {
+            @case (1) {
               <button
                 type="button"
                 (click)="next()"
-                class="flex-1 rounded-full bg-brand-dark py-3.5 text-base font-semibold text-white transition-colors hover:bg-ink"
+                [disabled]="!formValid"
+                class="w-full rounded-full bg-brand py-3.5 text-base font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-brand-dark"
               >
-                Looks good
+                Continue
               </button>
-            </div>
+            }
+            @case (2) {
+              <div class="flex gap-3">
+                <button
+                  type="button"
+                  (click)="editDetails()"
+                  class="flex-1 rounded-full border border-ink py-3.5 text-base font-semibold text-ink transition-colors hover:bg-ink hover:text-white"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  (click)="next()"
+                  class="flex-1 rounded-full bg-brand-dark py-3.5 text-base font-semibold text-white transition-colors hover:bg-ink"
+                >
+                  Looks good
+                </button>
+              </div>
+            }
+            @case (3) {
+              <button
+                type="button"
+                (click)="back()"
+                class="w-full rounded-full border border-ink py-3.5 text-base font-semibold text-ink transition-colors hover:bg-ink hover:text-white"
+              >
+                Back to review
+              </button>
+            }
           }
-          @case (3) {
-            <button
-              type="button"
-              (click)="back()"
-              class="w-full rounded-full border border-ink py-3.5 text-base font-semibold text-ink transition-colors hover:bg-ink hover:text-white"
-            >
-              Back to review
-            </button>
-          }
-        }
-      </div>
+        </div>
+      }
     }
   </div>
 </div>
