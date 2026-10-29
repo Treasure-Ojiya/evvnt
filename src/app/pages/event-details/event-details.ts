@@ -3,14 +3,13 @@ import { DatePipe, NgClass } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { filter, switchMap } from 'rxjs';
-import { EventModel, EventTicketTypeModel } from '../../../app-model/model';
-import { ExploreService } from '../../../core/services/explore-service/explore-service';
-import { BookingService } from '../../../core/services/booking-service/booking-service';
-import { CartService } from '../../../core/services/cart-service/cart-service';
-import { AuthService } from '../../../core/services/auth-service/auth-service';
-import { UserService } from '../../../core/services/user-service/user-service';
-import { OrganizerService } from '../../../core/services/organizer-service/organizer-service';
-import { ToastService } from '../../../core/services/toast-service/toast-service';
+import { EventModel, EventTicketTypeModel } from '../../app-model/model';
+import { ExploreService } from '../../core/services/explore-service/explore-service';
+import { CartService } from '../../core/services/cart-service/cart-service';
+import { AuthService } from '../../core/services/auth-service/auth-service';
+import { UserService } from '../../core/services/user-service/user-service';
+// import { OrganizerService } from '../../core/services/organizer-service/organizer-service';
+import { ToastService } from '../../core/services/toast-service/toast-service';
 
 const MAX_PER_ORDER = 10;
 
@@ -25,10 +24,9 @@ export class EventDetails {
   private router = inject(Router);
   private exploreService = inject(ExploreService);
   private cartService = inject(CartService);
-  private bookingService = inject(BookingService);
   private authService = inject(AuthService);
   private userService = inject(UserService);
-  private organizerService = inject(OrganizerService);
+  // private organizerService = inject(OrganizerService);
   private toastService = inject(ToastService);
 
   // =========================
@@ -239,8 +237,7 @@ export class EventDetails {
     });
   }
 
-  // ---- Keep for later (only this one touches the cart) ----
-  saveForLater(): void {
+  addToQueue(): void {
     if (!this.isLoggedIn()) {
       this.router.navigate(['/auth/authentication']);
       return;
@@ -267,6 +264,7 @@ export class EventDetails {
           );
         },
         error: (error) => {
+          console.error('Queue failed:', error);
           this.isQueueing.set(false);
           this.toastService.show(
             typeof error?.error?.detail === 'string'
@@ -282,31 +280,31 @@ export class EventDetails {
   // Organizer tools
   // =========================
 
-  publish(): void {
-    const event = this.event();
+  // publish(): void {
+  //   const event = this.event();
 
-    if (!event) {
-      return;
-    }
+  //   if (!event) {
+  //     return;
+  //   }
 
-    this.isPublishing.set(true);
-    this.ownerError.set('');
+  //   this.isPublishing.set(true);
+  //   this.ownerError.set('');
 
-    this.organizerService.publishEvent(event.uuid).subscribe({
-      next: (updated) => {
-        this.event.set(updated);
-        this.isPublishing.set(false);
-      },
-      error: (error) => {
-        console.error('Publish failed:', error);
-        this.ownerError.set(
-          error?.error?.message ??
-            'Could not publish this event. Please try again.',
-        );
-        this.isPublishing.set(false);
-      },
-    });
-  }
+  //   this.organizerService.publishEvent(event.uuid).subscribe({
+  //     next: (updated) => {
+  //       this.event.set(updated);
+  //       this.isPublishing.set(false);
+  //     },
+  //     error: (error) => {
+  //       console.error('Publish failed:', error);
+  //       this.ownerError.set(
+  //         error?.error?.message ??
+  //           'Could not publish this event. Please try again.',
+  //       );
+  //       this.isPublishing.set(false);
+  //     },
+  //   });
+  // }
 
   statusLabel(status: string): string {
     return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();

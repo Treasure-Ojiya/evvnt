@@ -105,7 +105,6 @@ export class Explore {
 
   queueingId = signal<string | null>(null);
   queuedEventIds = signal<string[]>([]);
-  queueMessages = signal<Record<string, string>>({});
 
   startingPrices = signal<Record<string, number>>({});
 
@@ -470,9 +469,6 @@ export class Explore {
           this.toastService.show(this.queueErrorText(error), 'error', 5000);
         },
       });
-  }
-  private setQueueMessage(id: string, message: string): void {
-    this.queueMessages.update((current) => ({ ...current, [id]: message }));
   }
 
   private queueErrorText(error: unknown): string {

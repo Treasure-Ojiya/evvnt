@@ -1,12 +1,6 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import {
-  TicketPickerData,
-  TicketPickerModal,
-  TicketPickerResult,
-} from '../../shared/modals/ticket-picker-modal/ticket-picker-modal';
 import { CartService } from '../../core/services/cart-service/cart-service';
 import { CartItem } from '../../app-model/model';
 import { FeatureCard } from '../../shared/components/feature-card/feature-card';
@@ -19,7 +13,6 @@ import { FeatureCard } from '../../shared/components/feature-card/feature-card';
 })
 export class Queue implements OnInit {
   private cartService = inject(CartService);
-  private dialog = inject(MatDialog);
   private router = inject(Router);
 
   items = signal<CartItem[]>([]);
@@ -56,42 +49,6 @@ export class Queue implements OnInit {
         this.items.update((list) => list.filter((i) => i.uuid !== item.uuid)),
       error: () => console.error('Failed to remove item'),
     });
-  }
-
-  // Opens the payment page for this cart item (uses TicketPicker to allow qty change)
-  proceedToPayment(item: CartItem): void {
-    this.dialog
-      .open<TicketPickerModal, TicketPickerData, TicketPickerResult>(
-        TicketPickerModal,
-        {
-          data: {
-            eventId: item.event.uuid,
-            eventTitle: item.event.title,
-            ticketTypeId: item.ticket_type.uuid,
-            quantity: item.quantity,
-          },
-          width: '480px',
-          maxWidth: '94vw',
-          autoFocus: 'dialog',
-        },
-      )
-      .afterClosed()
-      .subscribe((choice) => {
-        if (!choice) return;
-        // Save qty change to cart, then navigate
-        this.cartService
-          .updateCartItem(item.uuid, { quantity: choice.quantity })
-          .subscribe({
-            next: () =>
-              this.router.navigate(['/payment'], {
-                queryParams: { cart: item.uuid },
-              }),
-            error: () =>
-              this.router.navigate(['/payment'], {
-                queryParams: { cart: item.uuid },
-              }),
-          });
-      });
   }
 
   goToPayment(item: CartItem): void {

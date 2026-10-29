@@ -25,16 +25,11 @@ export class OrganizerService {
   createEvent(
     eventData: CreateEventModel,
     image: File,
-    video?: File | null,
   ): Observable<EventModel> {
     const formData = new FormData();
 
     formData.append('data', JSON.stringify(eventData));
     formData.append('image', image);
-
-    if (video) {
-      formData.append('video', video);
-    }
 
     return this.http.post<EventModel>(`${this.baseUrl}/events/`, formData);
   }

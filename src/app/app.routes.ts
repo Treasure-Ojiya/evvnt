@@ -34,6 +34,13 @@ export const routes: Routes = [
   },
 
   {
+    path: 'events/:id',
+    loadComponent: () =>
+      import('./pages/event-details/event-details').then((m) => m.EventDetails),
+    data: { hideFooter: true },
+  },
+
+  {
     path: 'payment',
     loadComponent: () =>
       import('./pages/payments/payments').then((m) => m.Payment),
@@ -48,6 +55,7 @@ export const routes: Routes = [
         (m) => m.PaymentCallback,
       ),
     data: { hideLayout: true },
+    canActivate: [authGuard],
   },
 
   {
@@ -96,7 +104,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: '/explore',
+        redirectTo: '/organizer',
         pathMatch: 'full',
       },
       {
@@ -172,14 +180,6 @@ export const routes: Routes = [
       },
 
       // Must stay after 'organizer', otherwise ':id' would swallow it.
-      {
-        path: ':id',
-        loadComponent: () =>
-          import('./pages/events/event-details/event-details').then(
-            (m) => m.EventDetails,
-          ),
-        data: { hideFooter: true },
-      },
     ],
   },
 
@@ -238,4 +238,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/contact/contact').then((m) => m.Contact),
   },
+
+  { path: 'my-booking', redirectTo: 'queue' },
+  { path: '**', redirectTo: 'home' },
 ];

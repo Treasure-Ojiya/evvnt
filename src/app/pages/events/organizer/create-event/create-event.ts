@@ -289,13 +289,6 @@ export class CreateEvent implements OnInit {
     this.selectedImage = input.files?.[0] ?? null;
   }
 
-  onVideoSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-
-    // Video is optional: cancelling the picker clears it back to null.
-    this.selectedVideo = input.files?.[0] ?? null;
-  }
-
   // =========================
   // Validation Helpers
   // =========================
@@ -400,12 +393,10 @@ export class CreateEvent implements OnInit {
 
     const event$ = this.createdEventId
       ? of(this.createdEventId)
-      : this.eventService
-          .createEvent(payload, this.selectedImage, this.selectedVideo)
-          .pipe(
-            tap((created) => (this.createdEventId = created.uuid)),
-            map((created) => created.uuid),
-          );
+      : this.eventService.createEvent(payload, this.selectedImage).pipe(
+          tap((created) => (this.createdEventId = created.uuid)),
+          map((created) => created.uuid),
+        );
 
     event$
       .pipe(

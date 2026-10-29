@@ -437,7 +437,7 @@
 
             <button
               type="button"
-              (click)="saveForLater()"
+              (click)="addToQueue()"
               [disabled]="isPast() || isQueueing() || !selectedTicket()"
               class="mt-2 w-full rounded-full border border-brand py-3 text-sm font-semibold text-ink transition-colors hover:bg-brand-dark hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-ink"
             >
